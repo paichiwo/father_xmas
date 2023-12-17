@@ -14,21 +14,24 @@ class Player(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2()
         self.pos = pygame.math.Vector2(self.rect.center)
         self.speed = 200
+        self.climbing = False
 
         # platforms
         self.platform_group = platform_group
-        self.platforms_y_pos = {}
-        for index, platform in enumerate(self.platform_group):
-            self.platforms_y_pos[f'platform_{index+1}'] = platform.rect.midtop[1]
-
+        self.platforms_y_pos = self.get_positions(platform_group, 'platform')
         self.current_platform = None
-        self.climbing = False
 
         # ladders
         self.ladder_group = ladder_group
-        self.ladders_y_pos = {}
-        for index, ladder in enumerate(self.ladder_group):
-            self.ladders_y_pos[f'ladder_{index+1}'] = ladder.rect.midbottom[1]
+        self.ladders_y_pos = self.get_positions(ladder_group, 'ladder')
+
+    @staticmethod
+    def get_positions(group, prefix):
+        positions = {}
+        for index, obj in enumerate(group):
+            key = f'{prefix}_{index + 1}'
+            positions[key] = obj.rect.top if prefix == 'platform' else obj.rect.bottom
+        return positions
 
     def get_current_platform(self):
         for platform_name, y_pos in self.platforms_y_pos.items():
@@ -40,35 +43,18 @@ class Player(pygame.sprite.Sprite):
         climb_down = False
         middle_of_ladder = False
 
-        under = pygame.rect.Rect((self.rect[0], self.rect[1] + self.rect.height),
-                                 (self.rect[2], self.rect[3]))
+        under = pygame.rect.Rect((self.rect[0], self.rect[1] + self.rect.height), (self.rect[2], self.rect[3]))
 
         for ladder in self.ladder_group:
             if self.rect.colliderect(ladder.rect) and not can_climb:
                 can_climb = True
-                ladder_middle_x = ladder.rect.centerx
-                player_middle_x = self.rect.centerx
                 offset = 10
-                middle_of_ladder = abs(player_middle_x - ladder_middle_x) <= offset
+                middle_of_ladder = abs(self.rect.centerx - ladder.rect.centerx) <= offset
 
             if under.colliderect(ladder):
                 climb_down = True
 
-        if can_climb and middle_of_ladder:
-            self.climbing = True
-
-        # Stop climbing if the player is not in the middle of the ladder
-        elif can_climb and not middle_of_ladder:
-            self.climbing = False
-
-        # Stop climbing if player is not on the ladder
-        elif not can_climb and not climb_down:
-            self.climbing = False
-
-        # if (not can_climb and (not climb_down or self.direction.y < 0)) or \
-        #         (self.landed and can_climb and self.direction.y > 0 and not climb_down):
-        #     self.climbing = False
-
+        self.climbing = can_climb and middle_of_ladder
         return can_climb, climb_down, middle_of_ladder
 
     def fall_onto_platform(self):
@@ -100,15 +86,13 @@ class Player(pygame.sprite.Sprite):
         if not on_ladder:
             self.fall_onto_platform()
 
+        # handle vertical movement
+        elif keys[pygame.K_UP] and can_climb and middle_of_ladder:
+            self.direction.y = -1
+        elif keys[pygame.K_DOWN] and climb_down and middle_of_ladder:
+            self.direction.y = 1
         else:
-            # handle vertical movement
-            self.climbing = can_climb
-            if keys[pygame.K_UP] and can_climb and middle_of_ladder:
-                self.direction.y = -1
-            elif keys[pygame.K_DOWN] and climb_down and middle_of_ladder:
-                self.direction.y = 1
-            else:
-                self.direction.y = 0
+            self.direction.y = 0
 
         # handle horizontal movement
         if keys[pygame.K_RIGHT]:
