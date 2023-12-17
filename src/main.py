@@ -1,13 +1,14 @@
 import pygame
 import sys
+from config import *
 from level import Level
 
 
 class Game:
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((1280, 720))
-        pygame.display.set_caption('Sprout lands')
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_caption('Father Xmas')
         self.clock = pygame.time.Clock()
         self.level = Level()
 

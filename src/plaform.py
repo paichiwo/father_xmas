@@ -8,5 +8,4 @@ class Platform(pygame.sprite.Sprite):
         # general setup
         self.image = pygame.Surface((1280, 32))
         self.image.fill('white')
-        self.rect = self.image.get_rect(midbottom=pos)
-        print(self.rect.midtop[1])
+        self.rect = self.image.get_rect(topleft=pos)

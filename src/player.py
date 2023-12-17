@@ -2,15 +2,15 @@ import pygame
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, platform_top, group):
+    def __init__(self, pos, platform_y_pos, group):
         super().__init__(group)
 
-        self.platform_top = platform_top
+        self.platform_y_pos = platform_y_pos
 
         # general setup
         self.image = pygame.Surface((32, 64))
         self.image.fill('green')
-        self.rect = self.image.get_rect(center=pos)
+        self.rect = self.image.get_rect(midbottom=pos)
 
         # movement attributes
         self.direction = pygame.math.Vector2()
@@ -20,11 +20,13 @@ class Player(pygame.sprite.Sprite):
     def input(self):
         keys = pygame.key.get_pressed()
 
+        # fall onto the platform
         self.direction.y = 1
-        if self.rect.midbottom[1] >= self.platform_top - 1:
+        if self.rect.midbottom[1] >= self.platform_y_pos:
             self.direction.y = 0
-            self.rect.bottom = self.platform_top
+            self.rect.bottom = self.platform_y_pos
 
+        # directions
         if keys[pygame.K_RIGHT]:
             self.direction.x = 1
         elif keys[pygame.K_LEFT]:
