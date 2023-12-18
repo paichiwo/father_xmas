@@ -6,14 +6,14 @@ class Player(pygame.sprite.Sprite):
         super().__init__(group)
 
         # general setup
-        self.image = pygame.Surface((64, 96))
+        self.image = pygame.Surface((16, 32))
         self.image.fill('green')
         self.rect = self.image.get_rect(midbottom=pos)
 
         # movement attributes
         self.direction = pygame.math.Vector2()
         self.pos = pygame.math.Vector2(self.rect.center)
-        self.speed = 200
+        self.speed = 100
         self.climbing = False
 
         # platforms
@@ -119,3 +119,4 @@ class Player(pygame.sprite.Sprite):
     def update(self, dt):
         self.input()
         self.move(dt)
+        print(self.current_platform)
