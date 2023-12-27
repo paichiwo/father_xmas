@@ -23,45 +23,47 @@ class Game:
         self.window.position = pg_sdl2.WINDOWPOS_CENTERED
         self.window.show()
 
+        self.timer = pygame.time.Clock()
+        self.fps = 60
+
         # Sprite groups
-        self.platform_group = pygame.sprite.Group()
-        self.ladder_group = pygame.sprite.Group()
         self.player_group = pygame.sprite.GroupSingle()
 
         # Game objects
-        self.level = Level()
-        self.player = Player(100, 50, self.ladder_group, self.platform_group, self.player_group)
+        self.level = Level(self.screen)
+        self.player = Player(100, 150, self.screen, self.level.ladders_group,
+                             self.level.platforms_group, self.player_group)
 
         # Add sprites to the sprite groups
-        self.platform_group.add(self.level.platforms.values())
-        self.ladder_group.add(self.level.ladders.values())
+
 
     def draw_sprites(self):
-        self.platform_group.draw(self.screen)
-        self.ladder_group.draw(self.screen)
+        self.level.platforms_group.draw(self.screen)
+        self.level.ladders_group.draw(self.screen)
         self.player_group.draw(self.screen)
 
-    def update_sprites(self, dt):
-        self.platform_group.update()
-        self.ladder_group.update()
-        self.player_group.update(dt)
+    def update_sprites(self):
+        self.level.platforms_group.update()
+        self.level.ladders_group.update()
+        self.player_group.update()
 
     def run(self):
         while True:
+            self.screen.fill('black')
+            can_climb, climbed_down = self.player.check_climb()
+
+            self.draw_sprites()
+            self.update_sprites()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
 
-                self.player.controls(event)
-
-            dt = self.clock.tick() / 1000
-
-            self.screen.fill('black')
-            self.draw_sprites()
-            self.update_sprites(dt)
+                self.player.controls(event, can_climb, climbed_down)
 
             pygame.display.update()
+            self.timer.tick(self.fps)
 
 
 if __name__ == '__main__':

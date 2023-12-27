@@ -1,98 +1,110 @@
 import pygame
 
-
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x_pos, y_pos, ladder_group, platform_group, group):
+    def __init__(self, x_pos, y_pos, screen, ladder_group, platform_group, group):
         super().__init__(group)
 
-        # general setup
+        # General setup
         self.x_pos = x_pos
         self.y_pos = y_pos
-        self.image = pygame.Surface((16, 32))
+        self.screen = screen
+
+        # Image & Rect
+        self.image = pygame.Surface((16, 25))
         self.image.fill('green')
         self.rect = self.image.get_rect()
         self.rect.midbottom = (self.x_pos, self.y_pos)
+        self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
 
-        # movement attributes
-        self.direction = pygame.math.Vector2()
-        self.pos = pygame.math.Vector2(self.rect.center)
-        self.speed = 100
+        # Movement attributes
+        self.speed = 1.5
+        self.y_change = 0
+        self.x_change = 0
         self.climbing = False
         self.landed = False
 
-        # platforms
+        # Platforms
         self.platform_group = platform_group
-        self.platforms_y_pos = self.get_positions(platform_group, 'platform')
-        self.current_platform = None
+        self.platform_rects = [platform.rect for platform in self.platform_group]
 
-        # ladders
+        # Ladders
         self.ladder_group = ladder_group
-        self.ladders_y_pos = self.get_positions(ladder_group, 'ladder')
+        self.ladders_rects = [ladder.rect for ladder in self.ladder_group]
 
-    @staticmethod
-    def get_positions(group, prefix):
-        positions = {}
-        for index, obj in enumerate(group):
-            key = f'{prefix}_{index + 1}'
-            positions[key] = obj.rect.top if prefix == 'platform' else obj.rect.bottom
-        return positions
+    def check_landed(self):
+
+        for i in range(len(self.platform_rects)):
+            if self.bottom.colliderect(self.platform_rects[i]):
+                self.landed = True
+                if not self.climbing:
+                    self.rect.centery = self.platform_rects[i].top - self.rect.height / 2 + 1
 
     def check_climb(self):
         can_climb = False
         climb_down = False
-        middle_of_ladder = False
 
-        under = pygame.rect.Rect((self.rect[0], self.rect[1] + self.rect.height), (self.rect[2], self.rect[3]))
+        under = pygame.rect.Rect((self.rect[0], self.rect[1] + self.rect.height),
+                                 (self.rect[2], self.rect[3] / 3))
+        pygame.draw.rect(self.screen, 'yellow', under)
 
-        for ladder in self.ladder_group:
-            if self.rect.colliderect(ladder.rect) and not can_climb:
+        for ladder in self.ladders_rects:
+            if self.rect.colliderect(ladder) and not can_climb:
                 can_climb = True
-                offset = 10
-                middle_of_ladder = abs(self.rect.centerx - ladder.rect.centerx) <= offset
-
             if under.colliderect(ladder):
                 climb_down = True
 
-        self.climbing = can_climb and middle_of_ladder
-        return can_climb, climb_down, middle_of_ladder
+        if (not can_climb and (not climb_down or self.y_change < 0)) or (
+                self.landed and can_climb and self.y_change > 0 and not climb_down):
+            self.climbing = False
 
-    def controls(self, event):
+        return can_climb, climb_down
 
-        can_climb, climbed_down, middle_of_ladder = self.check_climb()
+    def controls(self, event, can_climb, climbed_down):
 
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                self.direction.x = -1
-            if event.key == pygame.K_RIGHT:
-                self.direction.x = 1
+            if event.key == pygame.K_RIGHT and not self.climbing:
+                self.x_change = 1
+            if event.key == pygame.K_LEFT and not self.climbing:
+                self.x_change = -1
+
             if event.key == pygame.K_UP:
-                self.direction.y = -1
+                if can_climb:
+                    self.y_change = -2
+                    self.x_change = 0
+                    self.climbing = True
             if event.key == pygame.K_DOWN:
-                self.direction.y = 1
+                if climbed_down:
+                    self.y_change = 2
+                    self.x_change = 0
+                    self.climbing = True
 
         if event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT:
-                self.direction.x = 0
             if event.key == pygame.K_RIGHT:
-                self.direction.x = 0
+                self.x_change = 0
+            if event.key == pygame.K_LEFT:
+                self.x_change = 0
             if event.key == pygame.K_UP:
-                self.direction.y = 0
+                if can_climb:
+                    self.y_change = 0
+                if self.climbing and self.landed:
+                    self.climbing = False
             if event.key == pygame.K_DOWN:
-                self.direction.y = 0
+                if climbed_down:
+                    self.y_change = 0
+                if self.climbing and self.landed:
+                    self.climbing = False
 
-    def move(self, dt):
+    def update(self):
+        self.landed = False
+        self.check_landed()
 
-        # normalizing a vector (diagonal movement not faster than normal movement)
-        if self.direction.magnitude() > 0:
-            self.direction = self.direction.normalize()
+        if not self.landed and not self.climbing:
+            self.y_change -= 0.25
+        self.rect.move_ip(self.x_change * self.speed, self.y_change)
+        self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
 
-        # horizontal movement
-        self.pos.x += self.direction.x * self.speed * dt
-        self.rect.centerx = self.pos.x
-
-        # vertical movement
-        self.pos.y += self.direction.y * self.speed * dt
-        self.rect.centery = self.pos.y
-
-    def update(self, dt):
-        self.move(dt)
+        pygame.draw.rect(self.screen, 'red', self.bottom)
+        # print(self.platform_rects)
+        # print(self.bottom)
+        # print(self.rect.midbottom)
+        print('climbing', self.climbing, 'landed', self.landed)
