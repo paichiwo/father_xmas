@@ -6,6 +6,5 @@ class Ladder(pygame.sprite.Sprite):
         super().__init__()
 
         # general setup
-        self.image = pygame.Surface((16, 48))
-        self.image.fill('blue')
+        self.image = pygame.image.load('assets/ladder.png').convert_alpha()
         self.rect = self.image.get_rect(midbottom=pos)
