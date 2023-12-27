@@ -2,8 +2,8 @@ import pygame
 
 
 class Platform(pygame.sprite.Sprite):
-    def __init__(self, pos, group):
-        super().__init__(group)
+    def __init__(self, pos):
+        super().__init__()
 
         # general setup
         self.image = pygame.Surface((500, 4))

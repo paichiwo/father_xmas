@@ -2,19 +2,23 @@ import pygame
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, ladder_group, platform_group, group):
-        super().__init__(group)
+    def __init__(self, x_pos, y_pos, ladder_group, platform_group):
+        super().__init__()
 
         # general setup
+        self.x_pos = x_pos
+        self.y_pos = y_pos
         self.image = pygame.Surface((16, 32))
         self.image.fill('green')
-        self.rect = self.image.get_rect(midbottom=pos)
+        self.rect = self.image.get_rect()
+        self.rect.midbottom = (self.x_pos, self.y_pos)
 
         # movement attributes
         self.direction = pygame.math.Vector2()
         self.pos = pygame.math.Vector2(self.rect.center)
         self.speed = 100
         self.climbing = False
+        self.landed = False
 
         # platforms
         self.platform_group = platform_group
@@ -32,11 +36,6 @@ class Player(pygame.sprite.Sprite):
             key = f'{prefix}_{index + 1}'
             positions[key] = obj.rect.top if prefix == 'platform' else obj.rect.bottom
         return positions
-
-    def get_current_platform(self):
-        for platform_name, y_pos in self.platforms_y_pos.items():
-            if y_pos >= self.rect.bottom > y_pos - self.speed:
-                self.current_platform = platform_name
 
     def check_climb(self):
         can_climb = False
@@ -57,50 +56,29 @@ class Player(pygame.sprite.Sprite):
         self.climbing = can_climb and middle_of_ladder
         return can_climb, climb_down, middle_of_ladder
 
-    def fall_onto_platform(self):
+    def controls(self, event):
 
-        # check for the current platform
-        self.get_current_platform()
+        can_climb, climbed_down, middle_of_ladder = self.check_climb()
 
-        # fall onto the platform if not on a ladder
-        self.direction.y = 1
-        if self.rect.bottom >= self.platforms_y_pos[self.current_platform]:
-            self.direction.y = 0
-            self.rect.bottom = self.platforms_y_pos[self.current_platform]
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                self.direction.x = -1
+            if event.key == pygame.K_RIGHT:
+                self.direction.x = 1
+            if event.key == pygame.K_UP:
+                self.direction.y = -1
+            if event.key == pygame.K_DOWN:
+                self.direction.y = 1
 
-    def input(self):
-        keys = pygame.key.get_pressed()
-
-        # reset vertical direction
-        self.direction.y = 0
-
-        # reset climbing
-        self.climbing = False
-
-        # check if on a ladder
-        on_ladder = pygame.sprite.spritecollideany(self, self.ladder_group)
-
-        # check if player can climb
-        can_climb, climb_down, middle_of_ladder = self.check_climb()
-
-        if not on_ladder:
-            self.fall_onto_platform()
-
-        # handle vertical movement
-        elif keys[pygame.K_UP] and can_climb and middle_of_ladder:
-            self.direction.y = -1
-        elif keys[pygame.K_DOWN] and climb_down and middle_of_ladder:
-            self.direction.y = 1
-        else:
-            self.direction.y = 0
-
-        # handle horizontal movement
-        if keys[pygame.K_RIGHT]:
-            self.direction.x = 1
-        elif keys[pygame.K_LEFT]:
-            self.direction.x = -1
-        else:
-            self.direction.x = 0
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT:
+                self.direction.x = 0
+            if event.key == pygame.K_RIGHT:
+                self.direction.x = 0
+            if event.key == pygame.K_UP:
+                self.direction.y = 0
+            if event.key == pygame.K_DOWN:
+                self.direction.y = 0
 
     def move(self, dt):
 
@@ -117,6 +95,4 @@ class Player(pygame.sprite.Sprite):
         self.rect.centery = self.pos.y
 
     def update(self, dt):
-        self.input()
         self.move(dt)
-        print(self.current_platform)
