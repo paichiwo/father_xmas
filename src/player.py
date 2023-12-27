@@ -2,8 +2,8 @@ import pygame
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x_pos, y_pos, ladder_group, platform_group):
-        super().__init__()
+    def __init__(self, x_pos, y_pos, ladder_group, platform_group, group):
+        super().__init__(group)
 
         # general setup
         self.x_pos = x_pos
