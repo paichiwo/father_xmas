@@ -26,17 +26,15 @@ class Game:
         # Sprite groups
         self.platform_group = pygame.sprite.Group()
         self.ladder_group = pygame.sprite.Group()
-        self.player_group = pygame.sprite.Group()
+        self.player_group = pygame.sprite.GroupSingle()
 
         # Game objects
         self.level = Level()
-        self.player = Player(100, 50, self.platform_group, self.ladder_group)
+        self.player = Player(100, 50, self.ladder_group, self.platform_group, self.player_group)
 
         # Add sprites to the sprite groups
-
         self.platform_group.add(self.level.platforms.values())
         self.ladder_group.add(self.level.ladders.values())
-        self.player_group.add(self.player)
 
     def draw_sprites(self):
         self.platform_group.draw(self.screen)
