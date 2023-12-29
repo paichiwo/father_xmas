@@ -4,6 +4,7 @@ import sys
 
 from src.config import *
 from pygame.locals import *
+from src.camera import CameraGroup
 from src.level import Level
 from src.player import Player
 
@@ -27,28 +28,33 @@ class Game:
         # Sprite groups
         self.player_group = pygame.sprite.GroupSingle()
 
+        # Camera group
+        self.camera_group = CameraGroup()
+
         # Game objects
         self.level = Level(self.screen)
         self.player = Player(100, 150, self.screen, self.level.ladders_group,
                              self.level.platforms_group, self.player_group)
 
+        self.add_to_camera_group()
+
+    def add_to_camera_group(self):
+        self.camera_group.add(
+            self.level.platforms_group,
+            self.level.ladders_group,
+            self.player_group
+        )
+
     def draw_sprites(self):
-        self.level.platforms_group.draw(self.screen)
-        self.level.ladders_group.draw(self.screen)
-        self.player_group.draw(self.screen)
+        self.camera_group.custom_draw(self.player)
 
     def update_sprites(self):
-        self.level.platforms_group.update()
-        self.level.ladders_group.update()
-        self.player_group.update()
+        self.camera_group.update()
 
     def run(self):
         while True:
             self.screen.fill('black')
             can_climb, climbed_down = self.player.check_climb()
-
-            self.draw_sprites()
-            self.update_sprites()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -56,6 +62,9 @@ class Game:
                     sys.exit()
 
                 self.player.controls(event, can_climb, climbed_down)
+
+            self.update_sprites()
+            self.draw_sprites()
 
             pygame.display.update()
             self.clock.tick(self.fps)
