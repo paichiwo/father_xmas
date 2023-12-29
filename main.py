@@ -16,15 +16,13 @@ class Game:
         pygame.display.set_caption('Father Xmas')
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT), flags=HIDDEN | SCALED, vsync=1)
         self.clock = pygame.time.Clock()
+        self.fps = 60
 
         # Scaled window setup
         self.window = pg_sdl2.Window.from_display_module()
         self.window.size = (WIDTH * SCALE, HEIGHT * SCALE)
         self.window.position = pg_sdl2.WINDOWPOS_CENTERED
         self.window.show()
-
-        self.timer = pygame.time.Clock()
-        self.fps = 60
 
         # Sprite groups
         self.player_group = pygame.sprite.GroupSingle()
@@ -33,9 +31,6 @@ class Game:
         self.level = Level(self.screen)
         self.player = Player(100, 150, self.screen, self.level.ladders_group,
                              self.level.platforms_group, self.player_group)
-
-        # Add sprites to the sprite groups
-
 
     def draw_sprites(self):
         self.level.platforms_group.draw(self.screen)
@@ -63,7 +58,7 @@ class Game:
                 self.player.controls(event, can_climb, climbed_down)
 
             pygame.display.update()
-            self.timer.tick(self.fps)
+            self.clock.tick(self.fps)
 
 
 if __name__ == '__main__':

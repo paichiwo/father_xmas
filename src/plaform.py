@@ -16,11 +16,3 @@ class Platform(pygame.sprite.Sprite):
         self.image = pygame.Surface((self.length, self.height))
         self.image.fill('white')
         self.rect = self.image.get_rect(topleft=(self.x_pos, self.y_pos))
-
-        # Platform top surface
-        self.platform_tops = self.get_top_line_surface()
-
-    def get_top_line_surface(self):
-        top_line_surface = pygame.rect.Rect((self.x_pos, self.y_pos), (self.length, 5))
-        pygame.draw.rect(self.screen, 'orange', top_line_surface)
-        return top_line_surface

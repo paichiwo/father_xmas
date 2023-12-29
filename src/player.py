@@ -1,5 +1,6 @@
 import pygame
 
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, x_pos, y_pos, screen, ladder_group, platform_group, group):
         super().__init__(group)
@@ -32,7 +33,6 @@ class Player(pygame.sprite.Sprite):
         self.ladders_rects = [ladder.rect for ladder in self.ladder_group]
 
     def check_landed(self):
-
         for i in range(len(self.platform_rects)):
             if self.bottom.colliderect(self.platform_rects[i]):
                 self.landed = True
@@ -40,7 +40,6 @@ class Player(pygame.sprite.Sprite):
                     if self.rect.bottom != self.platform_rects[i][1]:
                         self.y_change = 0
                     self.rect.bottom = self.platform_rects[i][1]
-
 
     def check_climb(self):
         can_climb = False
@@ -61,6 +60,10 @@ class Player(pygame.sprite.Sprite):
             self.climbing = False
 
         return can_climb, climb_down
+
+    def move(self):
+        self.rect.move_ip(self.x_change * self.speed, self.y_change)
+        self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
 
     def controls(self, event, can_climb, climbed_down):
 
@@ -100,15 +103,6 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         self.landed = False
         self.check_landed()
-
-        if not self.landed and not self.climbing:
-            self.y_change -= 0.025
-        self.rect.move_ip(self.x_change * self.speed, self.y_change)
-        self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
-
+        self.move()
+        print(self.x_change, self.y_change)
         # pygame.draw.rect(self.screen, 'red', self.bottom)
-        # print(self.platform_rects)
-        # print(self.bottom)
-        # print(self.rect.midbottom)
-        print('climbing', self.climbing, 'landed', self.landed)
-        print(self.platform_rects, self.rect.bottom)
