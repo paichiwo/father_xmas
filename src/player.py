@@ -17,7 +17,7 @@ class Player(pygame.sprite.Sprite):
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
 
         # Movement attributes
-        self.speed = 1.5
+        self.speed = 1
         self.y_change = 0
         self.x_change = 0
         self.climbing = False
@@ -37,7 +37,10 @@ class Player(pygame.sprite.Sprite):
             if self.bottom.colliderect(self.platform_rects[i]):
                 self.landed = True
                 if not self.climbing:
-                    self.rect.centery = self.platform_rects[i].top - self.rect.height / 2 + 1
+                    if self.rect.bottom != self.platform_rects[i][1]:
+                        self.y_change = 0
+                    self.rect.bottom = self.platform_rects[i][1]
+
 
     def check_climb(self):
         can_climb = False
@@ -45,7 +48,7 @@ class Player(pygame.sprite.Sprite):
 
         under = pygame.rect.Rect((self.rect[0], self.rect[1] + self.rect.height),
                                  (self.rect[2], self.rect[3] / 3))
-        pygame.draw.rect(self.screen, 'yellow', under)
+        # pygame.draw.rect(self.screen, 'yellow', under)
 
         for ladder in self.ladders_rects:
             if self.rect.colliderect(ladder) and not can_climb:
@@ -69,12 +72,12 @@ class Player(pygame.sprite.Sprite):
 
             if event.key == pygame.K_UP:
                 if can_climb:
-                    self.y_change = -2
+                    self.y_change -= 1
                     self.x_change = 0
                     self.climbing = True
             if event.key == pygame.K_DOWN:
                 if climbed_down:
-                    self.y_change = 2
+                    self.y_change += 1
                     self.x_change = 0
                     self.climbing = True
 
@@ -99,12 +102,13 @@ class Player(pygame.sprite.Sprite):
         self.check_landed()
 
         if not self.landed and not self.climbing:
-            self.y_change -= 0.25
+            self.y_change -= 0.025
         self.rect.move_ip(self.x_change * self.speed, self.y_change)
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
 
-        pygame.draw.rect(self.screen, 'red', self.bottom)
+        # pygame.draw.rect(self.screen, 'red', self.bottom)
         # print(self.platform_rects)
         # print(self.bottom)
         # print(self.rect.midbottom)
         print('climbing', self.climbing, 'landed', self.landed)
+        print(self.platform_rects, self.rect.bottom)
