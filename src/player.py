@@ -11,8 +11,21 @@ class Player(pygame.sprite.Sprite):
         self.screen = screen
 
         # Image & Rect
-        self.image = pygame.Surface((16, 25))
-        self.image.fill('green')
+        self.frames = {
+            'walk_left':
+                [pygame.transform.flip(pygame.image.load(f'assets/player/walk/santa_walk_{i}.png').convert_alpha(),
+                                       True, False) for i in range(1, 5)],
+            'walk_right':
+                [pygame.image.load(f'assets/player/walk/santa_walk_{i}.png').convert_alpha() for i in range(1, 5)],
+            'climbing':
+                [pygame.image.load(f'assets/player/climb/santa_climb_{i}.png').convert_alpha() for i in range(1, 5)]
+        }
+
+        # Animation index
+        self.status = 'walk_right'
+        self.frame_index = 0
+
+        self.image = self.frames[self.status][self.frame_index]
         self.rect = self.image.get_rect()
         self.rect.midbottom = (self.x_pos, self.y_pos)
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
@@ -31,6 +44,13 @@ class Player(pygame.sprite.Sprite):
         # Ladders
         self.ladder_group = ladder_group
         self.ladders_rects = [ladder.rect for ladder in self.ladder_group]
+
+    def animate(self):
+        self.frame_index += 0.1
+        if self.frame_index >= len(self.frames[self.status]):
+            self.frame_index = 0
+
+        self.image = self.frames[self.status][int(self.frame_index)]
 
     def check_landed(self):
         for i in range(len(self.platform_rects)):
@@ -70,39 +90,46 @@ class Player(pygame.sprite.Sprite):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RIGHT and not self.climbing:
                 self.x_change = 1
+                self.status = 'walk_right'
             if event.key == pygame.K_LEFT and not self.climbing:
                 self.x_change = -1
-
+                self.status = 'walk_left'
             if event.key == pygame.K_UP:
                 if can_climb:
                     self.y_change -= 1
+                    self.status = 'climbing'
                     self.x_change = 0
                     self.climbing = True
             if event.key == pygame.K_DOWN:
                 if climbed_down:
                     self.y_change += 1
+                    self.status = 'climbing'
                     self.x_change = 0
                     self.climbing = True
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_RIGHT:
                 self.x_change = 0
+                self.image = self.frames['walk_right'][1]
             if event.key == pygame.K_LEFT:
                 self.x_change = 0
+                self.image = self.frames['walk_left'][1]
             if event.key == pygame.K_UP:
                 if can_climb:
                     self.y_change = 0
+                    self.image = self.frames['climbing'][1]
                 if self.climbing and self.landed:
                     self.climbing = False
             if event.key == pygame.K_DOWN:
                 if climbed_down:
                     self.y_change = 0
+                self.image = self.frames['climbing'][1]
                 if self.climbing and self.landed:
                     self.climbing = False
 
     def update(self):
         self.landed = False
         self.check_landed()
+        self.animate()
         self.move()
-        print(self.x_change, self.y_change)
         # pygame.draw.rect(self.screen, 'red', self.bottom)
