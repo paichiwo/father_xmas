@@ -53,15 +53,15 @@ class Game:
 
     def run(self):
         while True:
-            self.screen.fill('black')
-            can_climb, climbed_down = self.player.check_climb()
+            self.screen.fill('darkslategrey')
+            can_climb, climbed_down, middle_of_ladder = self.player.check_climb()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
 
-                self.player.controls(event, can_climb, climbed_down)
+                self.player.controls(event, can_climb, climbed_down, middle_of_ladder)
 
             self.update_sprites()
             self.draw_sprites()
