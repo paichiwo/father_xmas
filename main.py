@@ -56,6 +56,8 @@ class Game:
             self.screen.fill('darkslategrey')
             can_climb, climbed_down, middle_of_ladder = self.player.check_climb()
 
+            pygame.key.set_repeat(60)
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()

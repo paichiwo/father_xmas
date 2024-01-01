@@ -51,10 +51,10 @@ class Player(pygame.sprite.Sprite):
             self.frame_index += 0.1
             if self.frame_index >= len(self.frames[self.status]):
                 self.frame_index = 0
-
-            self.image = self.frames[self.status][int(self.frame_index)]
         else:
-            self.image = self.frames[self.status][1]
+            self.frame_index = 1
+
+        self.image = self.frames[self.status][int(self.frame_index)]
 
     def check_landed(self):
         for i in range(len(self.platform_rects)):
@@ -99,9 +99,10 @@ class Player(pygame.sprite.Sprite):
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
 
     def controls(self, event, can_climb, climbed_down, middle_of_ladder):
-
         if event.type == pygame.KEYDOWN:
-            self.animation_possible = True
+            if not self.animation_possible:
+                self.animation_possible = True
+
             if self.animation_possible:
                 if event.key == pygame.K_RIGHT and not self.climbing:
                     self.x_change = 1
@@ -111,18 +112,18 @@ class Player(pygame.sprite.Sprite):
                     self.status = 'walk_left'
                 if event.key == pygame.K_UP and middle_of_ladder:
                     if can_climb:
-                        self.y_change -= 1
+                        self.y_change = -1
                         self.x_change = 0
                         self.climbing = True
                         self.status = 'climbing'
                 if event.key == pygame.K_DOWN and middle_of_ladder:
                     if climbed_down:
-                        self.y_change += 1
+                        self.y_change = 1
                         self.x_change = 0
                         self.climbing = True
                         self.status = 'climbing'
 
-        if event.type == pygame.KEYUP:
+        elif event.type == pygame.KEYUP:
             self.animation_possible = False
             if event.key == pygame.K_RIGHT:
                 self.x_change = 0
