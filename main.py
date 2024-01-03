@@ -7,6 +7,7 @@ from pygame.locals import *
 from src.camera import CameraGroup
 from src.level import Level
 from src.player import Player
+from src.snow import Snow
 
 
 class Game:
@@ -27,14 +28,14 @@ class Game:
 
         # Sprite groups
         self.player_group = pygame.sprite.GroupSingle()
+        self.snow_group = Snow(WIDTH, HEIGHT, self.screen)
 
         # Camera group
         self.camera_group = CameraGroup()
 
         # Game objects
         self.level = Level(self.screen)
-        self.player = Player(100, 150, self.screen, self.level.ladders_group,
-                             self.level.platforms_group, self.player_group)
+        self.player = Player(100, 150, self.screen, self.level.ladders_group, self.level.platforms_group, self.player_group)
 
         self.add_to_camera_group()
 
@@ -48,8 +49,12 @@ class Game:
     def draw_sprites(self):
         self.camera_group.custom_draw(self.player)
 
+        self.snow_group.draw(self.screen)
+
     def update_sprites(self):
         self.camera_group.update()
+
+        self.snow_group.update()
 
     def run(self):
         while True:
