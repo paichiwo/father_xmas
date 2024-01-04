@@ -2,3 +2,7 @@
 WIDTH = 320
 HEIGHT = 180
 SCALE = 4
+
+# COLORS
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
