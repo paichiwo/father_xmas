@@ -56,7 +56,9 @@ class Game:
 
     def run(self):
         while True:
-            self.screen.fill('darkslategrey')
+            print(self.dashboard.game_over)
+
+            self.screen.fill('grey15')
             can_climb, climbed_down, middle_of_ladder = self.player.check_climb()
 
             pygame.key.set_repeat(60)
