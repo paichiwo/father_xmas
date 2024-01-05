@@ -140,6 +140,10 @@ class Player(pygame.sprite.Sprite):
                 if self.climbing and self.landed:
                     self.climbing = False
 
+    def reset(self):
+        self.rect.midbottom = (100, 150)
+        self.status = 'walk_right'
+
     def update(self):
         self.landed = False
         self.check_landed()

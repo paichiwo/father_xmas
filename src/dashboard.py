@@ -63,7 +63,10 @@ class Dashboard:
             self.timer_img_rect.topright = (55, 153)
             self.screen.blit(self.timer_img, self.timer_img_rect)
 
-        return self.game_over
+    def reset(self):
+        self.game_over = False
+        self.timer_start_time = pygame.time.get_ticks()
+        self.timer_img_rect.topleft = (31, 153)
 
     def update(self):
         self.draw_timer()

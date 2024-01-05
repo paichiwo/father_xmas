@@ -53,6 +53,14 @@ class Game:
             self.player_group
         )
 
+    def handle_game_events(self, event):
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        if not self.running:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+                self.reset_game()
+
     def draw_elements(self):
         self.camera_group.custom_draw(self.player)
 
@@ -70,9 +78,8 @@ class Game:
     def reset_game(self):
         self.running = True
         self.game_over_scene_active = False
-        self.dashboard.game_over = False
-        self.dashboard.timer_start_time = pygame.time.get_ticks()
-        self.dashboard.timer_img_rect.topleft = (31, 153)
+        self.dashboard.reset()
+        self.player.reset()
 
     def run(self):
         while True:
@@ -81,13 +88,7 @@ class Game:
             can_climb, climbed_down, middle_of_ladder = self.player.check_climb()
 
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                if not self.running:
-                    if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
-                        self.reset_game()
-
+                self.handle_game_events(event)
                 self.player.controls(event, can_climb, climbed_down, middle_of_ladder)
 
             if self.running:
