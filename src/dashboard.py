@@ -1,5 +1,5 @@
 import pygame
-from src.config import *
+from src.config import WHITE
 
 
 class Dashboard:
@@ -42,8 +42,8 @@ class Dashboard:
         score_text_rect = score_text.get_rect()
         score_value_rect = score_value.get_rect()
 
-        score_text_rect.topleft = (200, self.scores_y_pos)
-        score_value_rect.topleft = (244, self.scores_y_pos)
+        score_text_rect.topleft = (201, self.scores_y_pos)
+        score_value_rect.topleft = (243, self.scores_y_pos)
         self.screen.blit(score_text, score_text_rect)
         self.screen.blit(score_value, score_value_rect)
 
@@ -63,7 +63,10 @@ class Dashboard:
             self.timer_img_rect.topright = (55, 153)
             self.screen.blit(self.timer_img, self.timer_img_rect)
 
+        return self.game_over
+
     def update(self):
         self.draw_timer()
         self.draw_dashboard_bg()
         self.draw_score()
+        print(self.game_over)
