@@ -81,10 +81,15 @@ class Game:
         self.dashboard.reset()
         self.player.reset()
 
+    def test_map(self):
+        img = pygame.image.load('assets/map.png').convert_alpha()
+        img_rect = img.get_rect(topright=(320, 0))
+        self.screen.blit(img, img_rect)
+
     def run(self):
         while True:
             self.screen.fill('grey15')
-            pygame.key.set_repeat(60)
+            pygame.key.set_repeat(self.fps)
             can_climb, climbed_down, middle_of_ladder = self.player.check_climb()
 
             for event in pygame.event.get():
@@ -92,6 +97,7 @@ class Game:
                 self.player.controls(event, can_climb, climbed_down, middle_of_ladder)
 
             if self.running:
+                self.test_map()
                 self.draw_elements()
                 self.update_elements()
                 self.running = self.game_over()
