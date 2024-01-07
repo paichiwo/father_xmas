@@ -20,7 +20,7 @@ class Dashboard:
 
         # Timer animation variables
         self.timer_start_time = pygame.time.get_ticks()
-        self.timer_duration = 15 * 60 * 10  # * 1000 = 15 mins
+        self.timer_duration = 15 * 60 * 1000  # * 1000 = 15 mins
 
         # Score
         self.score = 0
@@ -52,7 +52,8 @@ class Dashboard:
 
         if not self.game_over:
             elapsed_time = pygame.time.get_ticks() - self.timer_start_time
-            displacement = (elapsed_time / self.timer_duration) * (96 - 24)
+            display_ratio = self.timer_img.get_width() - self.timer_img.get_width() / 4
+            displacement = (elapsed_time / self.timer_duration) * display_ratio
             self.timer_img_rect.topleft = (31 - displacement, 153)
             self.screen.blit(self.timer_img, self.timer_img_rect)
 
@@ -72,4 +73,3 @@ class Dashboard:
         self.draw_timer()
         self.draw_dashboard_bg()
         self.draw_score()
-        print(self.game_over)
