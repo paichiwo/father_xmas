@@ -29,7 +29,7 @@ class Ladder(pygame.sprite.Sprite):
         self.screen = screen
 
         # Image & Rect
-        self.image = pygame.image.load('assets/level/images/ladders/ladder.png').convert_alpha()
+        self.image = pygame.image.load('assets/level/ladders/ladder.png').convert_alpha()
         self.rect = self.image.get_rect(midbottom=(x_pos, y_pos))
 
 

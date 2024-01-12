@@ -24,7 +24,7 @@ class Level:
         }
 
         # level_images
-        img_path = 'assets/level/images/'
+        img_path = 'assets/level/'
         self.images = [
 
             # empty
