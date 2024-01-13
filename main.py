@@ -15,9 +15,11 @@ class Game:
         # Game setup
         pygame.init()
         pygame.display.set_caption('Father Xmas')
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), flags=SCALED | pygame.RESIZABLE, vsync=1)
+        self.s = pygame.display.set_mode((WIDTH*3, HEIGHT*3),  pygame.RESIZABLE, vsync=1)
         self.clock = pygame.time.Clock()
         self.fps = 60
+
+        self.screen = pygame.Surface((WIDTH, HEIGHT))
 
         # Game variables
         self.running = True
@@ -76,6 +78,9 @@ class Game:
 
     def run(self):
         while True:
+
+            scaled_screen = pygame.transform.scale(self.screen, (WIDTH * 4, HEIGHT * 4))
+            self.s.blit(scaled_screen, (0, 0))
 
             self.screen.fill('grey15')
             pygame.key.set_repeat(self.fps)
