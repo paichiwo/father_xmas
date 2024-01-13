@@ -1,6 +1,6 @@
 import sys
 import pygame
-
+import pygame._sdl2 as sdl2
 from pygame.locals import SCALED
 from src.config import WIDTH, HEIGHT
 from src.level import Level
@@ -15,11 +15,16 @@ class Game:
         # Game setup
         pygame.init()
         pygame.display.set_caption('Father Xmas')
-        self.s = pygame.display.set_mode((WIDTH*3, HEIGHT*3),  pygame.RESIZABLE, vsync=1)
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), SCALED | pygame.RESIZABLE, vsync=1)
         self.clock = pygame.time.Clock()
         self.fps = 60
 
-        self.screen = pygame.Surface((WIDTH, HEIGHT))
+        self.scale = 3
+        self.window = sdl2.Window.from_display_module()
+        self.window.size = (WIDTH * self.scale, HEIGHT * self.scale)
+        self.window.position = sdl2.WINDOWPOS_CENTERED
+        self.window.show()
+
 
         # Game variables
         self.running = True
@@ -76,12 +81,14 @@ class Game:
         self.dashboard.reset()
         self.player.reset()
 
+    def change_res(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_f]:
+            self.scale = 2
+            self.window.size = (WIDTH * self.scale, HEIGHT * self.scale)
+
     def run(self):
         while True:
-
-            scaled_screen = pygame.transform.scale(self.screen, (WIDTH * 4, HEIGHT * 4))
-            self.s.blit(scaled_screen, (0, 0))
-
             self.screen.fill('grey15')
             pygame.key.set_repeat(self.fps)
             can_climb, climbed_down, middle_of_ladder = self.player.check_climb()
@@ -93,6 +100,7 @@ class Game:
             if self.running:
                 self.update_elements()
                 self.draw_elements()
+                self.change_res()
 
                 self.running = self.game_over()
             else:
