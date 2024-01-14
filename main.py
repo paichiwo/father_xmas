@@ -1,8 +1,7 @@
 import sys
 import pygame
-import pygame._sdl2 as sdl2
-from pygame.locals import SCALED
-from src.config import WIDTH, HEIGHT
+from pygame.locals import SCALED, RESIZABLE, WINDOWPOS_CENTERED
+from src.config import FPS, WIDTH, HEIGHT, SCALE
 from src.level import Level
 from src.player import Player
 from src.dashboard import Dashboard
@@ -15,16 +14,13 @@ class Game:
         # Game setup
         pygame.init()
         pygame.display.set_caption('Father Xmas')
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), SCALED | pygame.RESIZABLE, vsync=1)
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), SCALED | RESIZABLE, vsync=1)
         self.clock = pygame.time.Clock()
-        self.fps = 60
 
-        self.scale = 3
-        self.window = sdl2.Window.from_display_module()
-        self.window.size = (WIDTH * self.scale, HEIGHT * self.scale)
-        self.window.position = sdl2.WINDOWPOS_CENTERED
+        self.window = pygame.Window.from_display_module()
+        self.window.size = (WIDTH * SCALE, HEIGHT * SCALE)
+        self.window.position = WINDOWPOS_CENTERED
         self.window.show()
-
 
         # Game variables
         self.running = True
@@ -84,13 +80,16 @@ class Game:
     def change_res(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_f]:
-            self.scale = 2
-            self.window.size = (WIDTH * self.scale, HEIGHT * self.scale)
+            SCALE = 2
+            self.window.size = (WIDTH * SCALE, HEIGHT * SCALE)
+        elif keys[pygame.K_d]:
+            SCALE = 4
+            self.window.size = (WIDTH * SCALE, HEIGHT * SCALE)
 
     def run(self):
         while True:
             self.screen.fill('grey15')
-            pygame.key.set_repeat(self.fps)
+            pygame.key.set_repeat(FPS)
             can_climb, climbed_down, middle_of_ladder = self.player.check_climb()
 
             for event in pygame.event.get():
@@ -108,7 +107,7 @@ class Game:
                 self.show_game_over_screen()
 
             pygame.display.flip()
-            self.clock.tick(self.fps)
+            self.clock.tick(FPS)
 
 
 if __name__ == '__main__':
