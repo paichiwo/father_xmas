@@ -1,5 +1,6 @@
 import sys
 import pygame
+import pygame._sdl2 as sdl2
 from pygame.locals import SCALED, RESIZABLE, WINDOWPOS_CENTERED
 from src.config import FPS, WIDTH, HEIGHT, SCALE
 from src.level import Level
@@ -80,15 +81,16 @@ class Game:
     def change_res(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_f]:
-            SCALE = 2
-            self.window.size = (WIDTH * SCALE, HEIGHT * SCALE)
+            scale = 2
+            self.window.size = (WIDTH * scale, HEIGHT * scale)
         elif keys[pygame.K_d]:
-            SCALE = 4
-            self.window.size = (WIDTH * SCALE, HEIGHT * SCALE)
+            scale = 4
+            self.window.size = (WIDTH * scale, HEIGHT * scale)
 
     def run(self):
         while True:
-            self.screen.fill('grey15')
+            # self.screen.fill('grey15')
+            self.screen.fill('black')
             pygame.key.set_repeat(FPS)
             can_climb, climbed_down, middle_of_ladder = self.player.check_climb()
 

@@ -28,23 +28,24 @@ class Level:
         self.images = [
 
             # empty
-            pygame.image.load(img_path + 'empty/empty.png').convert_alpha(),
+            pygame.image.load(img_path + 'empty/empty.png').convert_alpha(),                   # 0
 
             # floor
-            pygame.image.load(img_path + 'floor/floor.png').convert_alpha(),
+            pygame.image.load(img_path + 'floor/floor.png').convert_alpha(),                   # 1
 
             # roof
-            pygame.image.load(img_path + 'roof/roof_top.png').convert_alpha(),
-            pygame.image.load(img_path + 'roof/roof_bottom.png').convert_alpha(),
-            pygame.image.load(img_path + 'roof/roof_end_top.png').convert_alpha(),
-            pygame.image.load(img_path + 'roof/roof_end_bottom_left.png').convert_alpha(),
-            pygame.image.load(img_path + 'roof/roof_end_bottom_right.png'),
+            pygame.image.load(img_path + 'roof/roof_top.png').convert_alpha(),                 # 2
+            pygame.image.load(img_path + 'roof/roof_bottom.png').convert_alpha(),              # 3
+            pygame.image.load(img_path + 'roof/roof_end_top.png').convert_alpha(),             # 4
+            pygame.image.load(img_path + 'roof/roof_end_bottom_left.png').convert_alpha(),     # 5
+            pygame.image.load(img_path + 'roof/roof_end_bottom_right.png'),                    # 6
 
             # walls
-            pygame.image.load(img_path + 'walls/wall_left.png').convert_alpha(),
-            pygame.image.load(img_path + 'walls/wall_right.png').convert_alpha(),
-            pygame.image.load(img_path + 'walls/wall_top.png').convert_alpha(),
-            pygame.image.load(img_path + 'walls/wall_top_right.png').convert_alpha(),
+            pygame.image.load(img_path + 'walls/wall.png').convert_alpha(),                    # 7
+            pygame.image.load(img_path + 'walls/wall_top.png').convert_alpha(),                # 8
+
+            # decorations
+            pygame.image.load(img_path + 'decor/girland.png').convert_alpha(),                 # 9
 
         ]
 
@@ -53,12 +54,12 @@ class Level:
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 0, 0, 0],
             [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 5, 6, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0],
+            [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 7, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
-            [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 0, 0, 0, 0, 0],
+            [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 
         ]
@@ -96,7 +97,7 @@ class Level:
 
         for row_index, row in enumerate(room_layout):
             for col_index, tile_id in enumerate(row):
-                if tile_id == 9:
+                if tile_id == 8:
                     x_pos = col_index * self.tile_width
                     y_pos = row_index * self.tile_height
 
@@ -104,7 +105,7 @@ class Level:
                                      y_pos,
                                      self.tile_width,
                                      self.tile_height,
-                                     self.images[9],
+                                     self.images[8],
                                      self.screen,
                                      self.walls_group)
                     walls.append(top_walls)
@@ -114,7 +115,7 @@ class Level:
 
         for row_index, row in enumerate(room_layout):
             for col_index, tile_id in enumerate(row):
-                if tile_id == 8:
+                if tile_id == 7:
                     x_pos = col_index * self.tile_width
                     y_pos = row_index * self.tile_height
 
@@ -122,7 +123,7 @@ class Level:
                                                 y_pos,
                                                 self.tile_width,
                                                 self.tile_height,
-                                                self.images[8],
+                                                self.images[7],
                                                 self.screen,
                                                 self.walls_with_collision_group)
                     walls_with_collisions.append(wall_with_collisions)
@@ -132,7 +133,7 @@ class Level:
 
         for row_index, row in enumerate(room_layout):
             for col_index, tile_id in enumerate(row):
-                if tile_id in [0, 2, 3, 4, 5, 6]:
+                if tile_id in [0, 2, 3, 4, 5, 6, 9]:
                     x_pos = col_index * self.tile_width
                     y_pos = row_index * self.tile_height
 
