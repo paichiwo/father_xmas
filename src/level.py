@@ -12,44 +12,41 @@ class Level:
 
         # Create groups
         self.platforms_group = pygame.sprite.Group()
-        self.walls_group = pygame.sprite.Group()
-        self.walls_with_collision_group = pygame.sprite.Group()
-        self.decorations_group = pygame.sprite.Group()
-
-        # Ladders
         self.ladders_group = pygame.sprite.Group()
-        self.ladders = {
-            'ladder_1': Ladder(50, 150, 16, 50, self.screen, self.ladders_group),
-            'ladder_2': Ladder(150, 100, 16, 50, self.screen, self.ladders_group)
-        }
+        self.walls_with_collision_group = pygame.sprite.Group()
+        self.walls_group = pygame.sprite.Group()
+        self.decorations_group = pygame.sprite.Group()
 
         # level_images
         img_path = 'assets/level/'
-        self.images = [
-
-            # empty
-            pygame.image.load(img_path + 'empty/empty.png').convert_alpha(),                   # 0
-
-            # floor
-            pygame.image.load(img_path + 'floor/floor.png').convert_alpha(),                   # 1
-
-            # roof
-            pygame.image.load(img_path + 'roof/roof_top.png').convert_alpha(),                 # 2
-            pygame.image.load(img_path + 'roof/roof_bottom.png').convert_alpha(),              # 3
-            pygame.image.load(img_path + 'roof/roof_end_top.png').convert_alpha(),             # 4
-            pygame.image.load(img_path + 'roof/roof_end_bottom_left.png').convert_alpha(),     # 5
-            pygame.image.load(img_path + 'roof/roof_end_bottom_right.png'),                    # 6
-
-            # walls
-            pygame.image.load(img_path + 'walls/wall.png').convert_alpha(),                    # 7
-            pygame.image.load(img_path + 'walls/wall_top.png').convert_alpha(),                # 8
-
-            # decorations
-            pygame.image.load(img_path + 'decor/girland.png').convert_alpha(),                 # 9
-
-        ]
+        self.images = {
+            0: pygame.image.load(img_path + 'empty/empty.png').convert_alpha(),
+            1: pygame.image.load(img_path + 'floor/floor.png').convert_alpha(),
+            2: pygame.image.load(img_path + 'roof/roof_top.png').convert_alpha(),
+            3: pygame.image.load(img_path + 'roof/roof_bottom.png').convert_alpha(),
+            4: pygame.image.load(img_path + 'roof/roof_end_top.png').convert_alpha(),
+            5: pygame.image.load(img_path + 'roof/roof_end_bottom_left.png').convert_alpha(),
+            6: pygame.image.load(img_path + 'roof/roof_end_bottom_right.png').convert_alpha(),
+            7: pygame.image.load(img_path + 'walls/wall.png').convert_alpha(),
+            8: pygame.image.load(img_path + 'walls/wall_top.png').convert_alpha(),
+            9: pygame.image.load(img_path + 'decor/girland.png').convert_alpha(),
+            10: pygame.image.load(img_path + 'ladders/ladder_tile.png').convert_alpha()
+        }
 
         # Rooms setup
+        self.room_0_2 = [
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+            [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 7],
+            [0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 7],
+        ]
+
         self.room_0_3 = [
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 0, 0, 0],
@@ -66,82 +63,45 @@ class Level:
 
         self.current_room = self.room_0_3
 
-        # Create elements
-        self.create_platforms(self.room_0_3)
-        self.create_walls(self.room_0_3)
-        self.create_walls_with_collisions(self.room_0_3)
-        self.draw_decorations(self.room_0_3)
+        # Populate the level with elements based on the current room layout
+        self.populate_room()
+
+    def populate_room(self):
+        self.create_platforms(self.current_room)
+        self.create_walls(self.current_room)
+        self.create_walls_with_collisions(self.current_room)
+        self.draw_decorations(self.current_room)
+
+    def create_elements(self, room_layout, valid_ids, element_type, group):
+        elements = []
+
+        for row_index, row in enumerate(room_layout):
+            for col_index, tile_id in enumerate(row):
+                if tile_id in valid_ids:
+                    x_pos = col_index * self.tile_width
+                    y_pos = row_index * self.tile_height
+
+                    element = element_type(x_pos,
+                                           y_pos,
+                                           self.tile_width,
+                                           self.tile_height,
+                                           self.images[tile_id],
+                                           self.screen,
+                                           group)
+                    elements.append(element)
 
     def create_platforms(self, room_layout):
-        platforms = []
+        return self.create_elements(room_layout, [1], Platform, self.platforms_group)
 
-        for row_index, row in enumerate(room_layout):
-            for col_index, tile_id in enumerate(row):
-                if tile_id == 1:
-                    x_pos = col_index * self.tile_width
-                    y_pos = row_index * self.tile_height
-
-                    platform = Platform(x_pos,
-                                        y_pos,
-                                        self.tile_width,
-                                        self.tile_height,
-                                        self.images[1],
-                                        self.screen,
-                                        self.platforms_group)
-                    platforms.append(platform)
-
-        return platforms
+    def create_ladders(self, room_layout):
+        return self.create_elements(room_layout, [10], Ladder, self.ladders_group)
 
     def create_walls(self, room_layout):
-        walls = []
-
-        for row_index, row in enumerate(room_layout):
-            for col_index, tile_id in enumerate(row):
-                if tile_id == 8:
-                    x_pos = col_index * self.tile_width
-                    y_pos = row_index * self.tile_height
-
-                    top_walls = Wall(x_pos,
-                                     y_pos,
-                                     self.tile_width,
-                                     self.tile_height,
-                                     self.images[8],
-                                     self.screen,
-                                     self.walls_group)
-                    walls.append(top_walls)
+        return self.create_elements(room_layout, [8], Wall, self.walls_group)
 
     def create_walls_with_collisions(self, room_layout):
-        walls_with_collisions = []
-
-        for row_index, row in enumerate(room_layout):
-            for col_index, tile_id in enumerate(row):
-                if tile_id == 7:
-                    x_pos = col_index * self.tile_width
-                    y_pos = row_index * self.tile_height
-
-                    wall_with_collisions = Wall(x_pos,
-                                                y_pos,
-                                                self.tile_width,
-                                                self.tile_height,
-                                                self.images[7],
-                                                self.screen,
-                                                self.walls_with_collision_group)
-                    walls_with_collisions.append(wall_with_collisions)
+        return self.create_elements(room_layout, [7], Wall, self.walls_with_collision_group)
 
     def draw_decorations(self, room_layout):
-        decorations = []
+        return self.create_elements(room_layout, [0, 2, 3, 4, 5, 6, 9], Decoration, self.decorations_group)
 
-        for row_index, row in enumerate(room_layout):
-            for col_index, tile_id in enumerate(row):
-                if tile_id in [0, 2, 3, 4, 5, 6, 9]:
-                    x_pos = col_index * self.tile_width
-                    y_pos = row_index * self.tile_height
-
-                    decoration = Decoration(x_pos,
-                                            y_pos,
-                                            self.tile_width,
-                                            self.tile_height,
-                                            self.images[tile_id],
-                                            self.screen,
-                                            self.decorations_group)
-                    decorations.append(decoration)
