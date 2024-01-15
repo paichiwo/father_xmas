@@ -112,6 +112,10 @@ class Player(pygame.sprite.Sprite):
     def controls(self, event, can_climb, climbed_down, middle_of_ladder):
         self.animation_possible = False
 
+        keys = pygame.key.get_pressed()
+        if not any(keys[key] for key in [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]):
+            self.frame_index = 1
+
         if event.type == pygame.KEYDOWN:
             if not self.animation_possible:
                 self.animation_possible = True
