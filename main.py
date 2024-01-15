@@ -16,6 +16,7 @@ class Game:
         pygame.display.set_caption('Father Xmas')
         self.clock = pygame.time.Clock()
 
+        # Scaled window setup
         self.window = pygame.Window(size=(WIDTH * SCALE, HEIGHT * SCALE))
         self.window.resizable = True
         self.renderer = sdl2.Renderer(self.window, vsync=True)
@@ -32,19 +33,9 @@ class Game:
 
         # Game objects
         self.level = Level(self.screen)
-        self.player = Player(100, 112, self.screen, self.level.ladders_group,
-                             self.level.platforms_group, self.player_group)
+        self.player = Player(100, 112, self.screen, self.level, self.player_group)
         self.dashboard = Dashboard(self.screen)
         self.game_over_scene = GameOverScene(self.screen, WIDTH, HEIGHT)
-
-    def move_between_rooms(self):
-        if self.player.rect.left < 0:
-            self.level.current_room = self.level.room_0_2
-            self.level.clear_room()
-            self.level.populate_room()
-            self.player.platform_group = self.level.platforms_group
-            self.player.platform_rects = [platform.rect for platform in self.player.platform_group]
-            self.player.rect.x = WIDTH - self.player.rect.width
 
     def handle_game_events(self, event):
         if event.type == pygame.QUIT:
@@ -55,13 +46,7 @@ class Game:
                 self.reset_game()
 
     def draw_elements(self):
-
-        self.level.platforms_group.draw(self.screen)
-        self.level.ladders_group.draw(self.screen)
-        self.level.walls_group.draw(self.screen)
-        self.level.walls_with_collision_group.draw(self.screen)
-        self.level.decorations_group.draw(self.screen)
-
+        self.level.draw()
         self.player_group.draw(self.screen)
         self.dashboard.draw()
 
@@ -107,7 +92,6 @@ class Game:
                 self.update_elements()
                 self.draw_elements()
                 self.change_res()
-                self.move_between_rooms()
 
                 self.running = self.game_over()
             else:

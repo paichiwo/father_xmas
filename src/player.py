@@ -1,14 +1,16 @@
 import pygame
+from src.config import *
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x_pos, y_pos, screen, ladder_group, platform_group, group):
+    def __init__(self, x_pos, y_pos, screen, level, group):
         super().__init__(group)
 
         # General setup
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.screen = screen
+        self.level = level
 
         # Image & Rect
         self.frames = {
@@ -39,12 +41,12 @@ class Player(pygame.sprite.Sprite):
         self.landed = False
 
         # Platforms
-        self.platform_group = platform_group
-        self.platform_rects = [platform.rect for platform in self.platform_group]
+        self.platforms_group = self.level.platforms_group
+        self.platforms_rects = [platform.rect for platform in self.platforms_group]
 
         # Ladders
-        self.ladder_group = ladder_group
-        self.ladders_rects = [ladder.rect for ladder in self.ladder_group]
+        self.ladders_group = self.level.ladders_group
+        self.ladders_rects = [ladder.rect for ladder in self.ladders_group]
 
     def animate(self):
         if self.animation_possible:
@@ -57,13 +59,13 @@ class Player(pygame.sprite.Sprite):
         self.image = self.frames[self.status][int(self.frame_index)]
 
     def check_landed(self):
-        for i in range(len(self.platform_rects)):
-            if self.bottom.colliderect(self.platform_rects[i]):
+        for i in range(len(self.platforms_rects)):
+            if self.bottom.colliderect(self.platforms_rects[i]):
                 self.landed = True
                 if not self.climbing:
-                    if self.rect.bottom != self.platform_rects[i][1]:
+                    if self.rect.bottom != self.platforms_rects[i][1]:
                         self.y_change = 0
-                    self.rect.bottom = self.platform_rects[i][1]
+                    self.rect.bottom = self.platforms_rects[i][1]
 
     def check_climb(self):
         can_climb = False
@@ -73,9 +75,9 @@ class Player(pygame.sprite.Sprite):
         under = pygame.rect.Rect((self.rect[0], self.rect[1] + self.rect.height),
                                  (self.rect[2], self.rect[3]))
         # pygame.draw.rect(self.screen, 'yellow', under)
-        offset = 5
+        offset = 3
 
-        for ladder in self.ladder_group:
+        for ladder in self.ladders_group:
             if self.rect.colliderect(ladder.rect) and not can_climb:
                 can_climb = True
                 ladder_middle_x = ladder.rect.centerx
@@ -98,8 +100,18 @@ class Player(pygame.sprite.Sprite):
         self.rect.move_ip(self.x_change * self.speed, self.y_change)
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
 
+    def move_between_rooms(self):
+        if self.rect.left < 0:
+            self.level.current_room = self.level.room_0_2
+            self.level.clear_room()
+            self.level.populate_room()
+            self.platforms_group = self.level.platforms_group
+            self.platforms_rects = [platform.rect for platform in self.platforms_group]
+            self.rect.x = WIDTH - self.rect.width
+
     def controls(self, event, can_climb, climbed_down, middle_of_ladder):
         self.animation_possible = False
+
         if event.type == pygame.KEYDOWN:
             if not self.animation_possible:
                 self.animation_possible = True
@@ -117,6 +129,7 @@ class Player(pygame.sprite.Sprite):
                         self.x_change = 0
                         self.climbing = True
                         self.status = 'climbing'
+
                 if event.key == pygame.K_DOWN and middle_of_ladder:
                     if climbed_down:
                         self.y_change = 1
@@ -150,6 +163,8 @@ class Player(pygame.sprite.Sprite):
         self.check_landed()
         self.animate()
         self.move()
+        self.move_between_rooms()
 
-        print(self.rect.midbottom)
-        pygame.draw.rect(self.screen, 'red', self.bottom)
+        # print(self.rect.midbottom)
+        # pygame.draw.rect(self.screen, 'red', self.bottom)
+        print(self.status)
