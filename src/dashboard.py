@@ -69,7 +69,7 @@ class Dashboard:
         self.timer_start_time = pygame.time.get_ticks()
         self.timer_img_rect.topleft = (31, 153)
 
-    def update(self):
+    def draw(self):
         self.draw_timer()
         self.draw_dashboard_bg()
         self.draw_score()
