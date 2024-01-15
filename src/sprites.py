@@ -18,7 +18,7 @@ class Platform(pygame.sprite.Sprite):
 
 
 class Ladder(pygame.sprite.Sprite):
-    def __init__(self, x_pos, y_pos, length, height, screen, group):
+    def __init__(self, x_pos, y_pos, length, height, image, screen, group):
         super().__init__(group)
 
         # General setup
@@ -29,8 +29,8 @@ class Ladder(pygame.sprite.Sprite):
         self.screen = screen
 
         # Image & Rect
-        self.image = pygame.image.load('assets/level/ladders/ladder.png').convert_alpha()
-        self.rect = self.image.get_rect(midbottom=(x_pos, y_pos))
+        self.image = image
+        self.rect = self.image.get_rect(topleft=(x_pos, y_pos))
 
 
 class Wall(pygame.sprite.Sprite):
