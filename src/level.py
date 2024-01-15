@@ -38,7 +38,7 @@ class Level:
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -69,8 +69,16 @@ class Level:
     def populate_room(self):
         self.create_platforms(self.current_room)
         self.create_walls(self.current_room)
+        self.create_ladders(self.current_room)
         self.create_walls_with_collisions(self.current_room)
         self.draw_decorations(self.current_room)
+
+    def clear_room(self):
+        self.platforms_group.empty()
+        self.walls_group.empty()
+        self.ladders_group.empty()
+        self.walls_with_collision_group.empty()
+        self.decorations_group.empty()
 
     def create_elements(self, room_layout, valid_ids, element_type, group):
         elements = []
