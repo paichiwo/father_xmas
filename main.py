@@ -15,13 +15,14 @@ class Game:
         # Game setup
         pygame.init()
         pygame.display.set_caption('Father Xmas')
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), SCALED | RESIZABLE, vsync=1)
         self.clock = pygame.time.Clock()
 
-        self.window = pygame.Window.from_display_module()
-        self.window.size = (WIDTH * SCALE, HEIGHT * SCALE)
-        self.window.position = WINDOWPOS_CENTERED
-        self.window.show()
+        self.window = pygame.Window(size=(WIDTH * SCALE, HEIGHT * SCALE))
+        self.window.resizable = True
+        self.renderer = sdl2.Renderer(self.window)
+        self.renderer.logical_size = (WIDTH, HEIGHT)
+        self.screen = pygame.Surface((WIDTH, HEIGHT))
+        self.window.get_surface()
 
         # Game variables
         self.running = True
@@ -89,9 +90,12 @@ class Game:
 
     def run(self):
         while True:
-            # self.screen.fill('grey15')
             self.screen.fill('black')
+            self.renderer.clear()
+
+            self.clock.tick(FPS)
             pygame.key.set_repeat(FPS)
+
             can_climb, climbed_down, middle_of_ladder = self.player.check_climb()
 
             for event in pygame.event.get():
@@ -108,8 +112,8 @@ class Game:
                 self.game_over_scene_active = True
                 self.show_game_over_screen()
 
-            pygame.display.flip()
-            self.clock.tick(FPS)
+            sdl2.Texture.from_surface(self.renderer, self.screen).draw()
+            self.renderer.present()
 
 
 if __name__ == '__main__':

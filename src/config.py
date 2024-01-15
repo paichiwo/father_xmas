@@ -2,7 +2,7 @@
 FPS = 60
 WIDTH = 320
 HEIGHT = 180
-SCALE = 4
+SCALE = 3
 
 # COLORS
 BLACK = (0, 0, 0)
