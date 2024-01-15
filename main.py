@@ -64,6 +64,7 @@ class Game:
         self.running = True
         self.game_over_scene_active = False
         self.dashboard.reset()
+        self.level.reset()
         self.player.reset()
 
     def change_res(self):

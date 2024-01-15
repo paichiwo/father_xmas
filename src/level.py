@@ -14,7 +14,6 @@ class Level:
         self.platforms_group = pygame.sprite.Group()
         self.ladders_group = pygame.sprite.Group()
         self.walls_with_collision_group = pygame.sprite.Group()
-        self.walls_group = pygame.sprite.Group()
         self.decorations_group = pygame.sprite.Group()
 
         # level_images
@@ -31,7 +30,7 @@ class Level:
             8: pygame.image.load(img_path + 'walls/wall_top.png').convert_alpha(),
             9: pygame.image.load(img_path + 'decor/girland.png').convert_alpha(),
             10: pygame.image.load(img_path + 'ladders/ladder_tile_32.png').convert_alpha(),
-            11: pygame.image.load(img_path + 'ladders/ladder_floor_tile_32.png').convert_alpha(),
+            11: pygame.image.load(img_path + 'ladders/ladder_floor_32.png').convert_alpha(),
             12: pygame.image.load(img_path + 'ladders/ladder_top_32.png').convert_alpha()
         }
 
@@ -121,14 +120,12 @@ class Level:
 
     def populate_room(self):
         self.create_platforms(self.current_room)
-        self.create_walls(self.current_room)
         self.create_ladders(self.current_room)
         self.create_walls_with_collisions(self.current_room)
         self.draw_decorations(self.current_room)
 
     def clear_room(self):
         self.platforms_group.empty()
-        self.walls_group.empty()
         self.ladders_group.empty()
         self.walls_with_collision_group.empty()
         self.decorations_group.empty()
@@ -157,22 +154,22 @@ class Level:
     def create_ladders(self, room_layout):
         return self.create_elements(room_layout, [10, 11], Ladder, self.ladders_group)
 
-    def create_walls(self, room_layout):
-        return self.create_elements(room_layout, [8], Wall, self.walls_group)
-
     def create_walls_with_collisions(self, room_layout):
         return self.create_elements(room_layout, [7], Wall, self.walls_with_collision_group)
 
     def draw_decorations(self, room_layout):
-        return self.create_elements(room_layout, [0, 2, 3, 4, 5, 6, 9, 12], Decoration, self.decorations_group)
+        return self.create_elements(room_layout, [0, 2, 3, 4, 5, 6, 8, 9, 12], Decoration, self.decorations_group)
 
     def redraw_room(self):
         self.clear_room()
         self.populate_room()
 
+    def reset(self):
+        self.current_room = self.room_0_2
+        self.redraw_room()
+
     def draw(self):
         self.platforms_group.draw(self.screen)
         self.ladders_group.draw(self.screen)
-        self.walls_group.draw(self.screen)
         self.walls_with_collision_group.draw(self.screen)
         self.decorations_group.draw(self.screen)

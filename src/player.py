@@ -42,11 +42,9 @@ class Player(pygame.sprite.Sprite):
 
         # Platforms
         self.platforms_group = self.level.platforms_group
-        self.platforms_rects = [platform.rect for platform in self.platforms_group]
 
         # Ladders
         self.ladders_group = self.level.ladders_group
-        self.ladders_rects = [ladder.rect for ladder in self.ladders_group]
 
     def animate(self):
         if self.animation_possible:
@@ -59,13 +57,15 @@ class Player(pygame.sprite.Sprite):
         self.image = self.frames[self.status][int(self.frame_index)]
 
     def check_landed(self):
-        for i in range(len(self.platforms_rects)):
-            if self.bottom.colliderect(self.platforms_rects[i]):
-                self.landed = True
-                if not self.climbing:
-                    if self.rect.bottom != self.platforms_rects[i][1]:
-                        self.y_change = 0
-                    self.rect.bottom = self.platforms_rects[i][1]
+        for i in range(len(self.platforms_group)):
+            for platform in self.platforms_group:
+                if self.bottom.colliderect(platform.rect):
+                    self.landed = True
+                    if not self.climbing:
+                        if self.rect.bottom != platform.rect[1]:
+                            self.y_change = 0
+
+                        self.rect.bottom = platform.rect[1]
 
     def check_climb(self):
         can_climb = False
@@ -96,6 +96,15 @@ class Player(pygame.sprite.Sprite):
 
         return can_climb, climb_down, middle_of_ladder
 
+    def check_wall_collision(self):
+        for wall in self.level.walls_with_collision_group:
+            if self.rect.colliderect(wall.rect) and self.x_change > 0:
+                self.rect.right = wall.rect.left
+                self.x_change = 0
+            if self.rect.colliderect(wall.rect) and self.x_change < 0:
+                self.rect.left = wall.rect.right
+                self.x_change = 0
+
     def move(self):
         self.rect.move_ip(self.x_change * self.speed, self.y_change)
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
@@ -109,7 +118,6 @@ class Player(pygame.sprite.Sprite):
                 self.level.redraw_room()
 
                 self.platforms_group = self.level.platforms_group
-                self.platforms_rects = [platform.rect for platform in self.platforms_group]
                 self.rect.x = WIDTH - self.rect.width
 
         elif self.level.current_room == self.level.room_0_1:
@@ -119,7 +127,6 @@ class Player(pygame.sprite.Sprite):
                 self.level.redraw_room()
 
                 self.platforms_group = self.level.platforms_group
-                self.platforms_rects = [platform.rect for platform in self.platforms_group]
                 self.rect.x = 0
 
             if self.rect.bottom > 144:
@@ -127,29 +134,25 @@ class Player(pygame.sprite.Sprite):
                 self.level.redraw_room()
 
                 self.platforms_group = self.level.platforms_group
-                self.platforms_rects = [platform.rect for platform in self.platforms_group]
                 self.ladders_group = self.level.ladders_group
-                self.ladders_rects = [ladder.rect for ladder in self.ladders_group]
-                self.rect.midtop = (self.rect.midbottom[0], 0)
+                self.rect.midtop = (self.rect.midbottom[0], - 16)
 
         elif self.level.current_room == self.level.room_1_1:
 
-            if self.rect.top < 0:
+            if self.rect.top < -16:
                 self.level.current_room = self.level.room_0_1
                 self.level.redraw_room()
 
                 self.platforms_group = self.level.platforms_group
-                self.platforms_rects = [platform.rect for platform in self.platforms_group]
                 self.ladders_group = self.level.ladders_group
-                self.ladders_rects = [ladder.rect for ladder in self.ladders_group]
                 self.rect.midbottom = (self.rect.midbottom[0], 144)
 
     def controls(self, event, can_climb, climbed_down, middle_of_ladder):
-        self.animation_possible = False
 
         keys = pygame.key.get_pressed()
         if not any(keys[key] for key in [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]):
             self.frame_index = 1
+            self.animation_possible = False
 
         if event.type == pygame.KEYDOWN:
             if not self.animation_possible:
@@ -198,12 +201,20 @@ class Player(pygame.sprite.Sprite):
         self.status = 'walk_right'
 
     def update(self):
+
         self.landed = False
         self.check_landed()
+        self.check_wall_collision()
         self.animate()
         self.move()
         self.move_between_rooms()
 
-        print(self.rect.x)
+        # pygame.draw.rect(self.screen, 'red', self.rect)
+
+        for wall in self.level.walls_with_collision_group:
+            print(self.rect.colliderect(wall.rect) and self.x_change > 0)
+
+        # print(self.rect.top)
+        # print(self.rect.x)
         # print(self.rect.midbottom)
         # pygame.draw.rect(self.screen, 'red', self.bottom)
