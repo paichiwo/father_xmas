@@ -22,7 +22,7 @@ class Level:
         self.images = {
             0: pygame.image.load(img_path + 'empty/empty.png').convert_alpha(),
             1: pygame.image.load(img_path + 'floor/floor.png').convert_alpha(),
-            2: pygame.image.load(img_path + 'roof/roof_top.png').convert_alpha(),
+            2: pygame.image.load(img_path + 'roof/roof_top_.png').convert_alpha(),
             3: pygame.image.load(img_path + 'roof/roof_bottom.png').convert_alpha(),
             4: pygame.image.load(img_path + 'roof/roof_end_top.png').convert_alpha(),
             5: pygame.image.load(img_path + 'roof/roof_end_bottom_left.png').convert_alpha(),
@@ -30,7 +30,9 @@ class Level:
             7: pygame.image.load(img_path + 'walls/wall.png').convert_alpha(),
             8: pygame.image.load(img_path + 'walls/wall_top.png').convert_alpha(),
             9: pygame.image.load(img_path + 'decor/girland.png').convert_alpha(),
-            10: pygame.image.load(img_path + 'ladders/ladder_tile.png').convert_alpha()
+            10: pygame.image.load(img_path + 'ladders/ladder_tile_32.png').convert_alpha(),
+            11: pygame.image.load(img_path + 'ladders/ladder_floor_tile_32.png').convert_alpha(),
+            12: pygame.image.load(img_path + 'ladders/ladder_top_32.png').convert_alpha()
         }
 
         # Rooms setup
@@ -41,10 +43,10 @@ class Level:
             [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 7],
-            [0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 7],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 1],
+            [0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 7],
+            [0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 7],
         ]
 
         self.room_0_3 = [
@@ -102,7 +104,7 @@ class Level:
         return self.create_elements(room_layout, [1], Platform, self.platforms_group)
 
     def create_ladders(self, room_layout):
-        return self.create_elements(room_layout, [10], Ladder, self.ladders_group)
+        return self.create_elements(room_layout, [10, 11], Ladder, self.ladders_group)
 
     def create_walls(self, room_layout):
         return self.create_elements(room_layout, [8], Wall, self.walls_group)
@@ -111,5 +113,11 @@ class Level:
         return self.create_elements(room_layout, [7], Wall, self.walls_with_collision_group)
 
     def draw_decorations(self, room_layout):
-        return self.create_elements(room_layout, [0, 2, 3, 4, 5, 6, 9], Decoration, self.decorations_group)
+        return self.create_elements(room_layout, [0, 2, 3, 4, 5, 6, 9, 12], Decoration, self.decorations_group)
 
+    def draw(self):
+        self.platforms_group.draw(self.screen)
+        self.ladders_group.draw(self.screen)
+        self.walls_group.draw(self.screen)
+        self.walls_with_collision_group.draw(self.screen)
+        self.decorations_group.draw(self.screen)
