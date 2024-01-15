@@ -1,7 +1,6 @@
 import sys
 import pygame
 import pygame._sdl2 as sdl2
-from pygame.locals import SCALED, RESIZABLE, WINDOWPOS_CENTERED
 from src.config import FPS, WIDTH, HEIGHT, SCALE
 from src.level import Level
 from src.player import Player
@@ -19,7 +18,7 @@ class Game:
 
         self.window = pygame.Window(size=(WIDTH * SCALE, HEIGHT * SCALE))
         self.window.resizable = True
-        self.renderer = sdl2.Renderer(self.window)
+        self.renderer = sdl2.Renderer(self.window, vsync=True)
         self.renderer.logical_size = (WIDTH, HEIGHT)
         self.screen = pygame.Surface((WIDTH, HEIGHT))
         self.window.get_surface()
@@ -38,6 +37,15 @@ class Game:
         self.dashboard = Dashboard(self.screen)
         self.game_over_scene = GameOverScene(self.screen, WIDTH, HEIGHT)
 
+    def move_between_rooms(self):
+        if self.player.rect.left < 0:
+            self.level.current_room = self.level.room_0_2
+            self.level.clear_room()
+            self.level.populate_room()
+            self.player.platform_group = self.level.platforms_group
+            self.player.platform_rects = [platform.rect for platform in self.player.platform_group]
+            self.player.rect.x = WIDTH - self.player.rect.width
+
     def handle_game_events(self, event):
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -47,6 +55,7 @@ class Game:
                 self.reset_game()
 
     def draw_elements(self):
+
         self.level.platforms_group.draw(self.screen)
         self.level.ladders_group.draw(self.screen)
         self.level.walls_group.draw(self.screen)
@@ -54,16 +63,9 @@ class Game:
         self.level.decorations_group.draw(self.screen)
 
         self.player_group.draw(self.screen)
+        self.dashboard.draw()
 
     def update_elements(self):
-        self.dashboard.update()
-
-        self.level.platforms_group.update()
-        self.level.ladders_group.update()
-        self.level.walls_group.update()
-        self.level.walls_with_collision_group.update()
-        self.level.decorations_group.update()
-
         self.player_group.update()
 
     def game_over(self):
@@ -93,7 +95,6 @@ class Game:
             self.screen.fill('black')
             self.renderer.clear()
 
-            self.clock.tick(FPS)
             pygame.key.set_repeat(FPS)
 
             can_climb, climbed_down, middle_of_ladder = self.player.check_climb()
@@ -106,12 +107,14 @@ class Game:
                 self.update_elements()
                 self.draw_elements()
                 self.change_res()
+                self.move_between_rooms()
 
                 self.running = self.game_over()
             else:
                 self.game_over_scene_active = True
                 self.show_game_over_screen()
 
+            self.clock.tick(FPS)
             sdl2.Texture.from_surface(self.renderer, self.screen).draw()
             self.renderer.present()
 
