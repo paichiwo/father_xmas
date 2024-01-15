@@ -101,13 +101,48 @@ class Player(pygame.sprite.Sprite):
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
 
     def move_between_rooms(self):
-        if self.rect.left < 0:
-            self.level.current_room = self.level.room_0_2
-            self.level.clear_room()
-            self.level.populate_room()
-            self.platforms_group = self.level.platforms_group
-            self.platforms_rects = [platform.rect for platform in self.platforms_group]
-            self.rect.x = WIDTH - self.rect.width
+
+        if self.level.current_room == self.level.room_0_2:
+
+            if self.rect.left < 0:
+                self.level.current_room = self.level.room_0_1
+                self.level.redraw_room()
+
+                self.platforms_group = self.level.platforms_group
+                self.platforms_rects = [platform.rect for platform in self.platforms_group]
+                self.rect.x = WIDTH - self.rect.width
+
+        elif self.level.current_room == self.level.room_0_1:
+
+            if self.rect.right > 320:
+                self.level.current_room = self.level.room_0_2
+                self.level.redraw_room()
+
+                self.platforms_group = self.level.platforms_group
+                self.platforms_rects = [platform.rect for platform in self.platforms_group]
+                self.rect.x = 0
+
+            if self.rect.bottom > 144:
+                self.level.current_room = self.level.room_1_1
+                self.level.redraw_room()
+
+                self.platforms_group = self.level.platforms_group
+                self.platforms_rects = [platform.rect for platform in self.platforms_group]
+                self.ladders_group = self.level.ladders_group
+                self.ladders_rects = [ladder.rect for ladder in self.ladders_group]
+                self.rect.midtop = (self.rect.midbottom[0], 0)
+
+        elif self.level.current_room == self.level.room_1_1:
+
+            if self.rect.top < 0:
+                self.level.current_room = self.level.room_0_1
+                self.level.redraw_room()
+
+                self.platforms_group = self.level.platforms_group
+                self.platforms_rects = [platform.rect for platform in self.platforms_group]
+                self.ladders_group = self.level.ladders_group
+                self.ladders_rects = [ladder.rect for ladder in self.ladders_group]
+                self.rect.midbottom = (self.rect.midbottom[0], 144)
 
     def controls(self, event, can_climb, climbed_down, middle_of_ladder):
         self.animation_possible = False
@@ -169,6 +204,6 @@ class Player(pygame.sprite.Sprite):
         self.move()
         self.move_between_rooms()
 
+        print(self.rect.x)
         # print(self.rect.midbottom)
         # pygame.draw.rect(self.screen, 'red', self.bottom)
-        print(self.status)
