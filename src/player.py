@@ -99,32 +99,31 @@ class Player(pygame.sprite.Sprite):
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
 
     def controls(self, event, can_climb, climbed_down, middle_of_ladder):
-        if event.type == pygame.KEYDOWN:
-            if not self.animation_possible:
-                self.animation_possible = True
+        self.animation_possible = False
 
-            if self.animation_possible:
-                if event.key == pygame.K_RIGHT and not self.climbing:
-                    self.x_change = 1
-                    self.status = 'walk_right'
-                if event.key == pygame.K_LEFT and not self.climbing:
-                    self.x_change = -1
-                    self.status = 'walk_left'
-                if event.key == pygame.K_UP and middle_of_ladder:
-                    if can_climb:
-                        self.y_change = -1
-                        self.x_change = 0
-                        self.climbing = True
-                        self.status = 'climbing'
-                if event.key == pygame.K_DOWN and middle_of_ladder:
-                    if climbed_down:
-                        self.y_change = 1
-                        self.x_change = 0
-                        self.climbing = True
-                        self.status = 'climbing'
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RIGHT and not self.climbing:
+                self.x_change = 1
+                self.status = 'walk_right'
+                self.animation_possible = True
+            if event.key == pygame.K_LEFT and not self.climbing:
+                self.x_change = -1
+                self.status = 'walk_left'
+                self.animation_possible = True
+            if event.key == pygame.K_UP and middle_of_ladder:
+                if can_climb:
+                    self.y_change = -1
+                    self.x_change = 0
+                    self.climbing = True
+                    self.status = 'climbing'
+            if event.key == pygame.K_DOWN and middle_of_ladder:
+                if climbed_down:
+                    self.y_change = 1
+                    self.x_change = 0
+                    self.climbing = True
+                    self.status = 'climbing'
 
         elif event.type == pygame.KEYUP:
-            self.animation_possible = False
             if event.key == pygame.K_RIGHT:
                 self.x_change = 0
             if event.key == pygame.K_LEFT:
