@@ -211,9 +211,6 @@ class Player(pygame.sprite.Sprite):
 
         # pygame.draw.rect(self.screen, 'red', self.rect)
 
-        for wall in self.level.walls_with_collision_group:
-            print(self.rect.colliderect(wall.rect) and self.x_change > 0)
-
         # print(self.rect.top)
         # print(self.rect.x)
         # print(self.rect.midbottom)

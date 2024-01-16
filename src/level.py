@@ -1,5 +1,5 @@
 import pygame
-from src.sprites import Platform, Ladder, Wall, Decoration
+from src.sprites import Platform, Ladder, Wall, Decoration, AnimatedDecoration
 
 
 class Level:
@@ -31,8 +31,15 @@ class Level:
             9: pygame.image.load(img_path + 'decor/girland.png').convert_alpha(),
             10: pygame.image.load(img_path + 'ladders/ladder_tile_32.png').convert_alpha(),
             11: pygame.image.load(img_path + 'ladders/ladder_floor_32.png').convert_alpha(),
-            12: pygame.image.load(img_path + 'ladders/ladder_top_32.png').convert_alpha()
+            12: pygame.image.load(img_path + 'ladders/ladder_top_32.png').convert_alpha(),
+            13: [pygame.image.load(img_path + 'decor/candle_1.png').convert_alpha(),
+                 pygame.image.load(img_path + 'decor/candle_2.png').convert_alpha()],
+            14: pygame.image.load(img_path + 'decor/girland_left.png').convert_alpha(),
+            15: pygame.image.load(img_path + 'decor/girland_right.png').convert_alpha(),
         }
+
+        # candle animation index
+        self.candle_index = 0
 
         # Rooms setup
         self.room_0_0 = [
@@ -52,7 +59,7 @@ class Level:
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-            [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
+            [14, 15, 14, 15, 14, 15, 14, 15, 14, 15, 14, 15, 14, 15, 14, 15, 14, 15, 14, 15],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0],
@@ -66,7 +73,7 @@ class Level:
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 0, 0, 0],
             [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 5, 6, 0, 0],
             [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 7, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 7, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
@@ -123,6 +130,7 @@ class Level:
         self.create_ladders(self.current_room)
         self.create_walls_with_collisions(self.current_room)
         self.draw_decorations(self.current_room)
+        self.draw_candles(self.current_room)
 
     def clear_room(self):
         self.platforms_group.empty()
@@ -141,10 +149,7 @@ class Level:
 
                     element = element_type(x_pos,
                                            y_pos,
-                                           self.tile_width,
-                                           self.tile_height,
                                            self.images[tile_id],
-                                           self.screen,
                                            group)
                     elements.append(element)
 
@@ -158,7 +163,11 @@ class Level:
         return self.create_elements(room_layout, [7], Wall, self.walls_with_collision_group)
 
     def draw_decorations(self, room_layout):
-        return self.create_elements(room_layout, [0, 2, 3, 4, 5, 6, 8, 9, 12], Decoration, self.decorations_group)
+        valid_ids = [0, 2, 3, 4, 5, 6, 8, 9, 12, 14, 15]
+        return self.create_elements(room_layout, valid_ids, Decoration, self.decorations_group)
+
+    def draw_candles(self, room_layout):
+        return self.create_elements(room_layout, [13], AnimatedDecoration, self.decorations_group)
 
     def redraw_room(self):
         self.clear_room()
@@ -173,3 +182,4 @@ class Level:
         self.ladders_group.draw(self.screen)
         self.walls_with_collision_group.draw(self.screen)
         self.decorations_group.draw(self.screen)
+        self.decorations_group.update()
