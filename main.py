@@ -1,7 +1,7 @@
 import sys
 import pygame
 import pygame._sdl2 as sdl2
-from src.config import FPS, WIDTH, HEIGHT, SCALE
+from src.config import *
 from src.level import Level
 from src.player import Player
 from src.dashboard import Dashboard
@@ -78,7 +78,7 @@ class Game:
 
     def run(self):
         while True:
-            self.screen.fill('black')
+            self.screen.fill(BLACK)
             self.renderer.clear()
 
             pygame.key.set_repeat(FPS)
