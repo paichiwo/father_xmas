@@ -98,12 +98,17 @@ class Player(pygame.sprite.Sprite):
 
     def check_wall_collision(self):
         for wall in self.level.walls_with_collision_group:
-            if self.rect.colliderect(wall.rect) and self.x_change > 0:
-                self.rect.right = wall.rect.left
-                self.x_change = 0
-            if self.rect.colliderect(wall.rect) and self.x_change < 0:
-                self.rect.left = wall.rect.right
-                self.x_change = 0
+
+            if self.x_change > 0:
+                player_hitbox = pygame.Rect(self.rect[0]+2, self.rect[1], self.rect[2], self.rect[3])
+                if player_hitbox.colliderect(wall.rect):
+                    self.x_change = 0
+
+            # walk left
+            elif self.x_change < 0:
+                player_hitbox = pygame.Rect(self.rect[0]-2, self.rect[1], self.rect[2], self.rect[3])
+                if player_hitbox.colliderect(wall.rect):
+                    self.x_change = 0
 
     def move(self):
         self.rect.move_ip(self.x_change * self.speed, self.y_change)
@@ -111,41 +116,100 @@ class Player(pygame.sprite.Sprite):
 
     def move_between_rooms(self):
 
-        if self.level.current_room == self.level.room_0_2:
+        # room 0_0
+        if self.level.current_room == self.level.room_0_0:
 
-            if self.rect.left < 0:
+            # move right
+            if self.rect.right > WIDTH+5:
                 self.level.current_room = self.level.room_0_1
-                self.level.redraw_room()
+                self.rect.x = 0
+                self.update_room()
 
-                self.platforms_group = self.level.platforms_group
-                self.rect.x = WIDTH - self.rect.width
+            # move down
+            if self.rect.bottom > 144:
+                self.level.current_room = self.level.room_1_0
+                self.rect.midtop = (self.rect.midbottom[0], -5)
+                self.update_room()
 
+        # room 0_1
         elif self.level.current_room == self.level.room_0_1:
 
-            if self.rect.right > 320:
+            # move left
+            if self.rect.left < 0:
+                self.level.current_room = self.level.room_0_0
+                self.rect.x = WIDTH - self.rect.width
+                self.update_room()
+
+            # move right
+            if self.rect.right > WIDTH+5:
                 self.level.current_room = self.level.room_0_2
-                self.level.redraw_room()
-
-                self.platforms_group = self.level.platforms_group
                 self.rect.x = 0
+                self.update_room()
 
+            # move down
             if self.rect.bottom > 144:
                 self.level.current_room = self.level.room_1_1
-                self.level.redraw_room()
-
-                self.platforms_group = self.level.platforms_group
-                self.ladders_group = self.level.ladders_group
                 self.rect.midtop = (self.rect.midbottom[0], -5)
+                self.update_room()
 
+        # room 0_2
+        elif self.level.current_room == self.level.room_0_2:
+
+            # move left
+            if self.rect.left < 0:
+                self.level.current_room = self.level.room_0_1
+                self.rect.x = WIDTH - self.rect.width
+                self.update_room()
+
+        # room 1_0
+        elif self.level.current_room == self.level.room_1_0:
+
+            # move right
+            if self.rect.right > WIDTH+5:
+                self.level.current_room = self.level.room_1_1
+                self.rect.x = 0
+                self.update_room()
+
+            # move up
+            if self.rect.top < -5:
+                self.level.current_room = self.level.room_0_0
+                self.rect.midbottom = (self.rect.midbottom[0], 144)
+                self.update_room()
+
+        # room 1_1
         elif self.level.current_room == self.level.room_1_1:
 
+            # move left
+            if self.rect.left < 0:
+                self.level.current_room = self.level.room_1_0
+                self.rect.x = WIDTH - self.rect.width
+                self.update_room()
+
+            # move right
+            if self.rect.right > WIDTH:
+                self.level.current_room = self.level.room_1_2
+                self.rect.x = 0
+                self.update_room()
+
+            # move up
             if self.rect.top < -5:
                 self.level.current_room = self.level.room_0_1
-                self.level.redraw_room()
-
-                self.platforms_group = self.level.platforms_group
-                self.ladders_group = self.level.ladders_group
                 self.rect.midbottom = (self.rect.midbottom[0], 144)
+                self.update_room()
+
+        # room 1_2
+        elif self.level.current_room == self.level.room_1_2:
+
+            # move left
+            if self.rect.left < 0:
+                self.level.current_room = self.level.room_1_1
+                self.rect.x = WIDTH - self.rect.width
+                self.update_room()
+
+    def update_room(self):
+        self.level.redraw_room()
+        self.platforms_group = self.level.platforms_group
+        self.ladders_group = self.level.ladders_group
 
     def controls(self, event, can_climb, climbed_down, middle_of_ladder):
 
@@ -210,7 +274,6 @@ class Player(pygame.sprite.Sprite):
         self.move_between_rooms()
 
         # pygame.draw.rect(self.screen, 'red', self.rect)
-
         # print(self.rect.top)
         # print(self.rect.x)
         # print(self.rect.midbottom)
