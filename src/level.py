@@ -42,12 +42,12 @@ class Level:
             19: pygame.image.load(img_path + 'decor/bed.png').convert_alpha(),
             20: pygame.image.load(img_path + 'walls/fire_wall_left.png').convert_alpha(),
             21: pygame.image.load(img_path + 'walls/fire_wall_right.png').convert_alpha(),
-            22: pygame.image.load(img_path + 'ladders/ladder_girland_32.png').convert_alpha(),
-
+            22: pygame.image.load(img_path + 'walls/fire_wall_left.png').convert_alpha(),   # no collision
+            23: pygame.image.load(img_path + 'walls/fire_wall_right.png').convert_alpha(),  # no collision
+            24: pygame.image.load(img_path + 'ladders/ladder_girland_32.png').convert_alpha(),
+            25: pygame.image.load(img_path + 'floor/floor_snow.png').convert_alpha(),
+            26: [pygame.image.load(img_path + f'decor/fireplace_{i}.png').convert_alpha() for i in range(1, 5)],
         }
-
-        # candle animation index
-        self.candle_index = 0
 
         # Rooms setup
         self.room_0_0 = [
@@ -59,7 +59,7 @@ class Level:
             [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 21, 0, 0, 0, 0, 0, 0],
             [7, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 20, 21, 0, 0, 12, 0, 0, 0],
             [7, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 1, 20, 21, 1, 1, 11, 1, 1, 1],
-            [7, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 20, 21, 9, 9, 22, 0, 9, 9]
+            [7, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 20, 21, 9, 9, 24, 0, 9, 9]
         ]
 
         self.room_0_1 = [
@@ -87,15 +87,15 @@ class Level:
         ]
 
         self.room_1_0 = [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            [7, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 22, 23, 0, 0, 10, 0, 0, 0],
+            [7, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 22, 23, 0, 0, 10, 0, 0, 0],
+            [7, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 22, 23, 0, 0, 10, 0, 0, 0],
+            [7, 12, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 22, 23, 0, 0, 10, 0, 0, 0],
+            [7, 11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [7, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 23, 0, 0, 0, 0, 0, 0],
+            [7, 10, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 22, 23, 0, 17, 0, 0, 0, 0],
+            [7, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 0, 0, 0, 0, 0, 0, 0],
+            [7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ]
 
         self.room_1_1 = [
@@ -115,14 +115,14 @@ class Level:
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7],
+            [25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25]
         ]
 
-        self.current_room = self.room_0_2
+        self.current_room = self.room_1_0
 
         # Populate the level with elements based on the current room layout
         self.populate_room()
@@ -132,7 +132,7 @@ class Level:
         self.create_ladders(self.current_room)
         self.create_walls_with_collisions(self.current_room)
         self.draw_decorations(self.current_room)
-        self.draw_candles(self.current_room)
+        self.draw_animations(self.current_room)
 
     def clear_room(self):
         self.platforms_group.empty()
@@ -159,17 +159,17 @@ class Level:
         return self.create_elements(room_layout, [1], Platform, self.platforms_group)
 
     def create_ladders(self, room_layout):
-        return self.create_elements(room_layout, [10, 11, 22], Ladder, self.ladders_group)
+        return self.create_elements(room_layout, [10, 11, 24], Ladder, self.ladders_group)
 
     def create_walls_with_collisions(self, room_layout):
         return self.create_elements(room_layout, [7, 20, 21], Wall, self.walls_with_collision_group)
 
     def draw_decorations(self, room_layout):
-        valid_ids = [0, 2, 3, 4, 5, 6, 8, 9, 12, 14, 15, 16, 17, 18, 19]
+        valid_ids = [0, 2, 3, 4, 5, 6, 8, 9, 12, 14, 15, 16, 17, 18, 19, 22, 23]
         return self.create_elements(room_layout, valid_ids, Decoration, self.decorations_group)
 
-    def draw_candles(self, room_layout):
-        return self.create_elements(room_layout, [13], AnimatedDecoration, self.decorations_group)
+    def draw_animations(self, room_layout):
+        return self.create_elements(room_layout, [13, 26], AnimatedDecoration, self.decorations_group)
 
     def redraw_room(self):
         self.clear_room()
