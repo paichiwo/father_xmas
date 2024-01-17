@@ -66,7 +66,7 @@ class AnimatedDecoration(pygame.sprite.Sprite):
         self.frames_index = 0
 
         self.image = self.frames[self.frames_index]
-        self.rect = self.image.get_rect(topleft=(x_pos, y_pos))
+        self.rect = self.image.get_rect(topleft=(self.x_pos, self.y_pos))
 
     def animate(self):
 
