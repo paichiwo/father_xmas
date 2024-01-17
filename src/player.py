@@ -135,11 +135,11 @@ class Player(pygame.sprite.Sprite):
 
                 self.platforms_group = self.level.platforms_group
                 self.ladders_group = self.level.ladders_group
-                self.rect.midtop = (self.rect.midbottom[0], - 16)
+                self.rect.midtop = (self.rect.midbottom[0], -5)
 
         elif self.level.current_room == self.level.room_1_1:
 
-            if self.rect.top < -16:
+            if self.rect.top < -5:
                 self.level.current_room = self.level.room_0_1
                 self.level.redraw_room()
 
