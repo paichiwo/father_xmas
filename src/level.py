@@ -1,5 +1,7 @@
+import random
+
 import pygame
-from src.sprites import Platform, Ladder, Wall, Decoration, AnimatedDecoration
+from src.sprites import Platform, Ladder, Wall, Decoration, AnimatedDecoration, Snowflake
 
 
 class Level:
@@ -9,6 +11,9 @@ class Level:
         self.screen = screen
         self.tile_width = 16
         self.tile_height = 16
+
+        self.snowflakes = []
+
 
         # Create groups
         self.platforms_group = pygame.sprite.Group()
@@ -122,7 +127,7 @@ class Level:
             [25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25]
         ]
 
-        self.current_room = self.room_1_0
+        self.current_room = self.room_0_2
 
         # Populate the level with elements based on the current room layout
         self.populate_room()
@@ -131,8 +136,9 @@ class Level:
         self.create_platforms(self.current_room)
         self.create_ladders(self.current_room)
         self.create_walls_with_collisions(self.current_room)
-        self.draw_decorations(self.current_room)
-        self.draw_animations(self.current_room)
+        self.create_decorations(self.current_room)
+        self.create_animations(self.current_room)
+        self.create_snow()
 
     def clear_room(self):
         self.platforms_group.empty()
@@ -164,12 +170,48 @@ class Level:
     def create_walls_with_collisions(self, room_layout):
         return self.create_elements(room_layout, [7, 20, 21], Wall, self.walls_with_collision_group)
 
-    def draw_decorations(self, room_layout):
+    def create_decorations(self, room_layout):
         valid_ids = [0, 2, 3, 4, 5, 6, 8, 9, 12, 14, 15, 16, 17, 18, 19, 22, 23]
         return self.create_elements(room_layout, valid_ids, Decoration, self.decorations_group)
 
-    def draw_animations(self, room_layout):
+    def create_animations(self, room_layout):
         return self.create_elements(room_layout, [13, 26], AnimatedDecoration, self.decorations_group)
+
+    def create_snow(self):
+        self.snowflakes.clear()
+
+        snow_boundary = None
+        second_boundary = None
+
+        if self.current_room == self.room_0_0:
+            snow_boundary = pygame.Rect(0, 0, 320, 32)
+        if self.current_room == self.room_0_1:
+            snow_boundary = pygame.Rect(0, 0, 320, 32)
+        if self.current_room == self.room_0_2:
+            snow_boundary = pygame.Rect(0, 0, 240, 44)
+            second_boundary = pygame.Rect(240, 0, 80, 144)
+        if self.current_room == self.room_1_0:
+            self.snowflakes.clear()
+        if self.current_room == self.room_1_1:
+            self.snowflakes.clear()
+        if self.current_room == self.room_1_2:
+            snow_boundary = pygame.Rect(0, 0, 320, 144)
+
+        for _ in range(20):
+            if snow_boundary:
+                x = random.randint(snow_boundary.left, snow_boundary.right)
+                y = random.randint(snow_boundary.top, snow_boundary.bottom)
+                self.snowflakes.append(Snowflake(x, y, self.screen, snow_boundary))
+
+            if second_boundary:
+                x_second = random.randint(second_boundary.left, second_boundary.right)
+                y_second = random.randint(second_boundary.top, second_boundary.bottom)
+                self.snowflakes.append(Snowflake(x_second, y_second, self.screen, second_boundary))
+
+    def draw_snow(self):
+        for snowflake in self.snowflakes:
+            snowflake.draw()
+            snowflake.update()
 
     def redraw_room(self):
         self.clear_room()
@@ -179,9 +221,13 @@ class Level:
         self.current_room = self.room_0_2
         self.redraw_room()
 
-    def draw(self):
+    def update(self):
+        self.draw_snow()
         self.platforms_group.draw(self.screen)
         self.ladders_group.draw(self.screen)
         self.walls_with_collision_group.draw(self.screen)
         self.decorations_group.draw(self.screen)
         self.decorations_group.update()
+
+
+

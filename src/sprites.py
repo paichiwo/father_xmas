@@ -1,4 +1,6 @@
+import random
 import pygame
+from src.config import *
 
 
 class Platform(pygame.sprite.Sprite):
@@ -78,3 +80,23 @@ class AnimatedDecoration(pygame.sprite.Sprite):
 
     def update(self):
         self.animate()
+
+
+class Snowflake:
+    def __init__(self, x, y, screen, snow_boundary):
+        self.pos = pygame.Vector2(x, y)
+        self.screen = screen
+        self.snow_boundary = snow_boundary
+        self.size = random.randint(1, 2)
+        self.speed = random.choice([0.4, 0.6, 0.8, 1])
+
+    def draw(self):
+        pygame.draw.circle(self.screen, WHITE, (int(self.pos.x), int(self.pos.y)), self.size)
+
+    def update(self):
+        self.pos.y += self.speed
+        if self.pos.y > self.snow_boundary.bottom:
+            self.pos.y = self.snow_boundary.top
+        if self.pos.x < self.snow_boundary.left or self.pos.x > self.snow_boundary.right:
+            self.pos.x = random.randint(self.snow_boundary.left, self.snow_boundary.right)
+

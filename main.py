@@ -46,12 +46,13 @@ class Game:
                 self.reset_game()
 
     def draw_elements(self):
-        self.level.draw()
         self.player_group.draw(self.screen)
-        self.dashboard.draw()
 
     def update_elements(self):
         self.player_group.update()
+        self.level.update()
+        self.dashboard.update()
+
 
     def game_over(self):
         return not self.dashboard.game_over
