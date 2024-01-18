@@ -17,7 +17,7 @@ class Game:
         self.clock = pygame.time.Clock()
 
         # Scaled window setup
-        self.window = pygame.Window(size=(WIDTH * SCALE, HEIGHT * SCALE))
+        self.window = pygame.Window(size=(WIDTH * SCALE, HEIGHT * SCALE), title="Father Xmas")
         self.window.resizable = True
         self.renderer = sdl2.Renderer(self.window, vsync=True)
         self.renderer.logical_size = (WIDTH, HEIGHT)
@@ -52,7 +52,6 @@ class Game:
         self.player_group.update()
         self.level.update()
         self.dashboard.update()
-
 
     def game_over(self):
         return not self.dashboard.game_over

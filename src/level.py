@@ -1,5 +1,4 @@
 import random
-
 import pygame
 from src.sprites import Platform, Ladder, Wall, Decoration, AnimatedDecoration, Snowflake
 
@@ -39,8 +38,8 @@ class Level:
             12: pygame.image.load(img_path + 'ladders/ladder_top_32.png').convert_alpha(),
             13: [pygame.image.load(img_path + 'decor/candle_1.png').convert_alpha(),
                  pygame.image.load(img_path + 'decor/candle_2.png').convert_alpha()],
-            14: pygame.image.load(img_path + 'decor/girland_left.png').convert_alpha(),
-            15: pygame.image.load(img_path + 'decor/girland_right.png').convert_alpha(),
+            14: pygame.image.load(img_path + 'decor/painting_1.png').convert_alpha(),
+            15: pygame.image.load(img_path + 'decor/painting_2.png').convert_alpha(),
             16: pygame.image.load(img_path + 'decor/table.png').convert_alpha(),
             17: pygame.image.load(img_path + 'decor/chair.png').convert_alpha(),
             18: pygame.transform.flip(pygame.image.load(img_path + 'decor/chair.png').convert_alpha(), True, False),
@@ -51,7 +50,9 @@ class Level:
             23: pygame.image.load(img_path + 'walls/fire_wall_right.png').convert_alpha(),  # no collision
             24: pygame.image.load(img_path + 'ladders/ladder_girland_32.png').convert_alpha(),
             25: pygame.image.load(img_path + 'floor/floor_snow.png').convert_alpha(),
-            26: [pygame.image.load(img_path + f'decor/fireplace_{i}.png').convert_alpha() for i in range(1, 5)],
+            26: [pygame.image.load(img_path + f'decor/fire_place_{i}.png').convert_alpha() for i in range(1, 5)],
+            27: pygame.image.load(img_path + 'decor/stool.png').convert_alpha(),
+
         }
 
         # Rooms setup
@@ -60,9 +61,9 @@ class Level:
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
             [7, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 21, 9, 9, 9, 9, 9, 9],
+            [7, 0, 0, 0, 0, 0, 15 , 0, 0, 0, 0, 0, 20, 21, 0, 0, 0, 0, 0, 0],
             [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 21, 0, 0, 0, 0, 0, 0],
-            [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 21, 0, 0, 0, 0, 0, 0],
-            [7, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0, 20, 21, 0, 0, 12, 0, 0, 0],
+            [7, 0, 0, 27, 0, 0, 0, 0, 12, 0, 0, 0, 20, 21, 0, 0, 12, 0, 0, 0],
             [7, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 1, 20, 21, 1, 1, 11, 1, 1, 1],
             [7, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 20, 21, 9, 9, 24, 0, 9, 9]
         ]
@@ -72,7 +73,7 @@ class Level:
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
             [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0],
             [0, 0, 0, 0, 0, 18, 16, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 1],
@@ -86,7 +87,7 @@ class Level:
             [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 7, 0, 0, 0, 0, 0],
             [0, 0, 0, 13, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 19, 0, 0, 7, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0],
+            [0, 27 , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
             [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0]
         ]
@@ -95,21 +96,21 @@ class Level:
             [7, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 20, 21, 0, 0, 10, 0, 0, 0],
             [7, 13, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 20, 21, 0, 0, 10, 0, 0, 0],
             [7, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 20, 21, 0, 0, 10, 0, 0, 0],
-            [7, 12, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 20, 21, 0, 0, 10, 0, 0, 0],
+            [7, 12, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 20, 21, 0, 0, 10, 0, 0, 27],
             [7, 11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             [7, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 23, 0, 0, 0, 0, 0, 0],
-            [7, 10, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 22, 23, 0, 17, 0, 0, 0, 0],
-            [7, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 0, 0, 0, 0, 0, 0, 0],
+            [7, 10, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 26, 0, 0, 17, 0, 0, 0, 0],
+            [7, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ]
 
         self.room_1_1 = [
             [0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 7],
-            [0, 0, 0, 0, 7, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 7],
+            [0, 0, 0, 0, 7, 13, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 10, 0, 0, 7],
             [0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 7],
             [0, 0, 12, 0, 7, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 7],
             [1, 1, 11, 1, 1, 1, 1, 11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [0, 0, 10, 0, 13, 7, 0, 10, 0, 13, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0],
+            [0, 0, 10, 0, 13, 7, 0, 10, 0, 0, 13, 0, 0, 0, 13, 0, 0, 0, 0, 0],
             [0, 0, 10, 0, 0, 7, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 10, 0, 0, 7, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
@@ -171,7 +172,7 @@ class Level:
         return self.create_elements(room_layout, [7, 20, 21], Wall, self.walls_with_collision_group)
 
     def create_decorations(self, room_layout):
-        valid_ids = [0, 2, 3, 4, 5, 6, 8, 9, 12, 14, 15, 16, 17, 18, 19, 22, 23]
+        valid_ids = [0, 2, 3, 4, 5, 6, 8, 9, 12, 14, 15, 16, 17, 18, 19, 22, 23, 27]
         return self.create_elements(room_layout, valid_ids, Decoration, self.decorations_group)
 
     def create_animations(self, room_layout):

@@ -1,6 +1,6 @@
 import random
 import pygame
-from src.config import *
+from src.config import WHITE
 
 
 class Platform(pygame.sprite.Sprite):
