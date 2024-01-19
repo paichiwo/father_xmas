@@ -13,7 +13,6 @@ class Level:
 
         self.snowflakes = []
 
-
         # Create groups
         self.platforms_group = pygame.sprite.Group()
         self.ladders_group = pygame.sprite.Group()
