@@ -24,7 +24,7 @@ class Player(pygame.sprite.Sprite):
         }
 
         # Animation index
-        self.status = 'walk_right'
+        self.status = 'walk_left'
         self.frame_index = 1
         self.animation_possible = False
 
@@ -208,8 +208,8 @@ class Player(pygame.sprite.Sprite):
 
     def update_room(self):
         self.level.redraw_room()
-        # self.platforms_group = self.level.platforms_group
-        # self.ladders_group = self.level.ladders_group
+        self.platforms_group = self.level.platforms_group
+        self.ladders_group = self.level.ladders_group
 
     def controls(self, event, can_climb, climbed_down, middle_of_ladder):
 
@@ -262,10 +262,9 @@ class Player(pygame.sprite.Sprite):
                 if self.climbing and self.landed:
                     self.climbing = False
 
-
     def reset(self):
         self.rect.midbottom = (100, 150)
-        self.status = 'walk_right'
+        self.status = 'walk_left'
 
     def update(self):
 
@@ -281,4 +280,4 @@ class Player(pygame.sprite.Sprite):
         # print(self.rect.x)
         # print(self.rect.midbottom)
         # pygame.draw.rect(self.screen, 'red', self.bottom)
-        print(self.animation_possible)
+        # print(self.animation_possible)
