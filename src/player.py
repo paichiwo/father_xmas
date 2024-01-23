@@ -1,5 +1,6 @@
 import pygame
 from src.config import *
+from src.sprites import Sleigh
 
 
 class Player(pygame.sprite.Sprite):
@@ -211,6 +212,31 @@ class Player(pygame.sprite.Sprite):
         self.platforms_group = self.level.platforms_group
         self.ladders_group = self.level.ladders_group
 
+    def check_sleigh_collision(self):
+        for sleigh in self.level.sleigh_group:
+            if self.rect.colliderect(sleigh.rect):
+                print('collide')
+                self.level.sleigh_in_inventory = True
+                sleigh.kill()
+
+    def leave_sleigh(self):
+        if self.level.current_room == self.level.rooms['room_1_2']:
+            if self.level.sleigh_in_inventory:
+                if self.rect.x == 100:
+                    # self.screen.blit(self.level.images[33][0], (10, 10))
+                    if len(self.level.completed_sleigh_pieces) == 0:
+                        Sleigh(112, 128, self.screen, self.level.images[33][0], self.level.completed_sleigh_group)
+                        self.level.sleigh_in_inventory = False
+                        self.level.completed_sleigh_pieces.append('1')
+                        self.level.sleigh_group.empty()
+                        self.level.create_sleigh()
+                    elif len(self.level.completed_sleigh_pieces) == 1:
+                        Sleigh(96, 128, self.screen, self.level.images[33][1], self.level.completed_sleigh_group)
+                        self.level.sleigh_in_inventory = False
+                        self.level.completed_sleigh_pieces.append('2')
+                        self.level.create_sleigh()
+        # print(self.level.completed_sleigh_pieces)
+
     def controls(self, event, can_climb, climbed_down, middle_of_ladder):
 
         keys = pygame.key.get_pressed()
@@ -274,6 +300,9 @@ class Player(pygame.sprite.Sprite):
         self.animate()
         self.move()
         self.move_between_rooms()
+
+        self.check_sleigh_collision()
+        self.leave_sleigh()
 
         # pygame.draw.rect(self.screen, 'red', self.rect)
         # print(self.rect.top)
