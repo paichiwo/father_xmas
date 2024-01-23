@@ -76,26 +76,16 @@ class Snowflake:
 
 
 class Sleigh(pygame.sprite.Sprite):
-    def __init__(self, x_pos, y_pos, screen, platforms_group, walls_group, group):
+    def __init__(self, x_pos, y_pos, screen, image, group):
         super().__init__(group)
 
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.screen = screen
-        self.platforms_group = platforms_group
-        self.walls_group = walls_group
 
-        img_path = 'assets/level/'
-        self.images = [pygame.image.load(img_path + f'sleigh/sleigh_{i}.png').convert_alpha() for i in range(1, 5)]
-        self.current_piece = self.images[3]
-        self.rect = self.current_piece.get_rect(bottomleft=(x_pos, y_pos))
-
-    def place_sleigh_pieces(self):
-        platforms_rects = [platform.rect for platform in self.platforms_group]
-        random_platform_rect = random.choice(platforms_rects)
-
-        return [random_platform_rect.topleft[0], random_platform_rect.topleft[1]]
+        self.image = image
+        self.rect = self.image.get_rect(bottomleft=(x_pos, y_pos))
 
     def update(self):
-        self.screen.blit(self.current_piece, self.rect)
+        self.screen.blit(self.image, self.rect)
 
