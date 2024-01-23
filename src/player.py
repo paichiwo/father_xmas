@@ -117,92 +117,92 @@ class Player(pygame.sprite.Sprite):
     def move_between_rooms(self):
 
         # room 0_0
-        if self.level.current_room == self.level.room_0_0:
+        if self.level.current_room == self.level.rooms['room_0_0']:
 
             # move right
             if self.rect.right > WIDTH+5:
-                self.level.current_room = self.level.room_0_1
+                self.level.current_room = self.level.rooms['room_0_1']
                 self.rect.x = 0
                 self.update_room()
 
             # move down
             if self.rect.bottom > 144:
-                self.level.current_room = self.level.room_1_0
+                self.level.current_room = self.level.rooms['room_1_0']
                 self.rect.midtop = (self.rect.midbottom[0], -5)
                 self.update_room()
 
         # room 0_1
-        elif self.level.current_room == self.level.room_0_1:
+        elif self.level.current_room == self.level.rooms['room_0_1']:
 
             # move left
             if self.rect.left < 0:
-                self.level.current_room = self.level.room_0_0
+                self.level.current_room = self.level.rooms['room_0_0']
                 self.rect.x = WIDTH - self.rect.width
                 self.update_room()
 
             # move right
             if self.rect.right > WIDTH+5:
-                self.level.current_room = self.level.room_0_2
+                self.level.current_room = self.level.rooms['room_0_2']
                 self.rect.x = 0
                 self.update_room()
 
             # move down
             if self.rect.bottom > 144:
-                self.level.current_room = self.level.room_1_1
+                self.level.current_room = self.level.rooms['room_1_1']
                 self.rect.midtop = (self.rect.midbottom[0], -5)
                 self.update_room()
 
         # room 0_2
-        elif self.level.current_room == self.level.room_0_2:
+        elif self.level.current_room == self.level.rooms['room_0_2']:
 
             # move left
             if self.rect.left < 0:
-                self.level.current_room = self.level.room_0_1
+                self.level.current_room = self.level.rooms['room_0_1']
                 self.rect.x = WIDTH - self.rect.width
                 self.update_room()
 
         # room 1_0
-        elif self.level.current_room == self.level.room_1_0:
+        elif self.level.current_room == self.level.rooms['room_1_0']:
 
             # move right
             if self.rect.right > WIDTH+5:
-                self.level.current_room = self.level.room_1_1
+                self.level.current_room = self.level.rooms['room_1_1']
                 self.rect.x = 0
                 self.update_room()
 
             # move up
             if self.rect.top < -5:
-                self.level.current_room = self.level.room_0_0
+                self.level.current_room = self.level.rooms['room_0_0']
                 self.rect.midbottom = (self.rect.midbottom[0], 144)
                 self.update_room()
 
         # room 1_1
-        elif self.level.current_room == self.level.room_1_1:
+        elif self.level.current_room == self.level.rooms['room_1_1']:
 
             # move left
             if self.rect.left < 0:
-                self.level.current_room = self.level.room_1_0
+                self.level.current_room = self.level.rooms['room_1_0']
                 self.rect.x = WIDTH - self.rect.width
                 self.update_room()
 
             # move right
             if self.rect.right > WIDTH:
-                self.level.current_room = self.level.room_1_2
+                self.level.current_room = self.level.rooms['room_1_2']
                 self.rect.x = 0
                 self.update_room()
 
             # move up
             if self.rect.top < -5:
-                self.level.current_room = self.level.room_0_1
+                self.level.current_room = self.level.rooms['room_0_1']
                 self.rect.midbottom = (self.rect.midbottom[0], 144)
                 self.update_room()
 
         # room 1_2
-        elif self.level.current_room == self.level.room_1_2:
+        elif self.level.current_room == self.level.rooms['room_1_2']:
 
             # move left
             if self.rect.left < 0:
-                self.level.current_room = self.level.room_1_1
+                self.level.current_room = self.level.rooms['room_1_1']
                 self.rect.x = WIDTH - self.rect.width
                 self.update_room()
 
