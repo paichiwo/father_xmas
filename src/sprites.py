@@ -3,33 +3,7 @@ import pygame
 from src.config import WHITE
 
 
-class Platform(pygame.sprite.Sprite):
-    def __init__(self, x_pos, y_pos, image, group):
-        super().__init__(group)
-
-        # General setup
-        self.x_pos = x_pos
-        self.y_pos = y_pos
-
-        # Image & Rect
-        self.image = image
-        self.rect = self.image.get_rect(topleft=(self.x_pos, self.y_pos))
-
-
-class Ladder(pygame.sprite.Sprite):
-    def __init__(self, x_pos, y_pos, image, group):
-        super().__init__(group)
-
-        # General setup
-        self.x_pos = x_pos
-        self.y_pos = y_pos
-
-        # Image & Rect
-        self.image = image
-        self.rect = self.image.get_rect(topleft=(x_pos, y_pos))
-
-
-class Wall(pygame.sprite.Sprite):
+class CollisionObject(pygame.sprite.Sprite):
     def __init__(self, x_pos, y_pos, image, group):
         super().__init__(group)
 
@@ -99,4 +73,29 @@ class Snowflake:
             self.pos.y = self.snow_boundary.top
         if self.pos.x < self.snow_boundary.left or self.pos.x > self.snow_boundary.right:
             self.pos.x = random.randint(self.snow_boundary.left, self.snow_boundary.right)
+
+
+class Sleigh(pygame.sprite.Sprite):
+    def __init__(self, x_pos, y_pos, screen, platforms_group, walls_group, group):
+        super().__init__(group)
+
+        self.x_pos = x_pos
+        self.y_pos = y_pos
+        self.screen = screen
+        self.platforms_group = platforms_group
+        self.walls_group = walls_group
+
+        img_path = 'assets/level/'
+        self.images = [pygame.image.load(img_path + f'sleigh/sleigh_{i}.png').convert_alpha() for i in range(1, 5)]
+        self.current_piece = self.images[3]
+        self.rect = self.current_piece.get_rect(bottomleft=(x_pos, y_pos))
+
+    def place_sleigh_pieces(self):
+        platforms_rects = [platform.rect for platform in self.platforms_group]
+        random_platform_rect = random.choice(platforms_rects)
+
+        return [random_platform_rect.topleft[0], random_platform_rect.topleft[1]]
+
+    def update(self):
+        self.screen.blit(self.current_piece, self.rect)
 
