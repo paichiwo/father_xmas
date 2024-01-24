@@ -35,18 +35,11 @@ class Player(pygame.sprite.Sprite):
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
 
         # Movement attributes
-        self.speed = 1
+        self.speed = 2
         self.y_change = 0
         self.x_change = 0
         self.climbing = False
         self.landed = False
-
-        # Platforms
-        self.platforms_group = self.level.platforms_group
-
-        # Ladders
-        self.ladders_group = self.level.ladders_group
-
         self.sleigh_completed = False
 
     def animate(self):
@@ -60,8 +53,8 @@ class Player(pygame.sprite.Sprite):
         self.image = self.frames[self.status][int(self.frame_index)]
 
     def check_landed(self):
-        for i in range(len(self.platforms_group)):
-            for platform in self.platforms_group:
+        for i in range(len(self.level.platforms_group)):
+            for platform in self.level.platforms_group:
                 if self.bottom.colliderect(platform.rect):
                     self.landed = True
                     if not self.climbing:
@@ -80,7 +73,7 @@ class Player(pygame.sprite.Sprite):
         # pygame.draw.rect(self.screen, 'yellow', under)
         offset = 3
 
-        for ladder in self.ladders_group:
+        for ladder in self.level.ladders_group:
             if self.rect.colliderect(ladder.rect) and not can_climb:
                 can_climb = True
                 ladder_middle_x = ladder.rect.centerx
@@ -107,7 +100,6 @@ class Player(pygame.sprite.Sprite):
                 if player_hitbox.colliderect(wall.rect):
                     self.x_change = 0
 
-            # walk left
             elif self.x_change < 0:
                 player_hitbox = pygame.Rect(self.rect[0]-2, self.rect[1], self.rect[2], self.rect[3])
                 if player_hitbox.colliderect(wall.rect):
@@ -211,8 +203,6 @@ class Player(pygame.sprite.Sprite):
 
     def update_room(self):
         self.level.redraw_room()
-        self.platforms_group = self.level.platforms_group
-        self.ladders_group = self.level.ladders_group
 
     def check_sleigh_collision(self):
         if self.level.current_room == self.level.rooms[self.level.random_room]:
@@ -226,34 +216,24 @@ class Player(pygame.sprite.Sprite):
         if self.level.current_room == self.level.rooms['room_1_2']:
             if self.level.sleigh_in_inventory:
                 if self.rect.x == 100:
-                    # self.screen.blit(self.level.images[33][0], (10, 10))
-                    if len(self.level.completed_sleigh_pieces) == 0:
-                        Sleigh(112, 128, self.screen, self.level.images[33][0], self.level.completed_sleigh_group)
-                        self.level.sleigh_in_inventory = False
-                        self.level.completed_sleigh_pieces.append('1')
-                        self.level.sleigh_group.empty()
-                        self.level.create_sleigh()
-                    elif len(self.level.completed_sleigh_pieces) == 1:
-                        Sleigh(96, 128, self.screen, self.level.images[33][1], self.level.completed_sleigh_group)
-                        self.level.sleigh_in_inventory = False
-                        self.level.completed_sleigh_pieces.append('2')
-                        self.level.sleigh_group.empty()
-                        self.level.create_sleigh()
-                    elif len(self.level.completed_sleigh_pieces) == 2:
-                        Sleigh(80, 128, self.screen, self.level.images[33][2], self.level.completed_sleigh_group)
-                        self.level.sleigh_in_inventory = False
-                        self.level.completed_sleigh_pieces.append('3')
-                        self.level.sleigh_group.empty()
-                        self.level.create_sleigh()
-                    elif len(self.level.completed_sleigh_pieces) == 3:
-                        Sleigh(64, 128, self.screen, self.level.images[33][3], self.level.completed_sleigh_group)
-                        self.level.sleigh_in_inventory = False
-                        self.level.completed_sleigh_pieces.append('4')
-                        self.level.sleigh_group.empty()
-                        self.sleigh_completed = True
-                        # self.level.create_sleigh()
 
-        # print(self.level.completed_sleigh_pieces)
+                    # get the position and image index based on the number of completed sleigh pieces
+                    pos = (112 - 16 * len(self.level.completed_sleigh_pieces), 128)
+                    image_index = len(self.level.completed_sleigh_pieces)
+
+                    # create a sleigh object with the appropriate image
+                    Sleigh(pos[0], pos[1], self.screen, self.level.images[33][image_index],
+                           self.level.completed_sleigh_group)
+
+                    # update the sleigh status and create a new sleigh
+                    self.level.sleigh_in_inventory = False
+                    self.level.completed_sleigh_pieces.append(str(image_index + 1))
+                    self.level.sleigh_group.empty()
+                    self.level.create_sleigh()
+
+                    # check if the sleigh is completed
+                    if len(self.level.completed_sleigh_pieces) == 4:
+                        self.sleigh_completed = True
 
     def controls(self, event, can_climb, climbed_down, middle_of_ladder):
 
@@ -309,6 +289,7 @@ class Player(pygame.sprite.Sprite):
     def reset(self):
         self.rect.midbottom = (100, 150)
         self.status = 'walk_left'
+        self.sleigh_completed = False
 
     def update(self):
 

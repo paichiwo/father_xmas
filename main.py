@@ -32,9 +32,9 @@ class Game:
         self.player_group = pygame.sprite.GroupSingle()
 
         # Game objects
+        self.dashboard = Dashboard(self.screen)
         self.level = Level(self.screen)
         self.player = Player(100, 112, self.screen, self.level, self.player_group)
-        self.dashboard = Dashboard(self.screen)
         self.game_over_scene = GameOverScene(self.screen, WIDTH, HEIGHT)
 
     def handle_game_events(self, event):

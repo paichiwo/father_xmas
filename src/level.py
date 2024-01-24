@@ -74,7 +74,7 @@ class Level:
                 [7, 0, 0, 0, 0, 0, 15, 0, 0, 0, 28, 0, 20, 21, 0, 0, 0, 0, 0, 0],
                 [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 21, 0, 0, 0, 0, 0, 0],
                 [7, 0, 0, 27, 0, 0, 0, 0, 12, 0, 0, 0, 20, 21, 0, 0, 12, 0, 0, 0],
-                [7, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 1, 20, 21, 1, 1, 11, 1, 1, 1],
+                [7, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 1, 20, 21, 1, 1, 11, 1, 1, 31],
                 [7, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 20, 21, 9, 9, 24, 0, 9, 9]
             ],
 
@@ -86,7 +86,7 @@ class Level:
                 [0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0],
                 [0, 0, 0, 0, 0, 18, 16, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 31],
                 [9, 9, 9, 9, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 7]
             ],
 
@@ -107,11 +107,11 @@ class Level:
                 [7, 13, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 20, 21, 0, 0, 10, 0, 0, 0],
                 [7, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 20, 21, 0, 0, 10, 0, 0, 0],
                 [7, 12, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 20, 21, 0, 0, 10, 0, 0, 27],
-                [7, 11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 31, 31, 1, 1, 1, 1, 1, 1],
+                [7, 11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 31, 31, 1, 1, 1, 1, 1, 31],
                 [7, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 23, 0, 0, 0, 0, 0, 0],
                 [7, 10, 0, 29, 0, 0, 0, 0, 0, 0, 18, 0, 26, 0, 0, 17, 0, 0, 0, 0],
                 [7, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                [7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 31]
             ],
 
             'room_1_1': [
@@ -123,7 +123,7 @@ class Level:
                 [0, 0, 10, 0, 13, 7, 0, 10, 0, 0, 13, 0, 0, 0, 13, 0, 0, 0, 0, 0],
                 [0, 0, 10, 0, 0, 7, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 10, 0, 0, 7, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [1, 1, 1, 1, 1, 31, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+                [1, 1, 1, 1, 1, 31, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 31]
             ],
 
             'room_1_2': [
@@ -248,52 +248,86 @@ class Level:
                     rects.append(pygame.Rect(x_pos, y_pos, self.tile_width, self.tile_height))
         return rects
 
+    # def create_sleigh(self):
+    #     # refactor rooms to have a floor tile designated to spawn sleigh
+    #
+    #     if not self.sleigh_in_inventory:
+    #
+    #         if len(self.completed_sleigh_pieces) == 0:
+    #             platform_rects = self.get_platform_rects(self.rooms[self.random_room])
+    #
+    #             available_platforms = [rect for rect in platform_rects]
+    #             random_platform_rect = random.choice(available_platforms)
+    #             pos = [random_platform_rect.topleft[0], random_platform_rect.topleft[1]]
+    #             Sleigh(pos[0], pos[1], self.screen, self.images[33][0], self.sleigh_group)
+    #
+    #         if len(self.completed_sleigh_pieces) == 1:
+    #             self.random_room = self.get_random_room()
+    #             platform_rects = self.get_platform_rects(self.rooms[self.random_room])
+    #
+    #             available_platforms = [rect for rect in platform_rects]
+    #             random_platform_rect = random.choice(available_platforms)
+    #             pos = [random_platform_rect.topleft[0], random_platform_rect.topleft[1]]
+    #             Sleigh(pos[0], pos[1], self.screen, self.images[33][1], self.sleigh_group)
+    #
+    #         if len(self.completed_sleigh_pieces) == 2:
+    #             self.random_room = self.get_random_room()
+    #             platform_rects = self.get_platform_rects(self.rooms[self.random_room])
+    #
+    #             available_platforms = [rect for rect in platform_rects]
+    #             random_platform_rect = random.choice(available_platforms)
+    #             pos = [random_platform_rect.topleft[0], random_platform_rect.topleft[1]]
+    #             Sleigh(pos[0], pos[1], self.screen, self.images[33][2], self.sleigh_group)
+    #
+    #         if len(self.completed_sleigh_pieces) == 3:
+    #             self.random_room = self.get_random_room()
+    #             platform_rects = self.get_platform_rects(self.rooms[self.random_room])
+    #
+    #             available_platforms = [rect for rect in platform_rects]
+    #             random_platform_rect = random.choice(available_platforms)
+    #             pos = [random_platform_rect.topleft[0], random_platform_rect.topleft[1]]
+    #             Sleigh(pos[0], pos[1], self.screen, self.images[33][3], self.sleigh_group)
+    #
+    #     else:
+    #         self.sleigh_group.empty()
+
     def create_sleigh(self):
         # refactor rooms to have a floor tile designated to spawn sleigh
 
         if not self.sleigh_in_inventory:
 
-            if len(self.completed_sleigh_pieces) == 0:
-                platform_rects = self.get_platform_rects(self.rooms[self.random_room])
+            # get a random room and platform
+            self.random_room = self.get_random_room()
+            platform_rects = self.get_platform_rects(self.rooms[self.random_room])
+            random_platform_rect = random.choice(platform_rects)
 
-                available_platforms = [rect for rect in platform_rects]
-                random_platform_rect = random.choice(available_platforms)
-                pos = [random_platform_rect.topleft[0], random_platform_rect.topleft[1]]
-                Sleigh(pos[0], pos[1], self.screen, self.images[33][0], self.sleigh_group)
+            # get the position and image index based on the number of completed sleigh pieces
+            pos = random_platform_rect.topleft
+            image_index = len(self.completed_sleigh_pieces)
 
-            if len(self.completed_sleigh_pieces) == 1:
-                self.random_room = self.get_random_room()
-                platform_rects = self.get_platform_rects(self.rooms[self.random_room])
-
-                available_platforms = [rect for rect in platform_rects]
-                random_platform_rect = random.choice(available_platforms)
-                pos = [random_platform_rect.topleft[0], random_platform_rect.topleft[1]]
-                Sleigh(pos[0], pos[1], self.screen, self.images[33][1], self.sleigh_group)
-
-            if len(self.completed_sleigh_pieces) == 2:
-                self.random_room = self.get_random_room()
-                platform_rects = self.get_platform_rects(self.rooms[self.random_room])
-
-                available_platforms = [rect for rect in platform_rects]
-                random_platform_rect = random.choice(available_platforms)
-                pos = [random_platform_rect.topleft[0], random_platform_rect.topleft[1]]
-                Sleigh(pos[0], pos[1], self.screen, self.images[33][2], self.sleigh_group)
-
-            if len(self.completed_sleigh_pieces) == 3:
-                self.random_room = self.get_random_room()
-                platform_rects = self.get_platform_rects(self.rooms[self.random_room])
-
-                available_platforms = [rect for rect in platform_rects]
-                random_platform_rect = random.choice(available_platforms)
-                pos = [random_platform_rect.topleft[0], random_platform_rect.topleft[1]]
-                Sleigh(pos[0], pos[1], self.screen, self.images[33][3], self.sleigh_group)
+            # create a sleigh object with the appropriate image only if image_index is valid
+            if image_index < 4:
+                Sleigh(pos[0], pos[1], self.screen, self.images[33][image_index], self.sleigh_group)
 
         else:
             self.sleigh_group.empty()
 
+    def sleigh_update(self):
+        if self.current_room == self.rooms[self.random_room]:
+            self.sleigh_group.update()
+        else:
+            self.sleigh_group.remove()
+
+        if self.current_room == self.rooms['room_1_2']:
+            self.completed_sleigh_group.update()
+
     def reset(self):
         self.current_room = self.rooms['room_0_2']
         self.redraw_room()
+        self.random_room = self.get_random_room()
+        self.sleigh_in_inventory = False
+        self.completed_sleigh_pieces = []
+        self.create_sleigh()
 
     def update(self):
         self.draw_snow()
@@ -302,15 +336,10 @@ class Level:
         self.walls_with_collision_group.draw(self.screen)
         self.decorations_group.draw(self.screen)
         self.decorations_group.update()
+        self.sleigh_update()
 
-        for sleigh in self.sleigh_group:
-            pygame.draw.rect(self.screen, 'red', sleigh.rect, 1)
+        # for sleigh in self.sleigh_group:
+        #     pygame.draw.rect(self.screen, 'red', sleigh.rect, 1)
         print(self.random_room)
 
-        if self.current_room == self.rooms[self.random_room]:
-            self.sleigh_group.update()
-        else:
-            self.sleigh_group.remove()
 
-        if self.current_room == self.rooms['room_1_2']:
-            self.completed_sleigh_group.update()
