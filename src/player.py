@@ -47,6 +47,8 @@ class Player(pygame.sprite.Sprite):
         # Ladders
         self.ladders_group = self.level.ladders_group
 
+        self.sleigh_completed = False
+
     def animate(self):
         if self.animation_possible:
             self.frame_index += 0.1
@@ -213,11 +215,12 @@ class Player(pygame.sprite.Sprite):
         self.ladders_group = self.level.ladders_group
 
     def check_sleigh_collision(self):
-        for sleigh in self.level.sleigh_group:
-            if self.rect.colliderect(sleigh.rect):
-                print('collide')
-                self.level.sleigh_in_inventory = True
-                sleigh.kill()
+        if self.level.current_room == self.level.rooms[self.level.random_room]:
+            for sleigh in self.level.sleigh_group:
+                if self.rect.colliderect(sleigh.rect):
+                    print('collide')
+                    self.level.sleigh_in_inventory = True
+                    sleigh.kill()
 
     def leave_sleigh(self):
         if self.level.current_room == self.level.rooms['room_1_2']:
@@ -234,7 +237,22 @@ class Player(pygame.sprite.Sprite):
                         Sleigh(96, 128, self.screen, self.level.images[33][1], self.level.completed_sleigh_group)
                         self.level.sleigh_in_inventory = False
                         self.level.completed_sleigh_pieces.append('2')
+                        self.level.sleigh_group.empty()
                         self.level.create_sleigh()
+                    elif len(self.level.completed_sleigh_pieces) == 2:
+                        Sleigh(80, 128, self.screen, self.level.images[33][2], self.level.completed_sleigh_group)
+                        self.level.sleigh_in_inventory = False
+                        self.level.completed_sleigh_pieces.append('3')
+                        self.level.sleigh_group.empty()
+                        self.level.create_sleigh()
+                    elif len(self.level.completed_sleigh_pieces) == 3:
+                        Sleigh(64, 128, self.screen, self.level.images[33][3], self.level.completed_sleigh_group)
+                        self.level.sleigh_in_inventory = False
+                        self.level.completed_sleigh_pieces.append('4')
+                        self.level.sleigh_group.empty()
+                        self.sleigh_completed = True
+                        # self.level.create_sleigh()
+
         # print(self.level.completed_sleigh_pieces)
 
     def controls(self, event, can_climb, climbed_down, middle_of_ladder):
