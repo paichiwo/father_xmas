@@ -53,6 +53,10 @@ class Game:
         self.level.update()
         self.dashboard.update()
 
+    def game_win(self):
+        if self.player.sleigh_completed:
+            print('game won')
+
     def game_over(self):
         return not self.dashboard.game_over
 
@@ -93,6 +97,7 @@ class Game:
                 self.update_elements()
                 self.draw_elements()
                 self.change_res()
+                self.game_win()
 
                 self.running = self.game_over()
             else:
