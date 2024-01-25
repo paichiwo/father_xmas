@@ -2,10 +2,10 @@ import sys
 import pygame
 import pygame._sdl2 as sdl2
 from src.config import *
-from src.level import Level
+from src.level import Platformer, XmasLetter
 from src.player import Player
 from src.dashboard import Dashboard
-from src.scenes import GameOverScene
+from src.scenes import MainMenuScene, GameOverScene
 
 
 class Game:
@@ -24,18 +24,27 @@ class Game:
         self.screen = pygame.Surface((WIDTH, HEIGHT))
         self.window.get_surface()
 
+        self.main_menu_running = True
+        self.platformer_running = False
+        self.xmas_letter_running = False
+        self.gift_rain_running = False
+        self.gift_delivery_running = False
+        self.congratulations_running = False
+        self.game_over_scene_active = False
+
         # Game variables
         self.running = True
-        self.game_over_scene_active = False
 
         # Sprite groups
         self.player_group = pygame.sprite.GroupSingle()
 
         # Game objects
+        self.main_menu_scene = MainMenuScene(self.screen, self.window)
         self.dashboard = Dashboard(self.screen)
-        self.level = Level(self.screen)
-        self.player = Player(100, 112, self.screen, self.level, self.player_group)
-        self.game_over_scene = GameOverScene(self.screen, WIDTH, HEIGHT)
+        self.platformer = Platformer(self.screen)
+        self.xmas_letter = XmasLetter(self.screen)
+        self.game_over_scene = GameOverScene(self.screen)
+        self.player = Player(100, 112, self.screen, self.platformer, self.player_group)
 
     def handle_game_events(self, event):
         if event.type == pygame.QUIT:
@@ -45,17 +54,31 @@ class Game:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
                 self.reset_game()
 
-    def draw_elements(self):
+    def handle_main_menu_events(self, event):
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
+            self.reset_game()
+            self.main_menu_running = False
+            self.platformer_running = True
+
+    def draw_platformer_elements(self):
         self.player_group.draw(self.screen)
 
-    def update_elements(self):
-        self.player_group.update()
-        self.level.update()
+    def update_platformer_elements(self):
         self.dashboard.update()
+        self.player_group.update()
+        self.platformer.update()
 
-    def game_win(self):
+    def platformer_check_win(self):
         if self.player.sleigh_completed:
-            print('game won')
+            self.platformer_running = False
+            self.xmas_letter_running = True
+
+    def draw_xmas_letter_elements(self):
+        self.xmas_letter.draw()
+
+    def update_xmas_letter_elements(self):
+        self.dashboard.update()
+        self.xmas_letter.update()
 
     def game_over(self):
         return not self.dashboard.game_over
@@ -68,36 +91,45 @@ class Game:
         self.running = True
         self.game_over_scene_active = False
         self.dashboard.reset()
-        self.level.reset()
+        self.platformer.reset()
         self.player.reset()
 
-    def change_res(self):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_f]:
-            scale = 2
-            self.window.size = (WIDTH * scale, HEIGHT * scale)
-        elif keys[pygame.K_d]:
-            scale = 4
-            self.window.size = (WIDTH * scale, HEIGHT * scale)
+        self.platformer_running = False
+        self.xmas_letter_running = False
+        self.gift_rain_running = False
+        self.gift_delivery_running = False
+        self.main_menu_running = True
 
     def run(self):
         while True:
             self.screen.fill(BLACK)
             self.renderer.clear()
-
             pygame.key.set_repeat(FPS)
 
             can_climb, climbed_down, middle_of_ladder = self.player.check_climb()
 
             for event in pygame.event.get():
                 self.handle_game_events(event)
-                self.player.controls(event, can_climb, climbed_down, middle_of_ladder)
+
+                if self.main_menu_running:
+                    self.handle_main_menu_events(event)
+
+                if self.platformer_running:
+                    self.player.controls(event, can_climb, climbed_down, middle_of_ladder)
 
             if self.running:
-                self.update_elements()
-                self.draw_elements()
-                self.change_res()
-                self.game_win()
+                if self.main_menu_running:
+                    self.main_menu_scene.show()
+                    self.main_menu_scene.change_res()
+
+                if self.platformer_running:
+                    self.update_platformer_elements()
+                    self.draw_platformer_elements()
+                    self.platformer_check_win()
+
+                if self.xmas_letter_running:
+                    self.update_xmas_letter_elements()
+                    self.draw_xmas_letter_elements()
 
                 self.running = self.game_over()
             else:
