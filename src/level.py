@@ -3,7 +3,7 @@ import pygame
 from src.sprites import CollisionObject, Decoration, AnimatedDecoration, Snowflake, Sleigh
 
 
-class Level:
+class Platformer:
     def __init__(self, screen):
 
         # General setup
@@ -248,52 +248,7 @@ class Level:
                     rects.append(pygame.Rect(x_pos, y_pos, self.tile_width, self.tile_height))
         return rects
 
-    # def create_sleigh(self):
-    #     # refactor rooms to have a floor tile designated to spawn sleigh
-    #
-    #     if not self.sleigh_in_inventory:
-    #
-    #         if len(self.completed_sleigh_pieces) == 0:
-    #             platform_rects = self.get_platform_rects(self.rooms[self.random_room])
-    #
-    #             available_platforms = [rect for rect in platform_rects]
-    #             random_platform_rect = random.choice(available_platforms)
-    #             pos = [random_platform_rect.topleft[0], random_platform_rect.topleft[1]]
-    #             Sleigh(pos[0], pos[1], self.screen, self.images[33][0], self.sleigh_group)
-    #
-    #         if len(self.completed_sleigh_pieces) == 1:
-    #             self.random_room = self.get_random_room()
-    #             platform_rects = self.get_platform_rects(self.rooms[self.random_room])
-    #
-    #             available_platforms = [rect for rect in platform_rects]
-    #             random_platform_rect = random.choice(available_platforms)
-    #             pos = [random_platform_rect.topleft[0], random_platform_rect.topleft[1]]
-    #             Sleigh(pos[0], pos[1], self.screen, self.images[33][1], self.sleigh_group)
-    #
-    #         if len(self.completed_sleigh_pieces) == 2:
-    #             self.random_room = self.get_random_room()
-    #             platform_rects = self.get_platform_rects(self.rooms[self.random_room])
-    #
-    #             available_platforms = [rect for rect in platform_rects]
-    #             random_platform_rect = random.choice(available_platforms)
-    #             pos = [random_platform_rect.topleft[0], random_platform_rect.topleft[1]]
-    #             Sleigh(pos[0], pos[1], self.screen, self.images[33][2], self.sleigh_group)
-    #
-    #         if len(self.completed_sleigh_pieces) == 3:
-    #             self.random_room = self.get_random_room()
-    #             platform_rects = self.get_platform_rects(self.rooms[self.random_room])
-    #
-    #             available_platforms = [rect for rect in platform_rects]
-    #             random_platform_rect = random.choice(available_platforms)
-    #             pos = [random_platform_rect.topleft[0], random_platform_rect.topleft[1]]
-    #             Sleigh(pos[0], pos[1], self.screen, self.images[33][3], self.sleigh_group)
-    #
-    #     else:
-    #         self.sleigh_group.empty()
-
     def create_sleigh(self):
-        # refactor rooms to have a floor tile designated to spawn sleigh
-
         if not self.sleigh_in_inventory:
 
             # get a random room and platform
@@ -324,10 +279,8 @@ class Level:
     def reset(self):
         self.current_room = self.rooms['room_0_2']
         self.redraw_room()
-        self.random_room = self.get_random_room()
         self.sleigh_in_inventory = False
         self.completed_sleigh_pieces = []
-        self.create_sleigh()
 
     def update(self):
         self.draw_snow()
@@ -343,3 +296,19 @@ class Level:
         print(self.random_room)
 
 
+class XmasLetter:
+    def __init__(self, screen):
+
+        self.screen = screen
+        self.image = pygame.Surface((20, 20))
+        pygame.draw.circle(self.image, 'blue', (self.image.get_width() // 2, self.image.get_height() // 2), 10)
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (30, 30)
+
+    def draw(self):
+        self.screen.blit(self.image, self.rect)
+        pygame.draw.rect(self.screen, 'red', self.rect, 1)
+
+
+    def update(self):
+        self.rect.x += 1
