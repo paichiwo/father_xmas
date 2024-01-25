@@ -4,14 +4,14 @@ from src.sprites import Sleigh
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x_pos, y_pos, screen, level, group):
+    def __init__(self, x_pos, y_pos, screen, platformer, group):
         super().__init__(group)
 
         # General setup
         self.x_pos = x_pos
         self.y_pos = y_pos
         self.screen = screen
-        self.level = level
+        self.platformer = platformer
 
         # Image & Rect
         self.frames = {
@@ -53,8 +53,8 @@ class Player(pygame.sprite.Sprite):
         self.image = self.frames[self.status][int(self.frame_index)]
 
     def check_landed(self):
-        for i in range(len(self.level.platforms_group)):
-            for platform in self.level.platforms_group:
+        for i in range(len(self.platformer.platforms_group)):
+            for platform in self.platformer.platforms_group:
                 if self.bottom.colliderect(platform.rect):
                     self.landed = True
                     if not self.climbing:
@@ -73,7 +73,7 @@ class Player(pygame.sprite.Sprite):
         # pygame.draw.rect(self.screen, 'yellow', under)
         offset = 3
 
-        for ladder in self.level.ladders_group:
+        for ladder in self.platformer.ladders_group:
             if self.rect.colliderect(ladder.rect) and not can_climb:
                 can_climb = True
                 ladder_middle_x = ladder.rect.centerx
@@ -93,7 +93,7 @@ class Player(pygame.sprite.Sprite):
         return can_climb, climb_down, middle_of_ladder
 
     def check_wall_collision(self):
-        for wall in self.level.walls_with_collision_group:
+        for wall in self.platformer.walls_with_collision_group:
 
             if self.x_change > 0:
                 player_hitbox = pygame.Rect(self.rect[0]+2, self.rect[1], self.rect[2], self.rect[3])
@@ -112,127 +112,127 @@ class Player(pygame.sprite.Sprite):
     def move_between_rooms(self):
 
         # room 0_0
-        if self.level.current_room == self.level.rooms['room_0_0']:
+        if self.platformer.current_room == self.platformer.rooms['room_0_0']:
 
             # move right
             if self.rect.right > WIDTH+5:
-                self.level.current_room = self.level.rooms['room_0_1']
+                self.platformer.current_room = self.platformer.rooms['room_0_1']
                 self.rect.x = 0
                 self.update_room()
 
             # move down
             if self.rect.bottom > 144:
-                self.level.current_room = self.level.rooms['room_1_0']
+                self.platformer.current_room = self.platformer.rooms['room_1_0']
                 self.rect.midtop = (self.rect.midbottom[0], -5)
                 self.update_room()
 
         # room 0_1
-        elif self.level.current_room == self.level.rooms['room_0_1']:
+        elif self.platformer.current_room == self.platformer.rooms['room_0_1']:
 
             # move left
             if self.rect.left < 0:
-                self.level.current_room = self.level.rooms['room_0_0']
+                self.platformer.current_room = self.platformer.rooms['room_0_0']
                 self.rect.x = WIDTH - self.rect.width
                 self.update_room()
 
             # move right
             if self.rect.right > WIDTH+5:
-                self.level.current_room = self.level.rooms['room_0_2']
+                self.platformer.current_room = self.platformer.rooms['room_0_2']
                 self.rect.x = 0
                 self.update_room()
 
             # move down
             if self.rect.bottom > 144:
-                self.level.current_room = self.level.rooms['room_1_1']
+                self.platformer.current_room = self.platformer.rooms['room_1_1']
                 self.rect.midtop = (self.rect.midbottom[0], -5)
                 self.update_room()
 
         # room 0_2
-        elif self.level.current_room == self.level.rooms['room_0_2']:
+        elif self.platformer.current_room == self.platformer.rooms['room_0_2']:
 
             # move left
             if self.rect.left < 0:
-                self.level.current_room = self.level.rooms['room_0_1']
+                self.platformer.current_room = self.platformer.rooms['room_0_1']
                 self.rect.x = WIDTH - self.rect.width
                 self.update_room()
 
         # room 1_0
-        elif self.level.current_room == self.level.rooms['room_1_0']:
+        elif self.platformer.current_room == self.platformer.rooms['room_1_0']:
 
             # move right
             if self.rect.right > WIDTH+5:
-                self.level.current_room = self.level.rooms['room_1_1']
+                self.platformer.current_room = self.platformer.rooms['room_1_1']
                 self.rect.x = 0
                 self.update_room()
 
             # move up
             if self.rect.top < -5:
-                self.level.current_room = self.level.rooms['room_0_0']
+                self.platformer.current_room = self.platformer.rooms['room_0_0']
                 self.rect.midbottom = (self.rect.midbottom[0], 144)
                 self.update_room()
 
         # room 1_1
-        elif self.level.current_room == self.level.rooms['room_1_1']:
+        elif self.platformer.current_room == self.platformer.rooms['room_1_1']:
 
             # move left
             if self.rect.left < 0:
-                self.level.current_room = self.level.rooms['room_1_0']
+                self.platformer.current_room = self.platformer.rooms['room_1_0']
                 self.rect.x = WIDTH - self.rect.width
                 self.update_room()
 
             # move right
             if self.rect.right > WIDTH:
-                self.level.current_room = self.level.rooms['room_1_2']
+                self.platformer.current_room = self.platformer.rooms['room_1_2']
                 self.rect.x = 0
                 self.update_room()
 
             # move up
             if self.rect.top < -5:
-                self.level.current_room = self.level.rooms['room_0_1']
+                self.platformer.current_room = self.platformer.rooms['room_0_1']
                 self.rect.midbottom = (self.rect.midbottom[0], 144)
                 self.update_room()
 
         # room 1_2
-        elif self.level.current_room == self.level.rooms['room_1_2']:
+        elif self.platformer.current_room == self.platformer.rooms['room_1_2']:
 
             # move left
             if self.rect.left < 0:
-                self.level.current_room = self.level.rooms['room_1_1']
+                self.platformer.current_room = self.platformer.rooms['room_1_1']
                 self.rect.x = WIDTH - self.rect.width
                 self.update_room()
 
     def update_room(self):
-        self.level.redraw_room()
+        self.platformer.redraw_room()
 
     def check_sleigh_collision(self):
-        if self.level.current_room == self.level.rooms[self.level.random_room]:
-            for sleigh in self.level.sleigh_group:
+        if self.platformer.current_room == self.platformer.rooms[self.platformer.random_room]:
+            for sleigh in self.platformer.sleigh_group:
                 if self.rect.colliderect(sleigh.rect):
                     print('collide')
-                    self.level.sleigh_in_inventory = True
+                    self.platformer.sleigh_in_inventory = True
                     sleigh.kill()
 
     def leave_sleigh(self):
-        if self.level.current_room == self.level.rooms['room_1_2']:
-            if self.level.sleigh_in_inventory:
+        if self.platformer.current_room == self.platformer.rooms['room_1_2']:
+            if self.platformer.sleigh_in_inventory:
                 if self.rect.x == 100:
 
                     # get the position and image index based on the number of completed sleigh pieces
-                    pos = (112 - 16 * len(self.level.completed_sleigh_pieces), 128)
-                    image_index = len(self.level.completed_sleigh_pieces)
+                    pos = (112 - 16 * len(self.platformer.completed_sleigh_pieces), 128)
+                    image_index = len(self.platformer.completed_sleigh_pieces)
 
                     # create a sleigh object with the appropriate image
-                    Sleigh(pos[0], pos[1], self.screen, self.level.images[33][image_index],
-                           self.level.completed_sleigh_group)
+                    Sleigh(pos[0], pos[1], self.screen, self.platformer.images[33][image_index],
+                           self.platformer.completed_sleigh_group)
 
                     # update the sleigh status and create a new sleigh
-                    self.level.sleigh_in_inventory = False
-                    self.level.completed_sleigh_pieces.append(str(image_index + 1))
-                    self.level.sleigh_group.empty()
-                    self.level.create_sleigh()
+                    self.platformer.sleigh_in_inventory = False
+                    self.platformer.completed_sleigh_pieces.append(str(image_index + 1))
+                    self.platformer.sleigh_group.empty()
+                    self.platformer.create_sleigh()
 
                     # check if the sleigh is completed
-                    if len(self.level.completed_sleigh_pieces) == 4:
+                    if len(self.platformer.completed_sleigh_pieces) == 4:
                         self.sleigh_completed = True
 
     def controls(self, event, can_climb, climbed_down, middle_of_ladder):
@@ -299,7 +299,6 @@ class Player(pygame.sprite.Sprite):
         self.animate()
         self.move()
         self.move_between_rooms()
-
         self.check_sleigh_collision()
         self.leave_sleigh()
 

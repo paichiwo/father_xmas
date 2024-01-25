@@ -88,4 +88,3 @@ class Sleigh(pygame.sprite.Sprite):
 
     def update(self):
         self.screen.blit(self.image, self.rect)
-
