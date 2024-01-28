@@ -54,11 +54,10 @@ class Game:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
                 self.reset_game()
 
-    def handle_main_menu_events(self, event):
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
-            self.reset_game()
+    def check_game_start(self):
+        self.platformer_running = self.main_menu_scene.start_game
+        if self.platformer_running:
             self.main_menu_running = False
-            self.platformer_running = True
 
     def draw_platformer_elements(self):
         self.player_group.draw(self.screen)
@@ -104,7 +103,7 @@ class Game:
         while True:
             self.screen.fill(BLACK)
             self.renderer.clear()
-            pygame.key.set_repeat(FPS)
+            # pygame.key.set_repeat(FPS)
 
             can_climb, climbed_down, middle_of_ladder = self.player.check_climb()
 
@@ -112,15 +111,16 @@ class Game:
                 self.handle_game_events(event)
 
                 if self.main_menu_running:
-                    self.handle_main_menu_events(event)
+                    # self.handle_main_menu_events(event)
+                    self.main_menu_scene.handle_input(event)
 
                 if self.platformer_running:
                     self.player.controls(event, can_climb, climbed_down, middle_of_ladder)
 
             if self.running:
                 if self.main_menu_running:
-                    self.main_menu_scene.show()
-                    self.main_menu_scene.change_res()
+                    self.main_menu_scene.update()
+                    self.check_game_start()
 
                 if self.platformer_running:
                     self.update_platformer_elements()

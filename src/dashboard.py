@@ -1,5 +1,5 @@
 import pygame
-from src.config import WHITE
+from src.config import WHITE, FONT_8
 
 
 class Dashboard:
@@ -8,7 +8,6 @@ class Dashboard:
 
         # General setup
         self.screen = screen
-        self.font = pygame.font.Font('assets/font/C64_Pro_Mono-STYLE.ttf', size=8)
 
         # Background
         self.bg_img = pygame.image.load('assets/dashboard/dashboard.png').convert_alpha()
@@ -38,8 +37,8 @@ class Dashboard:
     def draw_score(self):
         """Display current score"""
 
-        score_text = self.font.render("SCORE", False, WHITE)
-        score_value = self.font.render("{:07}".format(self.score), False, WHITE)
+        score_text = FONT_8.render("SCORE", False, WHITE)
+        score_value = FONT_8.render("{:07}".format(self.score), False, WHITE)
         score_text_rect = score_text.get_rect()
         score_value_rect = score_value.get_rect()
 

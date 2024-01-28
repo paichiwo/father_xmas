@@ -1,51 +1,172 @@
 import pygame
-from src.config import WHITE, BLACK, WIDTH, HEIGHT
+from src.config import WHITE, BLACK, GREEN, WIDTH, HEIGHT, FONT_8
 
 
 class MainMenuScene:
     def __init__(self, screen, window):
 
+        # General setup
+        self.screen = screen
+        self.window = window
+        self.main_menu = True
+        self.start_game = False
+        self.options_menu = False
+        self.scores_screen = False
+        self.credits_screen = False
+
+        # Main menu
+        self.menu_items = ['START', 'OPTIONS', 'SCORES', 'CREDITS']
+        self.selected_option = 0
+
+        # Options
+        self.options = OptionsScene(self.screen, self.window)
+
+    def draw_menu(self):
+        if self.main_menu:
+            for idx, item in enumerate(self.menu_items):
+                color = GREEN if idx == self.selected_option else WHITE
+                text = FONT_8.render(item, True, color)
+                rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50 + idx * 10))
+                self.screen.blit(text, rect)
+
+        if self.options_menu:
+            self.options.draw()
+
+    def handle_input(self, event):
+        if self.main_menu:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    self.selected_option = (self.selected_option - 1) % len(self.menu_items)
+                elif event.key == pygame.K_DOWN:
+                    self.selected_option = (self.selected_option + 1) % len(self.menu_items)
+                elif event.key == pygame.K_RETURN:
+                    self.perform_action()
+
+        elif self.options_menu:
+            self.options.handle_input(event)
+            if self.options.finished:
+                self.options_menu = False
+                self.main_menu = True
+
+    def perform_action(self):
+        selected_item = self.menu_items[self.selected_option]
+        if selected_item == 'START':
+            self.start_game = True
+            self.main_menu = False
+            self.options_menu = False
+            self.scores_screen = False
+            self.credits_screen = False
+
+        elif selected_item == 'OPTIONS':
+            self.options_menu = True
+            self.main_menu = False
+            self.scores_screen = False
+            self.credits_screen = False
+
+        elif selected_item == 'SCORES':
+            self.scores_screen = True
+        elif selected_item == 'CREDITS':
+            self.credits_screen = True
+
+    def update(self):
+        self.draw_menu()
+
+
+class OptionsScene:
+    def __init__(self, screen, window):
+
+        # General setup
         self.screen = screen
         self.window = window
 
-        self.font = pygame.font.Font('assets/font/C64_Pro_Mono-STYLE.ttf', size=8)
+        # Options menu
+        self.menu_items = ['RESOLUTION', 'SOUND', 'ACCEPT']
+        self.current_option = 0
 
-    def show(self):
-        title_text = self.font.render("Official Father Christmas remake", True, WHITE)
-        start_game_text = self.font.render("Press 'S' to start", True, WHITE)
+        self.selecting_resolution = True
+        self.selecting_sound = False
+        self.selecting_accept = False
+        self.finished = False
 
-        title_text_rect = title_text.get_rect()
-        start_game_text_rect = start_game_text.get_rect()
+        # Options submenus
+        self.resolution_items = ['320x180', '640x320', '960x540', '1280x720']
+        self.scale = 3
+        self.current_chosen_scale = self.resolution_items[self.scale-1]
 
-        title_text_rect.center = (WIDTH // 2, HEIGHT // 2)
-        start_game_text_rect.center = (WIDTH // 2, HEIGHT // 2 + 10)
+    def draw(self):
+        # display options menu
+        for idx, item in enumerate(self.menu_items):
+            color = GREEN if idx == self.current_option else WHITE
+            text = FONT_8.render(item, True, color)
+            rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 70 + idx * 70))
+            self.screen.blit(text, rect)
 
-        self.screen.blit(title_text, title_text_rect)
-        self.screen.blit(start_game_text, start_game_text_rect)
+        # display resolution
+        text = FONT_8.render(self.current_chosen_scale, True, WHITE)
+        rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2-50))
+        self.screen.blit(text, rect)
 
-    def change_res(self):
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_f]:
-            scale = 2
-            self.window.size = (WIDTH * scale, HEIGHT * scale)
-        elif keys[pygame.K_d]:
-            scale = 4
-            self.window.size = (WIDTH * scale, HEIGHT * scale)
-        elif keys[pygame.K_g]:
-            scale = 3
-            self.window.size = (WIDTH * scale, HEIGHT * scale)
+    def handle_scaling_options(self):
+        # Scale window
+        if self.scale <= 0:
+            self.scale = 1
+        if self.scale >= 4:
+            self.scale = 4
+        self.current_chosen_scale = self.resolution_items[self.scale-1]
+        self.window.size = (WIDTH * self.scale, HEIGHT * self.scale)
+
+    def handle_input(self, event):
+        self.finished = False
+        if event.type == pygame.KEYDOWN:
+
+            if event.key == pygame.K_LEFT:
+                if self.selecting_resolution:
+                    self.scale -= 1
+                    self.handle_scaling_options()
+
+            elif event.key == pygame.K_RIGHT:
+                if self.selecting_resolution:
+                    self.scale += 1
+                    self.handle_scaling_options()
+
+            elif event.key == pygame.K_UP:
+                self.current_option = (self.current_option - 1) % len(self.menu_items)
+
+            elif event.key == pygame.K_DOWN:
+                self.current_option = (self.current_option + 1) % len(self.menu_items)
+
+            elif event.key == pygame.K_RETURN:
+                self.perform_action()
+                if self.selecting_accept:
+                    self.finished = True
+
+    def perform_action(self):
+        selected_item = self.menu_items[self.current_option]
+        if selected_item == 'RESOLUTION':
+            self.selecting_resolution = True
+            self.selecting_sound = False
+            self.selecting_accept = False
+
+        elif selected_item == 'SOUND':
+            self.selecting_resolution = False
+            self.selecting_sound = True
+            self.selecting_accept = False
+
+        elif selected_item == 'ACCEPT':
+            self.selecting_resolution = False
+            self.selecting_sound = False
+            self.selecting_accept = True
+
 
 class GameOverScene:
     def __init__(self, screen):
-
         self.screen = screen
-        self.font = pygame.font.Font('assets/font/C64_Pro_Mono-STYLE.ttf', size=8)
 
     def show(self):
         self.screen.fill(BLACK)
 
-        game_over_text = self.font.render("GAME OVER", True, WHITE)
-        restart_text = self.font.render("Press 'R' TO RESTART", True, WHITE)
+        game_over_text = FONT_8.render("GAME OVER", True, WHITE)
+        restart_text = FONT_8.render("Press 'R' TO RESTART", True, WHITE)
 
         game_over_rect = game_over_text.get_rect()
         restart_rect = restart_text.get_rect()

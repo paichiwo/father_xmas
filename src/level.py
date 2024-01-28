@@ -53,7 +53,6 @@ class Platformer:
             25: pygame.image.load(img_path + 'floor/floor_snow.png').convert_alpha(),
             26: [pygame.image.load(img_path + f'decor/fire_place_{i}.png').convert_alpha() for i in range(1, 5)],
             27: pygame.image.load(img_path + 'decor/stool.png').convert_alpha(),
-
             28: pygame.image.load(img_path + 'decor/bookcase.png').convert_alpha(),
             29: pygame.image.load(img_path + 'decor/plant.png').convert_alpha(),
             30: pygame.image.load(img_path + 'sleigh/raindeer.png').convert_alpha(),
