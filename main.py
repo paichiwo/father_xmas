@@ -103,7 +103,7 @@ class Game:
         while True:
             self.screen.fill(BLACK)
             self.renderer.clear()
-            # pygame.key.set_repeat(FPS)
+            pygame.key.set_repeat(FPS * 4)
 
             can_climb, climbed_down, middle_of_ladder = self.player.check_climb()
 
@@ -111,7 +111,6 @@ class Game:
                 self.handle_game_events(event)
 
                 if self.main_menu_running:
-                    # self.handle_main_menu_events(event)
                     self.main_menu_scene.handle_input(event)
 
                 if self.platformer_running:
