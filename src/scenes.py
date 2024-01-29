@@ -93,6 +93,9 @@ class OptionsScene:
         self.scale = 3
         self.current_chosen_scale = self.resolution_items[self.scale-1]
 
+        self.sound_volume = 100
+        self.sound_slider_rect = pygame.Rect(WIDTH // 2-50, HEIGHT // 2 + 10, 100, 10)
+
     def draw(self):
         # display options menu
         for idx, item in enumerate(self.menu_items):
@@ -106,14 +109,19 @@ class OptionsScene:
         rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2-50))
         self.screen.blit(text, rect)
 
+        # display sound slider
+        pygame.draw.rect(self.screen, WHITE, self.sound_slider_rect)
+        full_rect = pygame.Rect(WIDTH // 2 - 50, HEIGHT // 2 + 10, 100, 10)
+        pygame.draw.rect(self.screen, GREEN, full_rect, 1)
+
     def handle_scaling_options(self):
-        # Scale window
-        if self.scale <= 0:
-            self.scale = 1
-        if self.scale >= 4:
-            self.scale = 4
+        self.scale = min(max(self.scale, 1), 4)
         self.current_chosen_scale = self.resolution_items[self.scale-1]
         self.window.size = (WIDTH * self.scale, HEIGHT * self.scale)
+
+    def handle_sound_options(self):
+        self.sound_volume = min(max(self.sound_volume, 0), 100)
+        self.sound_slider_rect = pygame.Rect(WIDTH // 2-50, HEIGHT // 2 + 10, self.sound_volume-1, 10)
 
     def handle_input(self, event):
         self.finished = False
@@ -123,11 +131,17 @@ class OptionsScene:
                 if self.selecting_resolution:
                     self.scale -= 1
                     self.handle_scaling_options()
+                if self.selecting_sound:
+                    self.sound_volume -= 1
+                    self.handle_sound_options()
 
             elif event.key == pygame.K_RIGHT:
                 if self.selecting_resolution:
                     self.scale += 1
                     self.handle_scaling_options()
+                if self.selecting_sound:
+                    self.sound_volume += 1
+                    self.handle_sound_options()
 
             elif event.key == pygame.K_UP:
                 self.current_option = (self.current_option - 1) % len(self.menu_items)
@@ -136,9 +150,10 @@ class OptionsScene:
                 self.current_option = (self.current_option + 1) % len(self.menu_items)
 
             elif event.key == pygame.K_RETURN:
-                self.perform_action()
                 if self.selecting_accept:
                     self.finished = True
+        self.perform_action()
+        print(self.sound_volume)
 
     def perform_action(self):
         selected_item = self.menu_items[self.current_option]
@@ -163,7 +178,6 @@ class GameOverScene:
         self.screen = screen
 
     def show(self):
-        self.screen.fill(BLACK)
 
         game_over_text = FONT_8.render("GAME OVER", True, WHITE)
         restart_text = FONT_8.render("Press 'R' TO RESTART", True, WHITE)
