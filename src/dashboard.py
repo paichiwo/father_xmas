@@ -19,7 +19,7 @@ class Dashboard:
 
         # Timer animation variables
         self.timer_start_time = pygame.time.get_ticks()
-        self.timer_duration = 15 * 60 * 1000  # * 1000 = 15 mins
+        self.timer_duration = 15 * 60 * 10  # * 1000 = 15 mins
 
         # Score
         self.score = 0

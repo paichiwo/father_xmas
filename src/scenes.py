@@ -68,6 +68,10 @@ class MainMenuScene:
         elif selected_item == 'CREDITS':
             self.credits_screen = True
 
+    def reset(self):
+        self.start_game = False
+        self.main_menu = True
+
     def update(self):
         self.draw_menu()
 

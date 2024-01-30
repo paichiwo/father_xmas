@@ -1,7 +1,7 @@
 import sys
 import pygame
 import pygame._sdl2 as sdl2
-from src.config import *
+from src.config import WIDTH, HEIGHT, SCALE, BLACK, FPS
 from src.level import Platformer, XmasLetter
 from src.player import Player
 from src.dashboard import Dashboard
@@ -58,6 +58,7 @@ class Game:
         self.platformer_running = self.main_menu_scene.start_game
         if self.platformer_running:
             self.main_menu_running = False
+            self.dashboard.timer_start_time = pygame.time.get_ticks()
 
     def draw_platformer_elements(self):
         self.player_group.draw(self.screen)
@@ -89,9 +90,10 @@ class Game:
     def reset_game(self):
         self.running = True
         self.game_over_scene_active = False
-        self.dashboard.reset()
         self.platformer.reset()
         self.player.reset()
+        self.dashboard.reset()
+        self.main_menu_scene.reset()
 
         self.platformer_running = False
         self.xmas_letter_running = False
@@ -103,7 +105,6 @@ class Game:
         while True:
             self.screen.fill(BLACK)
             self.renderer.clear()
-            pygame.key.set_repeat(FPS * 4)
 
             can_climb, climbed_down, middle_of_ladder = self.player.check_climb()
 
@@ -133,6 +134,7 @@ class Game:
                 self.running = self.game_over()
             else:
                 self.game_over_scene_active = True
+                self.platformer_running = False
                 self.show_game_over_screen()
 
             self.clock.tick(FPS)
