@@ -1,6 +1,7 @@
 import random
 import pygame
 from src.sprites import CollisionObject, Decoration, AnimatedDecoration, Snowflake, Sleigh
+from src.enemy import Enemy
 
 
 class Platformer:
@@ -11,6 +12,9 @@ class Platformer:
         self.tile_width = 16
         self.tile_height = 16
 
+        self.sleigh_in_inventory = False
+        self.completed_sleigh_pieces = []
+
         self.snowflakes = []
 
         # Create groups
@@ -20,6 +24,7 @@ class Platformer:
         self.decorations_group = pygame.sprite.Group()
         self.sleigh_group = pygame.sprite.Group()
         self.completed_sleigh_group = pygame.sprite.Group()
+        self.enemy_group = pygame.sprite.Group()
 
         # level_images
         img_path = 'assets/level/'
@@ -60,8 +65,6 @@ class Platformer:
             32: pygame.image.load(img_path + 'decor/xmas_tree.png').convert_alpha(),
             33: [pygame.image.load(img_path + f'sleigh/sleigh_{i}.png').convert_alpha() for i in range(1, 5)]
         }
-
-        # Refactor images (got rid of the empty block)
 
         # Rooms setup
         self.rooms = {
@@ -138,16 +141,25 @@ class Platformer:
             ]
         }
 
-        self.current_room = self.rooms['room_0_2']
+        # Enemy setup
+        self.enemy_spawn_positions = {
+            'room_0_0': [(20, 112, 1, 'walk_right')],
+            'room_0_1': [(-20, 112, 1, 'walk_right'), (340, 112, -1, 'walk_left')],
+            'room_0_2': [(-20, 112, 1, 'walk_right')],
+            'room_1_0': [(340, 128, -1, 'walk_left'), (340, 64, -1, 'walk_left')],
+            'room_1_1': [(-20, 128, 1, 'walk_right'), (-20, 64, 1, 'walk_right')],
+            'room_1_2': [(-20, 128, 1, 'walk_right'), (300, 128, -1, 'walk_left')],
+        }
 
+        # Rooms setup
+        self.current_room = self.rooms['room_0_2']
         self.rooms_list = ['room_0_0', 'room_0_1', 'room_0_2', 'room_1_0', 'room_1_1']
         self.random_room = self.get_random_room()
-        self.sleigh_in_inventory = False
-        self.completed_sleigh_pieces = []
         self.create_sleigh()
 
         # Populate the level with elements based on the current room layout
         self.populate_room()
+        self.create_enemies()
 
     def populate_room(self):
         self.create_platforms(self.current_room)
@@ -162,10 +174,13 @@ class Platformer:
         self.ladders_group.empty()
         self.walls_with_collision_group.empty()
         self.decorations_group.empty()
+        self.enemy_group.empty()
 
     def redraw_room(self):
         self.clear_room()
+        self.enemy_group.empty()
         self.populate_room()
+        self.create_enemies()
 
     def create_elements(self, room_layout, valid_ids, element_type, group):
         elements = []
@@ -250,16 +265,13 @@ class Platformer:
     def create_sleigh(self):
         if not self.sleigh_in_inventory:
 
-            # get a random room and platform
             self.random_room = self.get_random_room()
             platform_rects = self.get_platform_rects(self.rooms[self.random_room])
             random_platform_rect = random.choice(platform_rects)
 
-            # get the position and image index based on the number of completed sleigh pieces
             pos = random_platform_rect.topleft
             image_index = len(self.completed_sleigh_pieces)
 
-            # create a sleigh object with the appropriate image only if image_index is valid
             if image_index < 4:
                 Sleigh(pos[0], pos[1], self.screen, self.images[33][image_index], self.sleigh_group)
 
@@ -275,6 +287,22 @@ class Platformer:
         if self.current_room == self.rooms['room_1_2']:
             self.completed_sleigh_group.update()
 
+    def get_current_room(self):
+        for key, value in self.rooms.items():
+            if self.current_room == value:
+                return key
+
+    def create_enemies(self):
+        print(self.get_current_room())
+        enemy_spawn_data = random.choice(self.enemy_spawn_positions[self.get_current_room()])
+        Enemy(x_pos=enemy_spawn_data[0],
+              y_pos=enemy_spawn_data[1],
+              x_change=enemy_spawn_data[2],
+              status=enemy_spawn_data[3],
+              platformer=self,
+              screen=self.screen,
+              group=self.enemy_group)
+
     def reset(self):
         self.current_room = self.rooms['room_0_2']
         self.redraw_room()
@@ -289,10 +317,12 @@ class Platformer:
         self.decorations_group.draw(self.screen)
         self.decorations_group.update()
         self.sleigh_update()
+        self.enemy_group.draw(self.screen)
+        self.enemy_group.update()
 
         # for sleigh in self.sleigh_group:
         #     pygame.draw.rect(self.screen, 'red', sleigh.rect, 1)
-        print(self.random_room)
+        # print(self.random_room)
 
 
 class XmasLetter:
@@ -307,7 +337,6 @@ class XmasLetter:
     def draw(self):
         self.screen.blit(self.image, self.rect)
         pygame.draw.rect(self.screen, 'red', self.rect, 1)
-
 
     def update(self):
         self.rect.x += 1
