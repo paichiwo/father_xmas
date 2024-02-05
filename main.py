@@ -4,6 +4,7 @@ import pygame._sdl2 as sdl2
 from src.config import WIDTH, HEIGHT, SCALE, BLACK, FPS
 from src.level import Platformer, XmasLetter
 from src.player import Player
+from src.enemy import Enemy
 from src.dashboard import Dashboard
 from src.scenes import MainMenuScene, GameOverScene
 
@@ -13,7 +14,6 @@ class Game:
 
         # Game setup
         pygame.init()
-        pygame.display.set_caption('Father Xmas')
         self.clock = pygame.time.Clock()
 
         # Scaled window setup
@@ -37,6 +37,7 @@ class Game:
 
         # Sprite groups
         self.player_group = pygame.sprite.GroupSingle()
+        self.enemy_group = pygame.sprite.Group()
 
         # Game objects
         self.main_menu_scene = MainMenuScene(self.screen, self.window)
@@ -45,6 +46,7 @@ class Game:
         self.xmas_letter = XmasLetter(self.screen)
         self.game_over_scene = GameOverScene(self.screen)
         self.player = Player(100, 112, self.screen, self.platformer, self.player_group)
+        self.enemy = Enemy(self.screen, self.platformer, self.enemy_group)
 
     def handle_game_events(self, event):
         if event.type == pygame.QUIT:
@@ -62,10 +64,12 @@ class Game:
 
     def draw_platformer_elements(self):
         self.player_group.draw(self.screen)
+        self.enemy_group.draw(self.screen)
 
     def update_platformer_elements(self):
         self.dashboard.update()
         self.player_group.update()
+        self.enemy_group.update()
         self.platformer.update()
 
     def platformer_check_win(self):
@@ -123,11 +127,13 @@ class Game:
                     self.check_game_start()
 
                 if self.platformer_running:
+                    pygame.key.set_repeat(FPS)
                     self.update_platformer_elements()
                     self.draw_platformer_elements()
                     self.platformer_check_win()
 
                 if self.xmas_letter_running:
+                    pygame.key.set_repeat(FPS)
                     self.update_xmas_letter_elements()
                     self.draw_xmas_letter_elements()
 

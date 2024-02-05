@@ -1,5 +1,5 @@
 import pygame
-from src.config import WHITE, BLACK, GREEN, WIDTH, HEIGHT, FONT_8
+from src.config import WHITE, GREEN, WIDTH, HEIGHT, FONT_8
 
 
 class MainMenuScene:
@@ -8,8 +8,10 @@ class MainMenuScene:
         # General setup
         self.screen = screen
         self.window = window
-        self.main_menu = True
+
         self.start_game = False
+
+        self.main_menu = True
         self.options_menu = False
         self.scores_screen = False
         self.credits_screen = False
@@ -156,12 +158,14 @@ class OptionsScene:
             elif event.key == pygame.K_RETURN:
                 if self.selecting_accept:
                     self.finished = True
+
         self.perform_action()
         print(self.sound_volume)
 
     def perform_action(self):
         selected_item = self.menu_items[self.current_option]
         if selected_item == 'RESOLUTION':
+            pygame.key.set_repeat()
             self.selecting_resolution = True
             self.selecting_sound = False
             self.selecting_accept = False
