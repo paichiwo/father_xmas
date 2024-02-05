@@ -33,8 +33,9 @@ class Enemy(pygame.sprite.Sprite):
         self.y_change = 0
         self.speed = 1
 
-        # create spawning position for each room
-        # create probability to go left or right
+        self.direction_change_timer = random.randint(2000, 5000)  # Initial timer duration
+        self.last_direction_change_time = pygame.time.get_ticks()
+
         # create functionality what happens when off-screen
         # create player response when collided with player (flash player, steal a sleigh piece)
 
@@ -64,18 +65,13 @@ class Enemy(pygame.sprite.Sprite):
             # pygame.draw.rect(self.screen, 'red', player_hitbox)
 
     def move(self):
-        if self.platformer.enemy_spawn_position[0] <= 20:
-            self.rect.x += self.x_change
-        else:
-            self.rect.x += -self.x_change
+        self.rect.x += self.x_change
 
     def move_off_screen(self):
         if self.rect.left < -16:
             self.x_change = 1
-            self.rect.x += self.x_change
         elif self.rect.right > 360:
             self.x_change = -1
-            self.rect.x += self.x_change
 
     def set_status(self):
         if self.x_change > 0:
@@ -83,12 +79,23 @@ class Enemy(pygame.sprite.Sprite):
         else:
             self.status = 'walk_left'
 
+    def update_direction_change_timer(self):
+        current_time = pygame.time.get_ticks()
+        elapsed_time = current_time - self.last_direction_change_time
+
+        if elapsed_time >= self.direction_change_timer:
+            self.x_change *= -1
+
+            self.last_direction_change_time = current_time
+            self.direction_change_timer = random.randint(2000, 5000)
+
     def update(self):
         self.animate()
         self.check_wall_collision()
         self.move()
         self.move_off_screen()
         self.set_status()
+        self.update_direction_change_timer()
         print(self.status)
         print(self.x_change)
 

@@ -143,11 +143,11 @@ class Platformer:
 
         # Enemy setup
         self.enemy_spawn_positions = {
-            'room_0_0': [(20, 112, 1, 'walk_right')],
+            'room_0_0': [(20, 112, 1, 'walk_right'), (340, 112, -1, 'walk_left')],
             'room_0_1': [(-20, 112, 1, 'walk_right'), (340, 112, -1, 'walk_left')],
             'room_0_2': [(-20, 112, 1, 'walk_right')],
-            'room_1_0': [(340, 128, -1, 'walk_left'), (340, 64, -1, 'walk_left')],
-            'room_1_1': [(-20, 128, 1, 'walk_right'), (-20, 64, 1, 'walk_right')],
+            'room_1_0': [(20, 128, 1, 'walk_right'), (20, 64, 1, 'walk_right'), (340, 128, -1, 'walk_left'), (340, 64, -1, 'walk_left')],
+            'room_1_1': [(-20, 128, 1, 'walk_right'), (-20, 64, 1, 'walk_right'), (340, 128, -1, 'walk_left')],
             'room_1_2': [(-20, 128, 1, 'walk_right'), (300, 128, -1, 'walk_left')],
         }
 
