@@ -31,10 +31,13 @@ class Enemy(pygame.sprite.Sprite):
 
         # Movement attributes
         self.y_change = 0
-        self.speed = 1
 
         self.direction_change_timer = random.randint(2000, 5000)  # Initial timer duration
         self.last_direction_change_time = pygame.time.get_ticks()
+
+        self.off_screen_timer = random.randint(2000, 5000)  # Initial off-screen timer duration
+        self.last_off_screen_time = pygame.time.get_ticks()
+        self.off_screen = False
 
         # create functionality what happens when off-screen
         # create player response when collided with player (flash player, steal a sleigh piece)
@@ -53,13 +56,13 @@ class Enemy(pygame.sprite.Sprite):
         for wall in self.platformer.walls_with_collision_group:
 
             if self.x_change > 0:
-                player_hitbox = pygame.Rect(self.rect[0]+2, self.rect[1], self.rect[2], self.rect[3])
-                if player_hitbox.colliderect(wall.rect):
+                enemy_hitbox = pygame.Rect(self.rect[0]+2, self.rect[1], self.rect[2], self.rect[3])
+                if enemy_hitbox.colliderect(wall.rect):
                     self.x_change = -1
 
             elif self.x_change < 0:
-                player_hitbox = pygame.Rect(self.rect[0]-2, self.rect[1], self.rect[2], self.rect[3])
-                if player_hitbox.colliderect(wall.rect):
+                enemy_hitbox = pygame.Rect(self.rect[0]-2, self.rect[1], self.rect[2], self.rect[3])
+                if enemy_hitbox.colliderect(wall.rect):
                     self.x_change = 1
 
             # pygame.draw.rect(self.screen, 'red', player_hitbox)
@@ -68,10 +71,29 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.x += self.x_change
 
     def move_off_screen(self):
-        if self.rect.left < -16:
-            self.x_change = 1
-        elif self.rect.right > 360:
-            self.x_change = -1
+
+        if self.rect.left < -16 or self.rect.right > 320:
+            if not self.off_screen:
+                self.off_screen = True
+                self.last_off_screen_time = pygame.time.get_ticks()
+
+            current_time = pygame.time.get_ticks()
+            elapsed_time = current_time - self.last_off_screen_time
+
+            if elapsed_time >= self.off_screen_timer:
+                self.off_screen = False
+                self.last_off_screen_time = current_time
+                self.off_screen_timer = random.randint(3000, 9000)
+
+                if self.rect.left < -16:
+                    self.x_change = 1
+                elif self.rect.right > 360:
+                    self.x_change = -1
+
+                self.rect.x += self.x_change
+        else:
+            self.off_screen = False
+        print(self.off_screen)
 
     def set_status(self):
         if self.x_change > 0:
@@ -96,6 +118,5 @@ class Enemy(pygame.sprite.Sprite):
         self.move_off_screen()
         self.set_status()
         self.update_direction_change_timer()
-        print(self.status)
-        print(self.x_change)
-
+        # print(self.status)
+        # print(self.x_change)

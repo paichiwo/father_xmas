@@ -143,12 +143,12 @@ class Platformer:
 
         # Enemy setup
         self.enemy_spawn_positions = {
-            'room_0_0': [(20, 112, 1, 'walk_right'), (340, 112, -1, 'walk_left')],
-            'room_0_1': [(-20, 112, 1, 'walk_right'), (340, 112, -1, 'walk_left')],
-            'room_0_2': [(-20, 112, 1, 'walk_right')],
-            'room_1_0': [(20, 128, 1, 'walk_right'), (20, 64, 1, 'walk_right'), (340, 128, -1, 'walk_left'), (340, 64, -1, 'walk_left')],
-            'room_1_1': [(-20, 128, 1, 'walk_right'), (-20, 64, 1, 'walk_right'), (340, 128, -1, 'walk_left')],
-            'room_1_2': [(-20, 128, 1, 'walk_right'), (300, 128, -1, 'walk_left')],
+            'room_0_0': [(20, 112, 1, 'walk_right'), (360, 112, -1, 'walk_left')],
+            'room_0_1': [(-40, 112, 1, 'walk_right'), (360, 112, -1, 'walk_left')],
+            'room_0_2': [(-40, 112, 1, 'walk_right')],
+            'room_1_0': [(20, 128, 1, 'walk_right'), (20, 64, 1, 'walk_right'), (360, 128, -1, 'walk_left'), (360, 64, -1, 'walk_left')],
+            'room_1_1': [(-40, 128, 1, 'walk_right'), (-40, 64, 1, 'walk_right'), (360, 128, -1, 'walk_left')],
+            'room_1_2': [(-40, 128, 1, 'walk_right'), (300, 128, -1, 'walk_left')],
         }
 
         # Rooms setup
@@ -159,6 +159,9 @@ class Platformer:
 
         # Populate the level with elements based on the current room layout
         self.populate_room()
+
+        self.enemy_spawn_timer = 0
+        self.enemy_spawn_delay = random.randint(2000, 5000)
         self.create_enemies()
 
     def populate_room(self):
@@ -293,15 +296,18 @@ class Platformer:
                 return key
 
     def create_enemies(self):
-        print(self.get_current_room())
-        enemy_spawn_data = random.choice(self.enemy_spawn_positions[self.get_current_room()])
-        Enemy(x_pos=enemy_spawn_data[0],
-              y_pos=enemy_spawn_data[1],
-              x_change=enemy_spawn_data[2],
-              status=enemy_spawn_data[3],
-              platformer=self,
-              screen=self.screen,
-              group=self.enemy_group)
+        self.enemy_spawn_timer += pygame.time.get_ticks()
+        if self.enemy_spawn_timer >= self.enemy_spawn_delay:
+            enemy_spawn_data = random.choice(self.enemy_spawn_positions[self.get_current_room()])
+            Enemy(x_pos=enemy_spawn_data[0],
+                  y_pos=enemy_spawn_data[1],
+                  x_change=enemy_spawn_data[2],
+                  status=enemy_spawn_data[3],
+                  platformer=self,
+                  screen=self.screen,
+                  group=self.enemy_group)
+            self.enemy_spawn_timer = 0
+            self.enemy_spawn_delay = random.randint(2000, 5000)
 
     def reset(self):
         self.current_room = self.rooms['room_0_2']
