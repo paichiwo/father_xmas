@@ -143,12 +143,12 @@ class Platformer:
 
         # Enemy setup
         self.enemy_spawn_positions = {
-            'room_0_0': [(20, 112, 1, 'walk_right'), (360, 112, -1, 'walk_left')],
-            'room_0_1': [(-40, 112, 1, 'walk_right'), (360, 112, -1, 'walk_left')],
-            'room_0_2': [(-40, 112, 1, 'walk_right')],
-            'room_1_0': [(20, 128, 1, 'walk_right'), (20, 64, 1, 'walk_right'), (360, 128, -1, 'walk_left'), (360, 64, -1, 'walk_left')],
-            'room_1_1': [(-40, 128, 1, 'walk_right'), (-40, 64, 1, 'walk_right'), (360, 128, -1, 'walk_left')],
-            'room_1_2': [(-40, 128, 1, 'walk_right'), (300, 128, -1, 'walk_left')],
+            'room_0_0': [(20, 112, 1, 'walk_right', False), (360, 112, -1, 'walk_left', True)],
+            'room_0_1': [(-40, 112, 1, 'walk_right', True), (360, 112, -1, 'walk_left', True)],
+            'room_0_2': [(-40, 112, 1, 'walk_right', True)],
+            'room_1_0': [(20, 128, 1, 'walk_right', False), (20, 64, 1, 'walk_right', False), (360, 128, -1, 'walk_left', True), (360, 64, -1, 'walk_left', True)],
+            'room_1_1': [(-40, 128, 1, 'walk_right', True), (-40, 64, 1, 'walk_right', False), (360, 128, -1, 'walk_left', False)],
+            'room_1_2': [(-40, 128, 1, 'walk_right', True), (300, 128, -1, 'walk_left', False)],
         }
 
         # Rooms setup
@@ -303,6 +303,7 @@ class Platformer:
                   y_pos=enemy_spawn_data[1],
                   x_change=enemy_spawn_data[2],
                   status=enemy_spawn_data[3],
+                  off_screen=enemy_spawn_data[4],
                   platformer=self,
                   screen=self.screen,
                   group=self.enemy_group)

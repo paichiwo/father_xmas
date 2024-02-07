@@ -74,12 +74,15 @@ class Player(pygame.sprite.Sprite):
         offset = 3
 
         for ladder in self.platformer.ladders_group:
+
+            # going up
             if self.rect.colliderect(ladder.rect) and not can_climb:
                 can_climb = True
                 ladder_middle_x = ladder.rect.centerx
                 player_middle_x = under.centerx
                 middle_of_ladder = abs(player_middle_x - ladder_middle_x) <= offset
 
+            # going down
             if under.colliderect(ladder.rect):
                 climb_down = True
                 ladder_middle_x = ladder.rect.centerx
