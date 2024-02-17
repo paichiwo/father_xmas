@@ -211,7 +211,6 @@ class Player(pygame.sprite.Sprite):
         if self.platformer.current_room == self.platformer.rooms[self.platformer.random_room]:
             for sleigh in self.platformer.sleigh_group:
                 if self.rect.colliderect(sleigh.rect):
-                    print('collide')
                     self.platformer.sleigh_in_inventory = True
                     sleigh.kill()
 

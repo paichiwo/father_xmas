@@ -1,6 +1,8 @@
 import random
 import pygame
 
+from src.config import *
+
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x_pos, y_pos, x_change, status, off_screen, platformer, screen, group):
@@ -48,7 +50,6 @@ class Enemy(pygame.sprite.Sprite):
         # make enemy climb ladders:
         # find all possible ladders in the room
         # find if enemy is on the bottom or top of the ladder
-        # if climbing ladder makes enemy go off-screen - delete enemy
         # create player response when collided with player (flash player, steal a sleigh piece)
 
     def animate(self):
@@ -77,6 +78,9 @@ class Enemy(pygame.sprite.Sprite):
             # pygame.draw.rect(self.screen, 'red', player_hitbox)
 
     def check_climb(self):
+        self.climbing = False
+        self.climbing_down = False
+        
         under = pygame.rect.Rect((self.rect[0], self.rect[1] + self.rect.height),
                                  (self.rect[2], self.rect[3]))
         pygame.draw.rect(self.screen, 'yellow', under)
@@ -87,26 +91,24 @@ class Enemy(pygame.sprite.Sprite):
             enemy_middle_x = under.centerx
             middle_of_ladder = abs(enemy_middle_x - ladder_middle_x) <= offset
             if self.x_change > 0:
-                if self.rect.colliderect(ladder.rect) and self.random_number == 0 and middle_of_ladder:
+                if self.rect.colliderect(ladder.rect) and middle_of_ladder:
                     self.rect.centerx = ladder.rect.centerx
                     self.climbing = True
                     self.y_change = 1
 
-                if under.colliderect(ladder.rect) and self.random_number == 0 and middle_of_ladder:
+                if under.colliderect(ladder.rect) and middle_of_ladder:
                     self.climbing_down = True
                     self.y_change = 1
 
-        if self.climbing:
+        if self.climbing and self.random_number == 0:
             self.rect.y -= self.y_change
-
-
 
     def move(self):
         self.rect.x += self.x_change
 
     def move_off_screen(self):
 
-        if self.rect.left < -60 or self.rect.right > 320:
+        if self.rect.left < -60 or self.rect.right > WIDTH:
             if not self.off_screen:
                 self.off_screen = True
                 self.last_off_screen_time = pygame.time.get_ticks()
@@ -121,21 +123,17 @@ class Enemy(pygame.sprite.Sprite):
 
                 if self.rect.left < -16:
                     self.x_change = 1
-                elif self.rect.right > 320:
+                elif self.rect.right > WIDTH:
                     self.x_change = -1
 
-                self.rect.x += self.x_change
         else:
             self.off_screen = False
 
-        if self.rect.bottom <= 0:
-            self.kill()
+        # if self.rect.bottom <= 0:
+        #     self.kill()
 
     def set_status(self):
-        if self.x_change > 0:
-            self.status = 'walk_right'
-        else:
-            self.status = 'walk_left'
+        self.status = 'walk_right' if self.x_change > 0 else 'walk_left'
 
     def update_direction_change_timer(self):
         current_time = pygame.time.get_ticks()
@@ -149,13 +147,12 @@ class Enemy(pygame.sprite.Sprite):
             self.direction_change_timer = random.randint(2000, 5000)
 
     def update(self):
-        self.climbing = False
-        self.climbing_down = False
+
         self.animate()
-        self.check_wall_collision()
         self.move()
         self.move_off_screen()
+        self.check_wall_collision()
+        self.check_climb()
         self.set_status()
         self.update_direction_change_timer()
 
-        self.check_climb()
