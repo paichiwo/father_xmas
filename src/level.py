@@ -1,7 +1,9 @@
+import json
 import random
 import pygame
-from src.sprites import CollisionObject, Decoration, AnimatedDecoration, Snowflake, Sleigh
+from src.sprites import SimpleSprite, AnimatedSprite, Snowflake, Sleigh
 from src.enemy import Enemy
+from src.config import TILE_SIZE, ENEMY_SPAWN_POS
 
 
 class Platformer:
@@ -9,8 +11,6 @@ class Platformer:
 
         # General setup
         self.screen = screen
-        self.tile_width = 16
-        self.tile_height = 16
 
         self.sleigh_in_inventory = False
         self.completed_sleigh_pieces = []
@@ -26,7 +26,6 @@ class Platformer:
         self.completed_sleigh_group = pygame.sprite.Group()
         self.enemy_group = pygame.sprite.Group()
 
-        # level_images
         img_path = 'assets/level/'
         self.images = {
             0: pygame.image.load(img_path + 'empty/empty.png').convert_alpha(),
@@ -52,7 +51,7 @@ class Platformer:
             19: pygame.image.load(img_path + 'decor/bed.png').convert_alpha(),
             20: pygame.image.load(img_path + 'walls/fire_wall_left.png').convert_alpha(),
             21: pygame.image.load(img_path + 'walls/fire_wall_right.png').convert_alpha(),
-            22: pygame.image.load(img_path + 'walls/fire_wall_left.png').convert_alpha(),   # no collision
+            22: pygame.image.load(img_path + 'walls/fire_wall_left.png').convert_alpha(),  # no collision
             23: pygame.image.load(img_path + 'walls/fire_wall_right.png').convert_alpha(),  # no collision
             24: pygame.image.load(img_path + 'ladders/ladder_girland_32.png').convert_alpha(),
             25: pygame.image.load(img_path + 'floor/floor_snow.png').convert_alpha(),
@@ -67,89 +66,7 @@ class Platformer:
         }
 
         # Rooms setup
-        self.rooms = {
-            'room_0_0': [
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-                [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-                [7, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 21, 9, 9, 9, 9, 9, 9],
-                [7, 0, 0, 0, 0, 0, 15, 0, 0, 0, 28, 0, 20, 21, 0, 0, 0, 0, 0, 0],
-                [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 21, 0, 0, 0, 0, 0, 0],
-                [7, 0, 0, 27, 0, 0, 0, 0, 12, 0, 0, 0, 20, 21, 0, 0, 12, 0, 0, 0],
-                [7, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 1, 20, 21, 1, 1, 11, 1, 1, 31],
-                [7, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 20, 21, 9, 9, 24, 0, 9, 9]
-            ],
-
-            'room_0_1': [
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-                [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
-                [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
-                [0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0],
-                [0, 0, 0, 0, 0, 18, 16, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 0, 0, 0],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 11, 1, 1, 31],
-                [9, 9, 9, 9, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 7]
-            ],
-
-            'room_0_2': [
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 0, 0, 0],
-                [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 5, 6, 0, 0],
-                [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 7, 0, 0, 0, 0, 0],
-                [0, 0, 0, 13, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 19, 0, 0, 7, 0, 0, 0, 0, 0],
-                [0, 27, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0],
-                [31, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 31, 0, 0, 0, 0, 0],
-                [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0]
-            ],
-
-            'room_1_0': [
-                [7, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 20, 21, 0, 0, 10, 0, 0, 0],
-                [7, 13, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 20, 21, 0, 0, 10, 0, 0, 0],
-                [7, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 20, 21, 0, 0, 10, 0, 0, 0],
-                [7, 12, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 20, 21, 0, 0, 10, 0, 0, 27],
-                [7, 11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 31, 31, 1, 1, 1, 1, 1, 31],
-                [7, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 23, 0, 0, 0, 0, 0, 0],
-                [7, 10, 0, 29, 0, 0, 0, 0, 0, 0, 18, 0, 26, 0, 0, 17, 0, 0, 0, 0],
-                [7, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [7, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 31]
-            ],
-
-            'room_1_1': [
-                [0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 7],
-                [0, 0, 0, 0, 7, 13, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 10, 0, 0, 7],
-                [0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 10, 0, 0, 7],
-                [0, 0, 12, 0, 7, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 7],
-                [1, 1, 11, 1, 31, 1, 1, 11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 31],
-                [0, 0, 10, 0, 13, 7, 0, 10, 0, 0, 13, 0, 0, 0, 13, 0, 0, 0, 0, 0],
-                [0, 0, 10, 0, 0, 7, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 10, 0, 0, 7, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [1, 1, 1, 1, 1, 31, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 31]
-            ],
-
-            'room_1_2': [
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7],
-                [0, 0, 0, 0, 0, 0, 0, 0, 30, 0, 0, 0, 0, 32, 0, 0, 32, 0, 0, 7],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7],
-                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7],
-                [25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25]
-            ]
-        }
-
-        # Enemy setup
-        self.enemy_spawn_positions = {
-            'room_0_0': [(20, 112, 1, 'walk_right', False), (360, 112, -1, 'walk_left', True)],
-            'room_0_1': [(-40, 112, 1, 'walk_right', True), (360, 112, -1, 'walk_left', True)],
-            'room_0_2': [(-40, 112, 1, 'walk_right', True)],
-            'room_1_0': [(20, 128, 1, 'walk_right', False), (20, 64, 1, 'walk_right', False), (360, 128, -1, 'walk_left', True), (360, 64, -1, 'walk_left', True)],
-            'room_1_1': [(-40, 128, 1, 'walk_right', True), (-40, 64, 1, 'walk_right', False), (360, 128, -1, 'walk_left', False)],
-            'room_1_2': [(-40, 128, 1, 'walk_right', True), (300, 128, -1, 'walk_left', False)],
-        }
+        self.rooms = self.load_room_data()
 
         # Rooms setup
         self.current_room = self.rooms['room_0_2']
@@ -163,6 +80,12 @@ class Platformer:
         self.enemy_spawn_timer = 0
         self.enemy_spawn_delay = random.randint(2000, 5000)
         self.create_enemies()
+
+    @staticmethod
+    def load_room_data():
+        with open('data/rooms_data.json', 'r') as json_file:
+            rooms_data = json.load(json_file)
+        return rooms_data
 
     def populate_room(self):
         self.create_platforms(self.current_room)
@@ -191,8 +114,8 @@ class Platformer:
         for row_index, row in enumerate(room_layout):
             for col_index, tile_id in enumerate(row):
                 if tile_id in valid_ids:
-                    x_pos = col_index * self.tile_width
-                    y_pos = row_index * self.tile_height
+                    x_pos = col_index * TILE_SIZE
+                    y_pos = row_index * TILE_SIZE
 
                     element = element_type(x_pos,
                                            y_pos,
@@ -201,24 +124,23 @@ class Platformer:
                     elements.append(element)
 
     def create_platforms(self, room_layout):
-        return self.create_elements(room_layout, [1, 25], CollisionObject, self.platforms_group)
+        return self.create_elements(room_layout, [1, 25], SimpleSprite, self.platforms_group)
 
     def create_ladders(self, room_layout):
-        return self.create_elements(room_layout, [10, 11, 24], CollisionObject, self.ladders_group)
+        return self.create_elements(room_layout, [10, 11, 24], SimpleSprite, self.ladders_group)
 
     def create_walls_with_collisions(self, room_layout):
-        return self.create_elements(room_layout, [7, 20, 21], CollisionObject, self.walls_with_collision_group)
+        return self.create_elements(room_layout, [7, 20, 21], SimpleSprite, self.walls_with_collision_group)
 
     def create_decorations(self, room_layout):
         valid_ids = [2, 3, 4, 5, 6, 8, 9, 12, 14, 15, 16, 17, 18, 19, 22, 23, 27, 28, 29, 30, 31, 32]
-        return self.create_elements(room_layout, valid_ids, Decoration, self.decorations_group)
+        return self.create_elements(room_layout, valid_ids, SimpleSprite, self.decorations_group)
 
     def create_animations(self, room_layout):
-        return self.create_elements(room_layout, [13, 26], AnimatedDecoration, self.decorations_group)
+        return self.create_elements(room_layout, [13, 26], AnimatedSprite, self.decorations_group)
 
     def create_snow(self):
         self.snowflakes.clear()
-
         snow_boundary = None
         second_boundary = None
 
@@ -255,14 +177,15 @@ class Platformer:
     def get_random_room(self):
         return random.choice(self.rooms_list)
 
-    def get_platform_rects(self, room_layout):
+    @ staticmethod
+    def get_platform_rects(room_layout):
         rects = []
         for row_index, row in enumerate(room_layout):
             for col_index, tile_id in enumerate(row):
                 if tile_id == 1:
-                    x_pos = col_index * self.tile_width
-                    y_pos = row_index * self.tile_height
-                    rects.append(pygame.Rect(x_pos, y_pos, self.tile_width, self.tile_height))
+                    x_pos = col_index * TILE_SIZE
+                    y_pos = row_index * TILE_SIZE
+                    rects.append(pygame.Rect(x_pos, y_pos, TILE_SIZE, TILE_SIZE))
         return rects
 
     def create_sleigh(self):
@@ -298,7 +221,7 @@ class Platformer:
     def create_enemies(self):
         self.enemy_spawn_timer += pygame.time.get_ticks()
         if self.enemy_spawn_timer >= self.enemy_spawn_delay:
-            enemy_spawn_data = random.choice(self.enemy_spawn_positions[self.get_current_room()])
+            enemy_spawn_data = random.choice(ENEMY_SPAWN_POS[self.get_current_room()])
             Enemy(x_pos=enemy_spawn_data[0],
                   y_pos=enemy_spawn_data[1],
                   x_change=enemy_spawn_data[2],

@@ -70,7 +70,7 @@ class Player(pygame.sprite.Sprite):
 
         under = pygame.rect.Rect((self.rect[0], self.rect[1] + self.rect.height),
                                  (self.rect[2], self.rect[3]))
-        # pygame.draw.rect(self.screen, 'yellow', under)
+        pygame.draw.rect(self.screen, 'yellow', under)
         offset = 3
 
         for ladder in self.platformer.ladders_group:

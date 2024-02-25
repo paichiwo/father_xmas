@@ -1,7 +1,6 @@
 import sys
-import pygame
 import pygame._sdl2 as sdl2
-from src.config import WIDTH, HEIGHT, SCALE, BLACK, FPS
+from src.config import *
 from src.level import Platformer, XmasLetter
 from src.player import Player
 from src.dashboard import Dashboard

@@ -34,7 +34,7 @@ class Enemy(pygame.sprite.Sprite):
         # Movement attributes
         self.y_change = 0
 
-        self.direction_change_timer = random.randint(2000, 5000)  # Initial timer duration
+        self.direction_change_timer = random.randint(2000, 10000)  # Initial timer duration
         self.last_direction_change_time = pygame.time.get_ticks()
 
         self.off_screen_timer = random.randint(2000, 5000)  # Initial off-screen timer duration
@@ -43,7 +43,7 @@ class Enemy(pygame.sprite.Sprite):
 
         self.climbing = False
         self.climbing_down = False
-        self.landed = False
+        self.landed = True
 
         self.random_number = random.choice([0])
 
@@ -66,12 +66,12 @@ class Enemy(pygame.sprite.Sprite):
         for wall in self.platformer.walls_with_collision_group:
 
             if self.x_change > 0:
-                enemy_hitbox = pygame.Rect(self.rect[0]+2, self.rect[1], self.rect[2], self.rect[3])
+                enemy_hitbox = pygame.Rect(self.rect[0] + 2, self.rect[1], self.rect[2], self.rect[3])
                 if enemy_hitbox.colliderect(wall.rect):
                     self.x_change = -1
 
             elif self.x_change < 0:
-                enemy_hitbox = pygame.Rect(self.rect[0]-2, self.rect[1], self.rect[2], self.rect[3])
+                enemy_hitbox = pygame.Rect(self.rect[0] - 2, self.rect[1], self.rect[2], self.rect[3])
                 if enemy_hitbox.colliderect(wall.rect):
                     self.x_change = 1
 
@@ -80,7 +80,7 @@ class Enemy(pygame.sprite.Sprite):
     def check_climb(self):
         self.climbing = False
         self.climbing_down = False
-        
+
         under = pygame.rect.Rect((self.rect[0], self.rect[1] + self.rect.height),
                                  (self.rect[2], self.rect[3]))
         pygame.draw.rect(self.screen, 'yellow', under)
@@ -90,27 +90,38 @@ class Enemy(pygame.sprite.Sprite):
             ladder_middle_x = ladder.rect.centerx
             enemy_middle_x = under.centerx
             middle_of_ladder = abs(enemy_middle_x - ladder_middle_x) <= offset
-            if self.x_change > 0:
+            if self.x_change != 0:
                 if self.rect.colliderect(ladder.rect) and middle_of_ladder:
                     self.rect.centerx = ladder.rect.centerx
                     self.climbing = True
+                    self.landed = False
                     self.y_change = 1
 
                 if under.colliderect(ladder.rect) and middle_of_ladder:
                     self.climbing_down = True
                     self.y_change = 1
 
+    def check_landed(self):
+
+        under = pygame.rect.Rect((self.rect[0], self.rect[1] + self.rect.height),
+                                 (self.rect[2], self.rect[3]//4))
+        for platform in self.platformer.platforms_group:
+            if under.colliderect(platform.rect):
+                if self.rect.bottom == platform.rect.top:
+                    self.landed = True
+
+    def move(self):
         if self.climbing and self.random_number == 0:
             self.rect.y -= self.y_change
 
-    def move(self):
         self.rect.x += self.x_change
 
     def move_off_screen(self):
 
-        if self.rect.left < -60 or self.rect.right > WIDTH:
+        if self.rect.right <= 0 or self.rect.left > WIDTH:
             if not self.off_screen:
                 self.off_screen = True
+                self.landed = True
                 self.last_off_screen_time = pygame.time.get_ticks()
 
             current_time = pygame.time.get_ticks()
@@ -118,41 +129,42 @@ class Enemy(pygame.sprite.Sprite):
 
             if elapsed_time >= self.off_screen_timer:
                 self.off_screen = False
+                self.landed = True
                 self.last_off_screen_time = current_time
                 self.off_screen_timer = random.randint(2000, 5000)
 
-                if self.rect.left < -16:
+                if self.rect.right <= 0:
                     self.x_change = 1
-                elif self.rect.right > WIDTH:
+                elif self.rect.left >= WIDTH:
                     self.x_change = -1
 
         else:
             self.off_screen = False
+            self.landed = True
 
-        # if self.rect.bottom <= 0:
-        #     self.kill()
 
     def set_status(self):
         self.status = 'walk_right' if self.x_change > 0 else 'walk_left'
 
-    def update_direction_change_timer(self):
+    def update_direction_change_timer(self, min_time, max_time):
         current_time = pygame.time.get_ticks()
         elapsed_time = current_time - self.last_direction_change_time
 
-        if elapsed_time >= self.direction_change_timer:
+        if elapsed_time >= self.direction_change_timer and not self.climbing and not self.climbing_down:
             self.x_change *= -1
             self.random_number = random.choice([0])
 
             self.last_direction_change_time = current_time
-            self.direction_change_timer = random.randint(2000, 5000)
+            self.direction_change_timer = random.randint(2000, 10000)
 
     def update(self):
-
+        self.check_landed()
         self.animate()
         self.move()
         self.move_off_screen()
         self.check_wall_collision()
         self.check_climb()
         self.set_status()
-        self.update_direction_change_timer()
+        self.update_direction_change_timer(2000, 10000)
+        print(self.landed)
 

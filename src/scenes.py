@@ -75,6 +75,7 @@ class MainMenuScene:
         self.main_menu = True
 
     def update(self):
+        self.screen.fill('black')
         self.draw_menu()
 
 

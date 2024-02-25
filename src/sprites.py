@@ -3,49 +3,26 @@ import pygame
 from src.config import WHITE
 
 
-class CollisionObject(pygame.sprite.Sprite):
-    def __init__(self, x_pos, y_pos, image, group):
+class SimpleSprite(pygame.sprite.Sprite):
+    def __init__(self, x_pos, y_pos, surf, group):
         super().__init__(group)
 
-        # General setup
         self.x_pos = x_pos
         self.y_pos = y_pos
-
-        # Image & Rect
-        self.image = image
+        self.image = surf
         self.rect = self.image.get_rect(topleft=(self.x_pos, self.y_pos))
 
 
-class Decoration(pygame.sprite.Sprite):
-    def __init__(self, x_pos, y_pos, image, group):
-        super().__init__(group)
+class AnimatedSprite(SimpleSprite):
+    def __init__(self, x_pos, y_pos, surf, group):
+        super().__init__(x_pos, y_pos, surf[0], group)
 
-        # General setup
-        self.x_pos = x_pos
-        self.y_pos = y_pos
-
-        # Image & Rect
-        self.image = image
-        self.rect = self.image.get_rect(topleft=(self.x_pos, self.y_pos))
-
-
-class AnimatedDecoration(pygame.sprite.Sprite):
-    def __init__(self, x_pos, y_pos, image, group):
-        super().__init__(group)
-
-        # General setup
-        self.x_pos = x_pos
-        self.y_pos = y_pos
-
-        # Image & Rect
-        self.frames = image
+        self.frames = surf
         self.frames_index = 0
-
         self.image = self.frames[self.frames_index]
         self.rect = self.image.get_rect(topleft=(self.x_pos, self.y_pos))
 
     def animate(self):
-
         self.frames_index += 0.2
         if self.frames_index >= len(self.frames):
             self.frames_index = 0
@@ -54,6 +31,17 @@ class AnimatedDecoration(pygame.sprite.Sprite):
 
     def update(self):
         self.animate()
+
+
+class Sleigh(SimpleSprite):
+    def __init__(self, x_pos, y_pos, screen, surf, group):
+        super().__init__(x_pos, y_pos, surf, group)
+
+        self.screen = screen
+        self.rect = self.image.get_rect(bottomleft=(x_pos, y_pos))
+
+    def update(self):
+        self.screen.blit(self.image, self.rect)
 
 
 class Snowflake:
@@ -73,18 +61,3 @@ class Snowflake:
             self.pos.y = self.snow_boundary.top
         if self.pos.x < self.snow_boundary.left or self.pos.x > self.snow_boundary.right:
             self.pos.x = random.randint(self.snow_boundary.left, self.snow_boundary.right)
-
-
-class Sleigh(pygame.sprite.Sprite):
-    def __init__(self, x_pos, y_pos, screen, image, group):
-        super().__init__(group)
-
-        self.x_pos = x_pos
-        self.y_pos = y_pos
-        self.screen = screen
-
-        self.image = image
-        self.rect = self.image.get_rect(bottomleft=(x_pos, y_pos))
-
-    def update(self):
-        self.screen.blit(self.image, self.rect)
