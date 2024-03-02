@@ -4,23 +4,21 @@ from src.config import WHITE
 
 
 class SimpleSprite(pygame.sprite.Sprite):
-    def __init__(self, x_pos, y_pos, surf, group):
+    def __init__(self, pos, surf, group):
         super().__init__(group)
 
-        self.x_pos = x_pos
-        self.y_pos = y_pos
         self.image = surf
-        self.rect = self.image.get_rect(topleft=(self.x_pos, self.y_pos))
+        self.rect = self.image.get_rect(topleft=pos)
 
 
 class AnimatedSprite(SimpleSprite):
-    def __init__(self, x_pos, y_pos, surf, group):
-        super().__init__(x_pos, y_pos, surf[0], group)
+    def __init__(self, pos, surf, group):
+        super().__init__(pos, surf[0], group)
 
         self.frames = surf
         self.frames_index = 0
         self.image = self.frames[self.frames_index]
-        self.rect = self.image.get_rect(topleft=(self.x_pos, self.y_pos))
+        self.rect = self.image.get_rect(topleft=pos)
 
     def animate(self):
         self.frames_index += 0.2
@@ -34,11 +32,11 @@ class AnimatedSprite(SimpleSprite):
 
 
 class Sleigh(SimpleSprite):
-    def __init__(self, x_pos, y_pos, screen, surf, group):
-        super().__init__(x_pos, y_pos, surf, group)
+    def __init__(self, pos, screen, surf, group):
+        super().__init__(pos, surf, group)
 
         self.screen = screen
-        self.rect = self.image.get_rect(bottomleft=(x_pos, y_pos))
+        self.rect = self.image.get_rect(bottomleft=pos)
 
     def update(self):
         self.screen.blit(self.image, self.rect)

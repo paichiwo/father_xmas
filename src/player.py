@@ -4,12 +4,10 @@ from src.sprites import Sleigh
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x_pos, y_pos, screen, platformer, group):
+    def __init__(self, pos, screen, platformer, group):
         super().__init__(group)
 
         # General setup
-        self.x_pos = x_pos
-        self.y_pos = y_pos
         self.screen = screen
         self.platformer = platformer
 
@@ -30,8 +28,7 @@ class Player(pygame.sprite.Sprite):
         self.animation_possible = False
 
         self.image = self.frames[self.status][self.frame_index]
-        self.rect = self.image.get_rect()
-        self.rect.midbottom = (self.x_pos, self.y_pos)
+        self.rect = self.image.get_rect(midbottom=pos)
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
 
         # Movement attributes
@@ -113,7 +110,6 @@ class Player(pygame.sprite.Sprite):
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
 
     def move_between_rooms(self):
-
         # room 0_0
         if self.platformer.current_room == self.platformer.rooms['room_0_0']:
 
@@ -237,7 +233,9 @@ class Player(pygame.sprite.Sprite):
                     if len(self.platformer.completed_sleigh_pieces) == 4:
                         self.sleigh_completed = True
 
-    def controls(self, event, can_climb, climbed_down, middle_of_ladder):
+    def controls(self, event):
+
+        can_climb, climbed_down, middle_of_ladder = self.check_climb()
 
         keys = pygame.key.get_pressed()
         if not any(keys[key] for key in [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_UP, pygame.K_DOWN]):
@@ -303,10 +301,3 @@ class Player(pygame.sprite.Sprite):
         self.move_between_rooms()
         self.check_sleigh_collision()
         self.leave_sleigh()
-
-        # pygame.draw.rect(self.screen, 'red', self.rect)
-        # print(self.rect.top)
-        # print(self.rect.x)
-        # print(self.rect.midbottom)
-        # pygame.draw.rect(self.screen, 'red', self.bottom)
-        # print(self.animation_possible)

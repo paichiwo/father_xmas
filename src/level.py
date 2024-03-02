@@ -117,8 +117,7 @@ class Platformer:
                     x_pos = col_index * TILE_SIZE
                     y_pos = row_index * TILE_SIZE
 
-                    element = element_type(x_pos,
-                                           y_pos,
+                    element = element_type((x_pos, y_pos),
                                            self.images[tile_id],
                                            group)
                     elements.append(element)
@@ -144,30 +143,25 @@ class Platformer:
         snow_boundary = None
         second_boundary = None
 
-        if self.current_room == self.rooms['room_0_0']:
-            snow_boundary = pygame.Rect(0, 0, 320, 32)
-        if self.current_room == self.rooms['room_0_1']:
+        if self.current_room == self.rooms['room_0_0'] or self.current_room == self.rooms['room_0_1']:
             snow_boundary = pygame.Rect(0, 0, 320, 32)
         if self.current_room == self.rooms['room_0_2']:
-            snow_boundary = pygame.Rect(0, 0, 240, 44)
-            second_boundary = pygame.Rect(240, 0, 80, 144)
-        if self.current_room == self.rooms['room_1_0']:
-            self.snowflakes.clear()
-        if self.current_room == self.rooms['room_1_1']:
+            snow_boundary, second_boundary = pygame.Rect(0, 0, 240, 44), pygame.Rect(240, 0, 80, 144)
+        if self.current_room == self.rooms['room_1_0'] or self.current_room == self.rooms['room_1_1']:
             self.snowflakes.clear()
         if self.current_room == self.rooms['room_1_2']:
             snow_boundary = pygame.Rect(0, 0, 320, 144)
 
         for _ in range(20):
             if snow_boundary:
-                x = random.randint(snow_boundary.left, snow_boundary.right)
-                y = random.randint(snow_boundary.top, snow_boundary.bottom)
-                self.snowflakes.append(Snowflake(x, y, self.screen, snow_boundary))
-
+                self.snow_fall(snow_boundary)
             if second_boundary:
-                x_second = random.randint(second_boundary.left, second_boundary.right)
-                y_second = random.randint(second_boundary.top, second_boundary.bottom)
-                self.snowflakes.append(Snowflake(x_second, y_second, self.screen, second_boundary))
+                self.snow_fall(second_boundary)
+
+    def snow_fall(self, boundary):
+        x = random.randint(boundary.left, boundary.right)
+        y = random.randint(boundary.top, boundary.bottom)
+        self.snowflakes.append(Snowflake(x, y, self.screen, boundary))
 
     def draw_snow(self):
         for snowflake in self.snowflakes:
@@ -199,7 +193,7 @@ class Platformer:
             image_index = len(self.completed_sleigh_pieces)
 
             if image_index < 4:
-                Sleigh(pos[0], pos[1], self.screen, self.images[33][image_index], self.sleigh_group)
+                Sleigh((pos[0], pos[1]), self.screen, self.images[33][image_index], self.sleigh_group)
 
         else:
             self.sleigh_group.empty()
@@ -222,8 +216,7 @@ class Platformer:
         self.enemy_spawn_timer += pygame.time.get_ticks()
         if self.enemy_spawn_timer >= self.enemy_spawn_delay:
             enemy_spawn_data = random.choice(ENEMY_SPAWN_POS[self.get_current_room()])
-            Enemy(x_pos=enemy_spawn_data[0],
-                  y_pos=enemy_spawn_data[1],
+            Enemy(pos=(enemy_spawn_data[0], enemy_spawn_data[1]),
                   x_change=enemy_spawn_data[2],
                   status=enemy_spawn_data[3],
                   off_screen=enemy_spawn_data[4],

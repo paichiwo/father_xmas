@@ -5,11 +5,9 @@ from src.config import *
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, x_pos, y_pos, x_change, status, off_screen, platformer, screen, group):
+    def __init__(self, pos, x_change, status, off_screen, platformer, screen, group):
         super().__init__(group)
 
-        self.x_pos = x_pos
-        self.y_pos = y_pos
         self.x_change = x_change
         self.status = status
         self.platformer = platformer
@@ -29,7 +27,7 @@ class Enemy(pygame.sprite.Sprite):
         self.animation_possible = True
 
         self.image = self.frames[self.status][self.frame_index]
-        self.rect = self.image.get_rect(midbottom=(self.x_pos, self.y_pos))
+        self.rect = self.image.get_rect(midbottom=pos)
 
         # Movement attributes
         self.y_change = 0
@@ -142,11 +140,10 @@ class Enemy(pygame.sprite.Sprite):
             self.off_screen = False
             self.landed = True
 
-
     def set_status(self):
         self.status = 'walk_right' if self.x_change > 0 else 'walk_left'
 
-    def update_direction_change_timer(self, min_time, max_time):
+    def update_direction_change_timer(self):
         current_time = pygame.time.get_ticks()
         elapsed_time = current_time - self.last_direction_change_time
 
@@ -165,6 +162,6 @@ class Enemy(pygame.sprite.Sprite):
         self.check_wall_collision()
         self.check_climb()
         self.set_status()
-        self.update_direction_change_timer(2000, 10000)
+        self.update_direction_change_timer()
         print(self.landed)
 
