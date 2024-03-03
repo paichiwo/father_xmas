@@ -220,7 +220,7 @@ class Player(pygame.sprite.Sprite):
                     image_index = len(self.platformer.completed_sleigh_pieces)
 
                     # create a sleigh object with the appropriate image
-                    Sleigh(pos[0], pos[1], self.screen, self.platformer.images[33][image_index],
+                    Sleigh((pos[0], pos[1]), self.screen, self.platformer.images[33][image_index],
                            self.platformer.completed_sleigh_group)
 
                     # update the sleigh status and create a new sleigh

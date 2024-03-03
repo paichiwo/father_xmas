@@ -2,7 +2,7 @@ import sys
 import pygame._sdl2 as sdl2
 from src.config import *
 from src.level import Platformer, XmasLetter
-from src.player import Player
+from src.player2 import Player
 from src.dashboard import Dashboard
 from src.scenes import MainMenuScene, GameOverScene
 
@@ -44,7 +44,12 @@ class Game:
         self.platformer = Platformer(self.screen)
         self.xmas_letter = XmasLetter(self.screen)
         self.game_over_scene = GameOverScene(self.screen)
-        self.player = Player((100, 112), self.screen, self.platformer, self.player_group)
+        self.player = Player(
+            pos=(100, 112),
+            screen=self.screen,
+            platformer=self.platformer,
+            path=PATHS['player'],
+            group=self.player_group)
 
     def handle_game_events(self, event):
         if event.type == pygame.QUIT:
@@ -63,9 +68,9 @@ class Game:
     def draw_platformer_elements(self):
         self.player_group.draw(self.screen)
 
-    def update_platformer_elements(self):
+    def update_platformer_elements(self, dt):
         self.dashboard.update()
-        self.player_group.update()
+        self.player_group.update(dt)
         self.platformer.update()
 
     def platformer_check_win(self):
@@ -112,17 +117,14 @@ class Game:
                 if self.states['main_menu_running']:
                     self.main_menu_scene.handle_input(event)
 
-                if self.states['platformer_running']:
-                    self.player.controls(event)
-
+            dt = self.clock.tick() / 1000
             if self.running:
                 if self.states['main_menu_running']:
                     self.main_menu_scene.update()
                     self.check_game_start()
 
                 if self.states['platformer_running']:
-                    pygame.key.set_repeat(FPS)
-                    self.update_platformer_elements()
+                    self.update_platformer_elements(dt)
                     self.draw_platformer_elements()
                     self.platformer_check_win()
 
@@ -137,7 +139,6 @@ class Game:
                 self.states['platformer_running'] = False
                 self.show_game_over_screen()
 
-            self.clock.tick(FPS)
             sdl2.Texture.from_surface(self.renderer, self.screen).draw()
             self.renderer.present()
 
