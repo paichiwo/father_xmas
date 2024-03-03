@@ -247,12 +247,14 @@ class Player(pygame.sprite.Sprite):
                 self.animation_possible = True
 
             if self.animation_possible:
+
                 if event.key == pygame.K_RIGHT and not self.climbing:
                     self.x_change = 1
                     self.status = 'walk_right'
                 if event.key == pygame.K_LEFT and not self.climbing:
                     self.x_change = -1
                     self.status = 'walk_left'
+
                 if event.key == pygame.K_UP and middle_of_ladder:
                     if can_climb:
                         self.y_change = -1
@@ -267,12 +269,14 @@ class Player(pygame.sprite.Sprite):
                         self.status = 'climbing'
 
         elif event.type == pygame.KEYUP:
+
             if event.key == pygame.K_RIGHT:
                 self.x_change = 0
                 self.animation_possible = False
             if event.key == pygame.K_LEFT:
                 self.x_change = 0
                 self.animation_possible = False
+
             if event.key == pygame.K_UP:
                 if can_climb:
                     self.y_change = 0

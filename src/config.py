@@ -25,10 +25,10 @@ ROOM_TRANSITIONS = {
                  'down': ('room_1_1', -5)},
     'room_0_2': {'left': ('room_0_1', 302)},
     'room_1_0': {'right': ('room_1_1', 0),
-                 'up': ('room_0_0', 110)},
+                 'up': ('room_0_0', 100)},
     'room_1_1': {'left': ('room_1_0', 302),
                  'right': ('room_1_2', 0),
-                 'up': ('room_0_1', 110)},
+                 'up': ('room_0_1', 100)},
     'room_1_2': {'left': ('room_1_1', 302)}
 }
 

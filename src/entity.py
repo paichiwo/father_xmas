@@ -21,7 +21,6 @@ class Entity(pygame.sprite.Sprite):
         self.animation_possible = True
 
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
-        self.hitbox = pygame.Rect(self.rect[0], self.rect[1], self.rect[2] - 4, self.rect[3])
 
         # Movement attributes
         self.direction = pygame.math.Vector2()
@@ -49,7 +48,9 @@ class Entity(pygame.sprite.Sprite):
         self.rect.x = round(self.pos.x)
 
         # horizontal
-        if self.climbing:
-            self.pos.y += self.direction.y * self.speed * dt
-            self.rect.y = round(self.pos.y)
+        self.pos.y += self.direction.y * self.speed * dt
+        self.rect.y = round(self.pos.y)
+
+        self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
+        pygame.draw.rect(self.screen, 'orange', self.bottom)
 

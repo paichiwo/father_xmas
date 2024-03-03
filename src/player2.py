@@ -18,14 +18,17 @@ class Player(Entity):
         self.image = self.frames[self.status][int(self.frame_index)]
 
     def input(self):
+
+        can_climb, climbed_down, middle_of_ladder = self.check_climb()
+
         keys = pygame.key.get_pressed()
 
         # horizontal
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_RIGHT] and not self.climbing:
             self.direction.x = 1
             self.animation_possible = True
             self.status = 'right'
-        elif keys[pygame.K_LEFT]:
+        elif keys[pygame.K_LEFT] and not self.climbing:
             self.direction.x = -1
             self.animation_possible = True
             self.status = 'left'
@@ -33,33 +36,79 @@ class Player(Entity):
             self.direction.x = 0
 
         # vertical
-        if keys[pygame.K_UP]:
-            self.direction.y = -1
-            self.animation_possible = True
-            self.status = 'climb'
-        elif keys[pygame.K_DOWN]:
-            self.direction.y = 1
-            self.animation_possible = True
-            self.status = 'climb'
+        if keys[pygame.K_UP] and middle_of_ladder:
+            if can_climb:
+                self.direction.y = -1
+                self.animation_possible = True
+                self.climbing = True
+                self.status = 'climb'
+        elif keys[pygame.K_DOWN] and middle_of_ladder:
+            if climbed_down:
+                self.direction.y = 1
+                self.animation_possible = True
+                self.climbing = True
+                self.status = 'climb'
         else:
             self.direction.y = 0
+            if self.climbing and self.landed:
+                self.climbing = False
 
         if not any((keys[pygame.K_RIGHT], keys[pygame.K_LEFT], keys[pygame.K_UP], keys[pygame.K_DOWN])):
             self.animation_possible = False
 
-    def collision(self):
-        for wall in self.platformer.collision_walls:
+    def collisions(self):
+        # platform collision
+        self.landed = False
+        for platform in self.platformer.platforms_group:
+            if self.bottom.colliderect(platform.rect):
+                self.landed = True
+                if not self.climbing and self.landed:
+                    if self.rect.bottom != platform.rect[1]:
+                        self.direction.y = 0
+                        self.rect.bottom = platform.rect[1]
 
-            if self.direction.x > 0:
-                player_hitbox = pygame.Rect(self.rect[0]+2, self.rect[1], self.rect[2], self.rect[3])
-                if player_hitbox.colliderect(wall.rect):
+        # wall collision
+        for wall in self.platformer.collision_walls:
+            hitbox = pygame.Rect(
+                self.rect[0] + (2 if self.direction.x > 0 else -2), self.rect[1], self.rect[2],self.rect[3])
+
+            if hitbox.colliderect(wall.rect):
+                if self.direction.x > 0:
                     self.rect.right = wall.rect.left
-                    self.pos.x = player_hitbox[0] - 2
-            else:
-                player_hitbox = pygame.Rect(self.rect[0]-2, self.rect[1], self.rect[2], self.rect[3])
-                if player_hitbox.colliderect(wall.rect):
+                else:
                     self.rect.left = wall.rect.right
-                    self.pos.x = player_hitbox[0] + 2
+                self.pos.x = hitbox[0] + (2 if self.direction.x > 0 else -2)
+
+    def check_climb(self):
+        can_climb = False
+        climb_down = False
+        middle_of_ladder = False
+
+        under = pygame.rect.Rect((self.rect[0], self.rect[1] + self.rect.height),
+                                 (self.rect[2], self.rect[3] / 2))
+        pygame.draw.rect(self.screen, 'yellow', under)
+        offset = 3
+
+        for ladder in self.platformer.ladders_group:
+            # going up
+            if self.rect.colliderect(ladder.rect) and not can_climb:
+                can_climb = True
+                ladder_middle_x = ladder.rect.centerx
+                player_middle_x = under.centerx
+                middle_of_ladder = abs(player_middle_x - ladder_middle_x) <= offset
+
+            # going down
+            if under.colliderect(ladder.rect):
+                climb_down = True
+                ladder_middle_x = ladder.rect.centerx
+                player_middle_x = under.centerx
+                middle_of_ladder = abs(player_middle_x - ladder_middle_x) <= offset
+
+        if (not can_climb and (not climb_down or self.direction.y < 0)) or (
+                self.landed and can_climb and self.direction.y > 0 and not climb_down):
+            self.climbing = False
+
+        return can_climb, climb_down, middle_of_ladder
 
     def move_between_rooms(self):
         current_room = self.platformer.current_room
@@ -120,11 +169,9 @@ class Player(Entity):
         self.move(dt)
         self.animate(dt)
 
-        self.collision()
+        self.collisions()
 
         self.move_between_rooms()
 
         self.collect_sleigh()
         self.leave_sleigh()
-
-        # pygame.draw.rect(self.screen, 'green', self.rect)

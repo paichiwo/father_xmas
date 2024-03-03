@@ -29,8 +29,6 @@ class Platformer:
         self.completed_sleigh_group = pygame.sprite.Group()
         self.enemy_group = pygame.sprite.Group()
 
-        self.obstacles = pygame.sprite.Group()
-
         img_path = 'assets/level/'
         self.images = {
             0: pygame.image.load(img_path + 'empty/empty.png').convert_alpha(),
@@ -128,13 +126,13 @@ class Platformer:
                     elements.append(element)
 
     def create_platforms(self, room_layout):
-        return self.create_elements(room_layout, [1, 25], SimpleSprite, [self.platforms_group, self.obstacles])
+        return self.create_elements(room_layout, [1, 25], SimpleSprite, self.platforms_group)
 
     def create_ladders(self, room_layout):
         return self.create_elements(room_layout, [10, 11, 24], SimpleSprite, self.ladders_group)
 
     def create_walls_with_collisions(self, room_layout):
-        return self.create_elements(room_layout, [7, 20, 21], SimpleSprite, [self.collision_walls, self.obstacles])
+        return self.create_elements(room_layout, [7, 20, 21], SimpleSprite, self.collision_walls)
 
     def create_decorations(self, room_layout):
         valid_ids = [2, 3, 4, 5, 6, 8, 9, 12, 14, 15, 16, 17, 18, 19, 22, 23, 27, 28, 29, 30, 31, 32]
