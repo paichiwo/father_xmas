@@ -54,3 +54,56 @@ class Entity(pygame.sprite.Sprite):
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
         pygame.draw.rect(self.screen, 'orange', self.bottom)
 
+    def collisions(self):
+        # platform collision
+        self.landed = False
+        for platform in self.platformer.platforms_group:
+            if self.bottom.colliderect(platform.rect):
+                self.landed = True
+                if not self.climbing and self.landed:
+                    if self.rect.bottom != platform.rect[1]:
+                        self.direction.y = 0
+                        self.rect.bottom = platform.rect[1]
+
+        # wall collision
+        for wall in self.platformer.collision_walls:
+            hitbox = pygame.Rect(
+                self.rect[0] + (2 if self.direction.x > 0 else -2), self.rect[1], self.rect[2],self.rect[3])
+
+            if hitbox.colliderect(wall.rect):
+                if self.direction.x > 0:
+                    self.rect.right = wall.rect.left
+                else:
+                    self.rect.left = wall.rect.right
+                self.pos.x = hitbox[0] + (2 if self.direction.x > 0 else -2)
+
+    def check_climb(self):
+        can_climb = False
+        climb_down = False
+        middle_of_ladder = False
+
+        under = pygame.rect.Rect((self.rect[0], self.rect[1] + self.rect.height),
+                                 (self.rect[2], self.rect[3] / 2))
+        pygame.draw.rect(self.screen, 'yellow', under)
+        offset = 3
+
+        for ladder in self.platformer.ladders_group:
+            # going up
+            if self.rect.colliderect(ladder.rect) and not can_climb:
+                can_climb = True
+                ladder_middle_x = ladder.rect.centerx
+                player_middle_x = under.centerx
+                middle_of_ladder = abs(player_middle_x - ladder_middle_x) <= offset
+
+            # going down
+            if under.colliderect(ladder.rect):
+                climb_down = True
+                ladder_middle_x = ladder.rect.centerx
+                player_middle_x = under.centerx
+                middle_of_ladder = abs(player_middle_x - ladder_middle_x) <= offset
+
+        if (not can_climb and (not climb_down or self.direction.y < 0)) or (
+                self.landed and can_climb and self.direction.y > 0 and not climb_down):
+            self.climbing = False
+
+        return can_climb, climb_down, middle_of_ladder
