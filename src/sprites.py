@@ -18,7 +18,6 @@ class AnimatedSprite(SimpleSprite):
         self.frames = surf
         self.frames_index = 0
         self.image = self.frames[self.frames_index]
-        self.rect = self.image.get_rect(topleft=pos)
 
     def animate(self):
         self.frames_index += 0.2
