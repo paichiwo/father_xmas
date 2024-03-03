@@ -21,11 +21,15 @@ class Entity(pygame.sprite.Sprite):
         self.animation_possible = True
 
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
+        self.hitbox = pygame.Rect(self.rect[0], self.rect[1], self.rect[2] - 4, self.rect[3])
 
         # Movement attributes
         self.direction = pygame.math.Vector2()
         self.pos = pygame.math.Vector2(self.rect.topleft)
         self.speed = 120
+
+        self.climbing = False
+        self.landed = False
 
     def import_assets(self, path):
         for index, folder in enumerate(walk(path)):
@@ -44,6 +48,8 @@ class Entity(pygame.sprite.Sprite):
         self.pos.x += self.direction.x * self.speed * dt
         self.rect.x = round(self.pos.x)
 
-        # vertical
-        self.pos.y += self.direction.y * self.speed * dt
-        self.rect.y = round(self.pos.y)
+        # horizontal
+        if self.climbing:
+            self.pos.y += self.direction.y * self.speed * dt
+            self.rect.y = round(self.pos.y)
+

@@ -1,5 +1,3 @@
-import pygame
-from os import walk
 from src.config import *
 from src.sprites import Sleigh
 from src.entity import Entity
@@ -8,10 +6,6 @@ from src.entity import Entity
 class Player(Entity):
     def __init__(self, pos, screen, platformer, path, group):
         super().__init__(pos, screen, platformer, path, group)
-
-        self.climbing = False
-        self.landed = False
-        self.sleigh_completed = False
 
     def animate(self, dt):
         if self.animation_possible:
@@ -53,6 +47,20 @@ class Player(Entity):
         if not any((keys[pygame.K_RIGHT], keys[pygame.K_LEFT], keys[pygame.K_UP], keys[pygame.K_DOWN])):
             self.animation_possible = False
 
+    def collision(self):
+        for wall in self.platformer.collision_walls:
+
+            if self.direction.x > 0:
+                player_hitbox = pygame.Rect(self.rect[0]+2, self.rect[1], self.rect[2], self.rect[3])
+                if player_hitbox.colliderect(wall.rect):
+                    self.rect.right = wall.rect.left
+                    self.pos.x = player_hitbox[0] - 2
+            else:
+                player_hitbox = pygame.Rect(self.rect[0]-2, self.rect[1], self.rect[2], self.rect[3])
+                if player_hitbox.colliderect(wall.rect):
+                    self.rect.left = wall.rect.right
+                    self.pos.x = player_hitbox[0] + 2
+
     def move_between_rooms(self):
         current_room = self.platformer.current_room
 
@@ -74,9 +82,49 @@ class Player(Entity):
                 self.pos.y = adjustment
                 self.platformer.redraw_room()
 
+    def collect_sleigh(self):
+        if self.platformer.current_room == self.platformer.random_room:
+            for sleigh in self.platformer.sleigh_group:
+                if self.rect.colliderect(sleigh.rect):
+                    self.platformer.sleigh_in_inventory = True
+                    sleigh.kill()
+
+    def leave_sleigh(self):
+        if self.platformer.current_room == 'room_1_2':
+            if self.platformer.sleigh_in_inventory:
+                if self.rect.x == 100:
+
+                    pos = (112 - 16 * len(self.platformer.completed_sleigh_pieces), 128)
+                    index = len(self.platformer.completed_sleigh_pieces)
+
+                    Sleigh(
+                        pos=(pos[0], pos[1]),
+                        screen=self.screen,
+                        surf=self.platformer.images[33][index],
+                        group=self.platformer.completed_sleigh_group)
+
+                    self.platformer.sleigh_in_inventory = False
+                    self.platformer.completed_sleigh_pieces.append(str(index + 1))
+                    self.platformer.sleigh_group.empty()
+                    self.platformer.create_sleigh()
+
+                    if len(self.platformer.completed_sleigh_pieces) == 4:
+                        self.platformer.sleigh_completed = True
+
+    def reset(self):
+        self.rect.midbottom = (100, 150)
+        self.status = 'left'
+
     def update(self, dt):
         self.input()
         self.move(dt)
         self.animate(dt)
+
+        self.collision()
+
         self.move_between_rooms()
-        pygame.draw.rect(self.screen, 'green', self.rect)
+
+        self.collect_sleigh()
+        self.leave_sleigh()
+
+        # pygame.draw.rect(self.screen, 'green', self.rect)

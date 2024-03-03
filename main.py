@@ -11,7 +11,6 @@ class Game:
     def __init__(self):
 
         # Game setup
-        pygame.init()
         self.clock = pygame.time.Clock()
 
         # Scaled window setup
@@ -29,7 +28,7 @@ class Game:
             'gift_rain_running': False,
             'gift_delivery_running': False,
             'congratulations_running': False,
-            'game_over_scene_active': False
+            'game_over_scene_running': False
         }
 
         # Game variables
@@ -74,7 +73,7 @@ class Game:
         self.platformer.update()
 
     def platformer_check_win(self):
-        if self.player.sleigh_completed:
+        if self.platformer.sleigh_completed:
             self.states['platformer_running'] = False
             self.states['xmas_letter_running'] = True
 
@@ -94,7 +93,7 @@ class Game:
 
     def reset_game(self):
         self.running = True
-        self.states['game_over_scene_active'] = False
+        self.states['game_over_scene_running'] = False
         self.platformer.reset()
         self.player.reset()
         self.dashboard.reset()
@@ -135,7 +134,7 @@ class Game:
 
                 self.running = self.game_over()
             else:
-                self.states['game_over_scene_active'] = True
+                self.states['game_over_scene_running'] = True
                 self.states['platformer_running'] = False
                 self.show_game_over_screen()
 

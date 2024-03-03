@@ -61,7 +61,7 @@ class Enemy(pygame.sprite.Sprite):
         self.image = self.frames[self.status][int(self.frame_index)]
 
     def check_wall_collision(self):
-        for wall in self.platformer.walls_with_collision_group:
+        for wall in self.platformer.collision_walls:
 
             if self.x_change > 0:
                 enemy_hitbox = pygame.Rect(self.rect[0] + 2, self.rect[1], self.rect[2], self.rect[3])
@@ -163,5 +163,4 @@ class Enemy(pygame.sprite.Sprite):
         self.check_climb()
         self.set_status()
         self.update_direction_change_timer()
-        print(self.landed)
 

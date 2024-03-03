@@ -12,15 +12,18 @@ class Platformer:
         # General setup
         self.screen = screen
 
-        self.sleigh_in_inventory = False
+        # sleigh
         self.completed_sleigh_pieces = []
+        self.sleigh_in_inventory = False
+        self.sleigh_completed = False
 
+        # snow
         self.snowflakes = []
 
         # Create groups
         self.platforms_group = pygame.sprite.Group()
         self.ladders_group = pygame.sprite.Group()
-        self.walls_with_collision_group = pygame.sprite.Group()
+        self.collision_walls = pygame.sprite.Group()
         self.decorations_group = pygame.sprite.Group()
         self.sleigh_group = pygame.sprite.Group()
         self.completed_sleigh_group = pygame.sprite.Group()
@@ -100,7 +103,7 @@ class Platformer:
     def clear_room(self):
         self.platforms_group.empty()
         self.ladders_group.empty()
-        self.walls_with_collision_group.empty()
+        self.collision_walls.empty()
         self.decorations_group.empty()
         self.enemy_group.empty()
 
@@ -131,7 +134,7 @@ class Platformer:
         return self.create_elements(room_layout, [10, 11, 24], SimpleSprite, self.ladders_group)
 
     def create_walls_with_collisions(self, room_layout):
-        return self.create_elements(room_layout, [7, 20, 21], SimpleSprite, [self.walls_with_collision_group, self.obstacles])
+        return self.create_elements(room_layout, [7, 20, 21], SimpleSprite, [self.collision_walls, self.obstacles])
 
     def create_decorations(self, room_layout):
         valid_ids = [2, 3, 4, 5, 6, 8, 9, 12, 14, 15, 16, 17, 18, 19, 22, 23, 27, 28, 29, 30, 31, 32]
@@ -226,15 +229,16 @@ class Platformer:
     def reset(self):
         self.current_room = 'room_0_2'
         self.redraw_room()
-        self.sleigh_in_inventory = False
         self.completed_sleigh_pieces = []
+        self.sleigh_in_inventory = False
+        self.sleigh_completed = False
 
     def update(self):
         self.draw_snow()
 
         self.platforms_group.draw(self.screen)
         self.ladders_group.draw(self.screen)
-        self.walls_with_collision_group.draw(self.screen)
+        self.collision_walls.draw(self.screen)
         self.decorations_group.draw(self.screen)
 
         self.decorations_group.update()
