@@ -51,17 +51,16 @@ class Entity(pygame.sprite.Sprite):
         self.pos.y += self.direction.y * self.speed * dt
         self.rect.y = round(self.pos.y)
 
-        self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
         pygame.draw.rect(self.screen, 'orange', self.bottom)
 
     def collisions(self):
         # platform collision
         self.landed = False
-        for platform in self.platformer.platforms_group:
-            if self.bottom.colliderect(platform.rect):
-                self.landed = True
-                if not self.climbing and self.landed:
-                    if self.rect.bottom != platform.rect[1]:
+        for i in range(len(self.platformer.platforms_group)):
+            for platform in self.platformer.platforms_group:
+                if self.bottom.colliderect(platform.rect):
+                    self.landed = True
+                    if not self.climbing:
                         self.direction.y = 0
                         self.rect.bottom = platform.rect[1]
 
@@ -77,13 +76,15 @@ class Entity(pygame.sprite.Sprite):
                     self.rect.left = wall.rect.right
                 self.pos.x = hitbox[0] + (2 if self.direction.x > 0 else -2)
 
+        self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
+
     def check_climb(self):
         can_climb = False
         climb_down = False
         middle_of_ladder = False
 
         under = pygame.rect.Rect((self.rect[0], self.rect[1] + self.rect.height),
-                                 (self.rect[2], self.rect[3] / 2))
+                                 (self.rect[2], self.rect[3] //3))
         pygame.draw.rect(self.screen, 'yellow', under)
         offset = 3
 

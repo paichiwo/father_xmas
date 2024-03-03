@@ -2,7 +2,7 @@ import sys
 import pygame._sdl2 as sdl2
 from src.config import *
 from src.level import Platformer, XmasLetter
-from src.player2 import Player
+from src.player import Player
 from src.dashboard import Dashboard
 from src.scenes import MainMenuScene, GameOverScene
 
