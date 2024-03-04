@@ -7,16 +7,6 @@ class Player(Entity):
     def __init__(self, pos, screen, platformer, path, group):
         super().__init__(pos, screen, platformer, path, group)
 
-    def animate(self, dt):
-        if self.animation_possible:
-            self.frame_index += 7 * dt
-            if self.frame_index >= len(self.frames[self.status]):
-                self.frame_index = 0
-        else:
-            self.frame_index = 1
-
-        self.image = self.frames[self.status][int(self.frame_index)]
-
     def input(self):
         can_climb, climb_down, middle_of_ladder = self.check_climb()
         keys = pygame.key.get_pressed()
