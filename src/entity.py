@@ -30,6 +30,16 @@ class Entity(pygame.sprite.Sprite):
         self.climbing = False
         self.landed = False
 
+    def animate(self, dt):
+        if self.animation_possible:
+            self.frame_index += 7 * dt
+            if self.frame_index >= len(self.frames[self.status]):
+                self.frame_index = 0
+        else:
+            self.frame_index = 1
+
+        self.image = self.frames[self.status][int(self.frame_index)]
+
     def import_assets(self, path):
         for index, folder in enumerate(walk(path)):
             if index == 0:
