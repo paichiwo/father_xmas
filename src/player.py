@@ -60,21 +60,16 @@ class Player(Entity):
         current_room = self.platformer.current_room
 
         for direction, (next_room, adjustment) in ROOM_TRANSITIONS[current_room].items():
-            if direction == 'left' and self.rect.left < 0:
+            if (direction == 'left' and self.rect.left < 0) or \
+                    (direction == 'right' and self.rect.right > WIDTH + 5) or \
+                    (direction == 'up' and self.rect.top < -5) or \
+                    (direction == 'down' and self.rect.bottom > 144):
+
                 self.platformer.current_room = next_room
-                self.pos.x = adjustment
-                self.platformer.redraw_room()
-            elif direction == 'right' and self.rect.right > WIDTH + 5:
-                self.platformer.current_room = next_room
-                self.pos.x = adjustment
-                self.platformer.redraw_room()
-            elif direction == 'up' and self.rect.top < -5:
-                self.platformer.current_room = next_room
-                self.pos.y = adjustment
-                self.platformer.redraw_room()
-            elif direction == 'down' and self.rect.bottom > 144:
-                self.platformer.current_room = next_room
-                self.pos.y = adjustment
+                if direction in ['left', 'right']:
+                    self.pos.x = adjustment
+                else:
+                    self.pos.y = adjustment
                 self.platformer.redraw_room()
 
     def collect_sleigh(self):

@@ -74,7 +74,7 @@ class Entity(pygame.sprite.Sprite):
                     self.rect.right = wall.rect.left
                 else:
                     self.rect.left = wall.rect.right
-                self.pos.x = hitbox[0] + (2 if self.direction.x > 0 else -2)
+                self.pos.x = hitbox[0]
 
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
 
