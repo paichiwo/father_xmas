@@ -1,7 +1,6 @@
-import json
 import random
 from src.sprites import SimpleSprite, AnimatedSprite, Snowflake, Sleigh
-from src.enemy2 import EnemyElf
+from src.enemy import EnemyElf
 from src.config import *
 
 
