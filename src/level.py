@@ -1,9 +1,8 @@
 import json
 import random
-import pygame
 from src.sprites import SimpleSprite, AnimatedSprite, Snowflake, Sleigh
-from src.enemy import Enemy
-from src.config import TILE_SIZE, ENEMY_SPAWN_POS
+from src.enemy2 import EnemyElf
+from src.config import *
 
 
 class Platformer:
@@ -68,7 +67,7 @@ class Platformer:
         }
 
         # Rooms setup
-        self.rooms = self.load_room_data()
+        self.rooms = ROOMS
 
         # Rooms setup
         self.current_room = 'room_0_2'
@@ -83,12 +82,6 @@ class Platformer:
         self.enemy_spawn_timer = 0
         self.enemy_spawn_delay = random.randint(2000, 5000)
         self.create_enemies()
-
-    @staticmethod
-    def load_room_data():
-        with open('data/rooms_data.json', 'r') as json_file:
-            rooms_data = json.load(json_file)
-        return rooms_data
 
     def populate_room(self):
         self.create_platforms(self.rooms[self.current_room])
@@ -214,13 +207,13 @@ class Platformer:
         self.enemy_spawn_timer += pygame.time.get_ticks()
         if self.enemy_spawn_timer >= self.enemy_spawn_delay:
             enemy_spawn_data = random.choice(ENEMY_SPAWN_POS[self.current_room])
-            Enemy(pos=(enemy_spawn_data[0], enemy_spawn_data[1]),
-                  x_change=enemy_spawn_data[2],
-                  status=enemy_spawn_data[3],
-                  off_screen=enemy_spawn_data[4],
-                  platformer=self,
-                  screen=self.screen,
-                  group=self.enemy_group)
+            EnemyElf(pos=(enemy_spawn_data[0], enemy_spawn_data[1]),
+                     direction_x=enemy_spawn_data[2],
+                     screen=self.screen,
+                     platformer=self,
+                     path=PATHS['elf'],
+                     group=self.enemy_group)
+
             self.enemy_spawn_timer = 0
             self.enemy_spawn_delay = random.randint(2000, 5000)
 
@@ -231,7 +224,7 @@ class Platformer:
         self.sleigh_in_inventory = False
         self.sleigh_completed = False
 
-    def update(self):
+    def update(self, dt):
         self.draw_snow()
 
         self.platforms_group.draw(self.screen)
@@ -242,7 +235,7 @@ class Platformer:
         self.decorations_group.update()
         self.sleigh_update()
         self.enemy_group.draw(self.screen)
-        self.enemy_group.update()
+        self.enemy_group.update(dt)
 
         # for sleigh in self.sleigh_group:
         #     pygame.draw.rect(self.screen, 'red', sleigh.rect, 1)

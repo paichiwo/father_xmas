@@ -70,7 +70,7 @@ class Game:
     def update_platformer_elements(self, dt):
         self.dashboard.update()
         self.player_group.update(dt)
-        self.platformer.update()
+        self.platformer.update(dt)
 
     def platformer_check_win(self):
         if self.platformer.sleigh_completed:
