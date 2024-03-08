@@ -23,7 +23,7 @@ class MainMenuScene:
         # Options
         self.options = OptionsScene(self.screen, self.window)
 
-    def draw_menu(self):
+    def draw(self):
         if self.main_menu:
             for idx, item in enumerate(self.menu_items):
                 color = GREEN if idx == self.selected_option else WHITE
@@ -34,7 +34,7 @@ class MainMenuScene:
         if self.options_menu:
             self.options.draw()
 
-    def handle_input(self, event):
+    def input(self, event):
         if self.main_menu:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
@@ -42,15 +42,15 @@ class MainMenuScene:
                 elif event.key == pygame.K_DOWN:
                     self.selected_option = (self.selected_option + 1) % len(self.menu_items)
                 elif event.key == pygame.K_RETURN:
-                    self.perform_action()
+                    self.action()
 
         elif self.options_menu:
-            self.options.handle_input(event)
+            self.options.input(event)
             if self.options.finished:
                 self.options_menu = False
                 self.main_menu = True
 
-    def perform_action(self):
+    def action(self):
         selected_item = self.menu_items[self.selected_option]
         if selected_item == 'START':
             self.start_game = True
@@ -76,7 +76,7 @@ class MainMenuScene:
 
     def update(self):
         self.screen.fill('black')
-        self.draw_menu()
+        self.draw()
 
 
 class OptionsScene:
@@ -121,34 +121,34 @@ class OptionsScene:
         full_rect = pygame.Rect(WIDTH // 2 - 50, HEIGHT // 2 + 10, 100, 10)
         pygame.draw.rect(self.screen, GREEN, full_rect, 1)
 
-    def handle_scaling_options(self):
+    def scaling_options(self):
         self.scale = min(max(self.scale, 1), 4)
         self.current_chosen_scale = self.resolution_items[self.scale-1]
         self.window.size = (WIDTH * self.scale, HEIGHT * self.scale)
 
-    def handle_sound_options(self):
+    def sound_options(self):
         self.sound_volume = min(max(self.sound_volume, 0), 100)
         self.sound_slider_rect = pygame.Rect(WIDTH // 2-50, HEIGHT // 2 + 10, self.sound_volume-1, 10)
 
-    def handle_input(self, event):
+    def input(self, event):
         self.finished = False
         if event.type == pygame.KEYDOWN:
 
             if event.key == pygame.K_LEFT:
                 if self.selecting_resolution:
                     self.scale -= 1
-                    self.handle_scaling_options()
+                    self.scaling_options()
                 if self.selecting_sound:
                     self.sound_volume -= 1
-                    self.handle_sound_options()
+                    self.sound_options()
 
             elif event.key == pygame.K_RIGHT:
                 if self.selecting_resolution:
                     self.scale += 1
-                    self.handle_scaling_options()
+                    self.scaling_options()
                 if self.selecting_sound:
                     self.sound_volume += 1
-                    self.handle_sound_options()
+                    self.sound_options()
 
             elif event.key == pygame.K_UP:
                 self.current_option = (self.current_option - 1) % len(self.menu_items)
@@ -186,7 +186,7 @@ class GameOverScene:
     def __init__(self, screen):
         self.screen = screen
 
-    def show(self):
+    def draw(self):
 
         game_over_text = FONT_8.render("GAME OVER", True, WHITE)
         restart_text = FONT_8.render("Press 'R' TO RESTART", True, WHITE)
