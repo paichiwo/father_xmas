@@ -110,6 +110,3 @@ class Player(Entity):
 
         self.collect_sleigh()
         self.leave_sleigh()
-
-        print('climbing', self.climbing)
-        print('landed', self.landed)

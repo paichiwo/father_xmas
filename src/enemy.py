@@ -51,7 +51,7 @@ class EnemyElf(Entity):
             if self.climbing and self.landed:
                 self.climbing = False
                 self.random_number = random.choice([0, 1])
-                self.direction.x = 1
+                self.direction.x = 1 if self.direction.x == -1 else -1
 
     def update(self, dt):
         self.move(dt)

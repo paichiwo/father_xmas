@@ -74,7 +74,7 @@ class Game:
         return not self.dashboard.game_over
 
     def show_game_over_screen(self):
-        if self.states['game_over_scene_active']:
+        if self.states['game_over_scene_running']:
             self.game_over_scene.draw()
 
     def reset_game(self):
