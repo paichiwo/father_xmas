@@ -28,18 +28,21 @@ class Player(Entity):
             self.direction.x = 0
 
         # vertical
-        if keys[pygame.K_UP] and middle_of_ladder:
-            if can_climb:
-                self.direction.y = -1
-                self.animation_possible = True
-                self.climbing = True
-                self.status = 'climb'
-        elif keys[pygame.K_DOWN] and middle_of_ladder:
-            if climb_down:
-                self.direction.y = 1
-                self.animation_possible = True
-                self.climbing = True
-                self.status = 'climb'
+        if keys[pygame.K_UP]:
+            if middle_of_ladder:
+                if can_climb:
+                    self.direction.y = -1
+                    self.animation_possible = True
+                    self.climbing = True
+                    self.status = 'climb'
+
+        elif keys[pygame.K_DOWN]:
+            if middle_of_ladder:
+                if climb_down:
+                    self.direction.y = 1
+                    self.animation_possible = True
+                    self.climbing = True
+                    self.status = 'climb'
         else:
             self.direction.y = 0
             if self.climbing and self.landed:

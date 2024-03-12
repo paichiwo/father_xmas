@@ -1,4 +1,6 @@
 import random
+from os import walk
+
 from src.sprites import SimpleSprite, AnimatedSprite, Snowflake, Sleigh
 from src.player import Player
 from src.enemy import EnemyElf
@@ -20,7 +22,7 @@ class Platformer:
         self.snowflakes = []
 
         # Create groups
-        self.player_group = pygame.sprite.Group()
+        self.player_group = pygame.sprite.GroupSingle()
         self.platforms_group = pygame.sprite.Group()
         self.ladders_group = pygame.sprite.Group()
         self.collision_walls = pygame.sprite.Group()
@@ -28,6 +30,8 @@ class Platformer:
         self.sleigh_group = pygame.sprite.Group()
         self.completed_sleigh_group = pygame.sprite.Group()
         self.enemy_group = pygame.sprite.Group()
+
+        self.frames = {}
 
         img_path = 'assets/level/'
         self.images = {
