@@ -6,6 +6,8 @@ class Entity(pygame.sprite.Sprite):
     def __init__(self, pos, screen, platformer, path, group):
         super().__init__(group)
 
+        self.name = 'entity'
+
         # General setup
         self.screen = screen
         self.platformer = platformer
@@ -66,24 +68,30 @@ class Entity(pygame.sprite.Sprite):
     def collisions(self):
         # platform collision
         self.landed = False
-        for i in range(len(self.platformer.platforms_group)):
-            for platform in self.platformer.platforms_group:
-                if self.bottom.colliderect(platform.rect):
-                    self.landed = True
-                    if not self.climbing:
-                        self.direction.y = 0
-                        self.rect.bottom = platform.rect[1]
+        for platform in self.platformer.platforms_group:
+            if self.bottom.colliderect(platform.rect):
+                self.landed = True
+                if not self.climbing:
+                    self.direction.y = 0
+                    self.rect.bottom = platform.rect[1]
 
         # wall collision
         for wall in self.platformer.collision_walls:
             hitbox = pygame.Rect(
-                self.rect[0] + (2 if self.direction.x > 0 else -2), self.rect[1], self.rect[2],self.rect[3])
+                self.rect[0] + (2 if self.direction.x > 0 else -2), self.rect[1], self.rect[2], self.rect[3])
 
             if hitbox.colliderect(wall.rect):
                 if self.direction.x > 0:
-                    self.rect.right = wall.rect.left
+                    if self.name == 'player':
+                        self.rect.right = wall.rect.left
+                    elif self.name == 'elf':
+                        self.direction.x = -1
                 else:
-                    self.rect.left = wall.rect.right
+                    if self.name == 'player':
+                        self.rect.left = wall.rect.right
+                    elif self.name == 'elf':
+                        self.direction.x = 1
+
                 self.pos.x = hitbox[0]
 
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
@@ -94,7 +102,7 @@ class Entity(pygame.sprite.Sprite):
         middle_of_ladder = False
 
         under = pygame.rect.Rect((self.rect[0], self.rect[1] + self.rect.height),
-                                 (self.rect[2], self.rect[3] //3))
+                                 (self.rect[2], self.rect[3] // 3))
         pygame.draw.rect(self.screen, 'yellow', under)
         offset = 3
 
@@ -102,16 +110,12 @@ class Entity(pygame.sprite.Sprite):
             # going up
             if self.rect.colliderect(ladder.rect) and not can_climb:
                 can_climb = True
-                ladder_middle_x = ladder.rect.centerx
-                player_middle_x = under.centerx
-                middle_of_ladder = abs(player_middle_x - ladder_middle_x) <= offset
+                middle_of_ladder = abs(ladder.rect.centerx - under.centerx) <= offset
 
             # going down
             if under.colliderect(ladder.rect):
                 climb_down = True
-                ladder_middle_x = ladder.rect.centerx
-                player_middle_x = under.centerx
-                middle_of_ladder = abs(player_middle_x - ladder_middle_x) <= offset
+                middle_of_ladder = abs(ladder.rect.centerx - under.centerx) <= offset
 
         if (not can_climb and (not climb_down or self.direction.y < 0)) or (
                 self.landed and can_climb and self.direction.y > 0 and not climb_down):

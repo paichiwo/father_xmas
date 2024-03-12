@@ -7,6 +7,8 @@ class Player(Entity):
     def __init__(self, pos, screen, platformer, path, group):
         super().__init__(pos, screen, platformer, path, group)
 
+        self.name = 'player'
+
     def input(self):
         can_climb, climb_down, middle_of_ladder = self.check_climb()
         keys = pygame.key.get_pressed()
@@ -15,10 +17,12 @@ class Player(Entity):
         if keys[pygame.K_RIGHT] and not self.climbing:
             self.direction.x = 1
             self.animation_possible = True
+            self.climbing = False
             self.status = 'right'
         elif keys[pygame.K_LEFT] and not self.climbing:
             self.direction.x = -1
             self.animation_possible = True
+            self.climbing = False
             self.status = 'left'
         else:
             self.direction.x = 0
@@ -27,14 +31,12 @@ class Player(Entity):
         if keys[pygame.K_UP] and middle_of_ladder:
             if can_climb:
                 self.direction.y = -1
-                self.direction.x = 0
                 self.animation_possible = True
                 self.climbing = True
                 self.status = 'climb'
         elif keys[pygame.K_DOWN] and middle_of_ladder:
             if climb_down:
                 self.direction.y = 1
-                self.direction.x = 0
                 self.animation_possible = True
                 self.climbing = True
                 self.status = 'climb'
@@ -47,13 +49,12 @@ class Player(Entity):
             self.animation_possible = False
 
     def move_between_rooms(self):
-        current_room = self.platformer.current_room
 
-        for direction, (next_room, adjustment) in ROOM_TRANSITIONS[current_room].items():
-            if (direction == 'left' and self.rect.left < 0) or \
+        for direction, (next_room, adjustment) in ROOM_TRANSITIONS[self.platformer.current_room].items():
+            if (direction == 'left' and self.rect.left < -5) or \
                     (direction == 'right' and self.rect.right > WIDTH + 5) or \
                     (direction == 'up' and self.rect.top < -5) or \
-                    (direction == 'down' and self.rect.bottom > 144):
+                    (direction == 'down' and self.rect.bottom > 149):
 
                 self.platformer.current_room = next_room
                 if direction in ['left', 'right']:
@@ -106,3 +107,6 @@ class Player(Entity):
 
         self.collect_sleigh()
         self.leave_sleigh()
+
+        print('climbing', self.climbing)
+        print('landed', self.landed)

@@ -2,7 +2,6 @@ import sys
 import pygame._sdl2 as sdl2
 from src.config import *
 from src.level import Platformer, XmasLetter
-from src.player import Player
 from src.dashboard import Dashboard
 from src.scenes import MainMenuScene, GameOverScene
 
@@ -34,21 +33,12 @@ class Game:
         # Game variables
         self.running = True
 
-        # Sprite groups
-        self.player_group = pygame.sprite.GroupSingle()
-
         # Game objects
         self.main_menu_scene = MainMenuScene(self.screen, self.window)
         self.dashboard = Dashboard(self.screen)
         self.platformer = Platformer(self.screen)
         self.xmas_letter = XmasLetter(self.screen)
         self.game_over_scene = GameOverScene(self.screen)
-        self.player = Player(
-            pos=(100, 112),
-            screen=self.screen,
-            platformer=self.platformer,
-            path=PATHS['player'],
-            group=self.player_group)
 
     def handle_game_events(self, event):
         if event.type == pygame.QUIT:
@@ -64,13 +54,9 @@ class Game:
             self.states['main_menu_running'] = False
             self.dashboard.timer_start_time = pygame.time.get_ticks()
 
-    def draw_platformer_elements(self):
-        self.player_group.draw(self.screen)
-
     def update_platformer_elements(self, dt):
-        self.dashboard.update()
-        self.player_group.update(dt)
         self.platformer.update(dt)
+        self.dashboard.update()
 
     def platformer_check_win(self):
         if self.platformer.sleigh_completed:
@@ -89,13 +75,12 @@ class Game:
 
     def show_game_over_screen(self):
         if self.states['game_over_scene_active']:
-            self.game_over_scene.show()
+            self.game_over_scene.draw()
 
     def reset_game(self):
         self.running = True
         self.states['game_over_scene_running'] = False
         self.platformer.reset()
-        self.player.reset()
         self.dashboard.reset()
         self.main_menu_scene.reset()
 
@@ -114,9 +99,9 @@ class Game:
                 self.handle_game_events(event)
 
                 if self.states['main_menu_running']:
-                    self.main_menu_scene.handle_input(event)
-
+                    self.main_menu_scene.input(event)
             dt = self.clock.tick() / 1000
+
             if self.running:
                 if self.states['main_menu_running']:
                     self.main_menu_scene.update()
@@ -124,7 +109,6 @@ class Game:
 
                 if self.states['platformer_running']:
                     self.update_platformer_elements(dt)
-                    self.draw_platformer_elements()
                     self.platformer_check_win()
 
                 if self.states['xmas_letter_running']:

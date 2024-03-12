@@ -1,5 +1,6 @@
 import random
 from src.sprites import SimpleSprite, AnimatedSprite, Snowflake, Sleigh
+from src.player import Player
 from src.enemy import EnemyElf
 from src.config import *
 
@@ -19,6 +20,7 @@ class Platformer:
         self.snowflakes = []
 
         # Create groups
+        self.player_group = pygame.sprite.Group()
         self.platforms_group = pygame.sprite.Group()
         self.ladders_group = pygame.sprite.Group()
         self.collision_walls = pygame.sprite.Group()
@@ -72,10 +74,16 @@ class Platformer:
         self.current_room = 'room_0_2'
         self.rooms_list = ['room_0_0', 'room_0_1', 'room_0_2', 'room_1_0', 'room_1_1']
         self.random_room = self.get_random_room()
-        self.create_sleigh()
 
         # Populate the level with elements based on the current room layout
+        self.player = Player(
+            pos=(100, 112),
+            screen=self.screen,
+            platformer=self,
+            path=PATHS['player'],
+            group=self.player_group)
         self.populate_room()
+        self.create_sleigh()
 
         # timers
         self.enemy_spawn_timer = 0
@@ -217,6 +225,7 @@ class Platformer:
             self.enemy_spawn_delay = random.randint(2000, 5000)
 
     def reset(self):
+        self.player.reset()
         self.current_room = 'room_0_2'
         self.redraw_room()
         self.completed_sleigh_pieces = []
@@ -229,16 +238,16 @@ class Platformer:
         self.platforms_group.draw(self.screen)
         self.ladders_group.draw(self.screen)
         self.collision_walls.draw(self.screen)
+
         self.decorations_group.draw(self.screen)
+        self.player_group.draw(self.screen)
+        self.enemy_group.draw(self.screen)
 
         self.decorations_group.update()
-        self.sleigh_update()
-        self.enemy_group.draw(self.screen)
+        self.player_group.update(dt)
         self.enemy_group.update(dt)
 
-        # for sleigh in self.sleigh_group:
-        #     pygame.draw.rect(self.screen, 'red', sleigh.rect, 1)
-        # print(self.random_room)
+        self.sleigh_update()
 
 
 class XmasLetter:
