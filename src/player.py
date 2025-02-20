@@ -14,35 +14,34 @@ class Player(Entity):
         keys = pygame.key.get_pressed()
 
         # horizontal
-        if keys[pygame.K_RIGHT] and not self.climbing:
-            self.direction.x = 1
-            self.animation_possible = True
-            self.climbing = False
-            self.status = 'right'
-        elif keys[pygame.K_LEFT] and not self.climbing:
-            self.direction.x = -1
-            self.animation_possible = True
-            self.climbing = False
-            self.status = 'left'
-        else:
-            self.direction.x = 0
+        if not self.climbing and self.landed:
+            if keys[pygame.K_RIGHT]:
+                self.direction.x = 1
+                self.animation_possible = True
+                self.climbing = False
+                self.status = 'right'
+            elif keys[pygame.K_LEFT]:
+                self.direction.x = -1
+                self.animation_possible = True
+                self.climbing = False
+                self.status = 'left'
+            else:
+                self.direction.x = 0
 
         # vertical
         if keys[pygame.K_UP]:
-            if middle_of_ladder:
-                if can_climb:
-                    self.direction.y = -1
-                    self.animation_possible = True
-                    self.climbing = True
-                    self.status = 'climb'
+            if middle_of_ladder and can_climb:
+                self.direction.y = -1
+                self.animation_possible = True
+                self.climbing = True
+                self.status = 'climb'
 
         elif keys[pygame.K_DOWN]:
-            if middle_of_ladder:
-                if climb_down:
-                    self.direction.y = 1
-                    self.animation_possible = True
-                    self.climbing = True
-                    self.status = 'climb'
+            if middle_of_ladder and climb_down:
+                self.direction.y = 1
+                self.animation_possible = True
+                self.climbing = True
+                self.status = 'climb'
         else:
             self.direction.y = 0
             if self.climbing and self.landed:
