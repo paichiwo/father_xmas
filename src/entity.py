@@ -20,8 +20,6 @@ class Entity(pygame.sprite.Sprite):
 
         self.image = self.frames[self.status][self.frame_index]
         self.rect = self.image.get_rect(midbottom=pos)
-        self.animation_possible = True
-
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
 
         # Movement attributes
@@ -33,14 +31,9 @@ class Entity(pygame.sprite.Sprite):
         self.landed = False
 
     def animate(self, dt):
-        if self.animation_possible:
             self.frame_index += 7 * dt
             if self.frame_index >= len(self.frames[self.status]):
                 self.frame_index = 0
-        else:
-            self.frame_index = 1
-
-        self.image = self.frames[self.status][int(self.frame_index)]
 
     def import_assets(self, path):
         for index, folder in enumerate(walk(path)):
@@ -80,10 +73,8 @@ class Entity(pygame.sprite.Sprite):
 
         # wall collision
         for wall in self.platformer.collision_walls:
-            hitbox = pygame.Rect(
-                self.rect[0] + (2 if self.direction.x > 0 else -2), self.rect[1], self.rect[2], self.rect[3])
 
-            if hitbox.colliderect(wall.rect):
+            if self.rect.colliderect(wall.rect):
                 if self.direction.x > 0:
                     if self.name == 'player':
                         self.rect.right = wall.rect.left
@@ -95,13 +86,13 @@ class Entity(pygame.sprite.Sprite):
                     elif self.name == 'elf':
                         self.direction.x = 1
 
-                self.pos.x = hitbox[0]
+                self.pos.x = self.rect[0]
 
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
 
     def check_climb(self):
-        can_climb = False
-        climb_down = False
+        can_climb_up = False
+        can_climb_down = False
         middle_of_ladder = False
 
         under = pygame.rect.Rect(
@@ -110,21 +101,21 @@ class Entity(pygame.sprite.Sprite):
         )
         pygame.draw.rect(self.screen, 'yellow', under)
 
-        offset = 2 if self.name == 'player' else 1
+        offset = 3 if self.name == 'player' else 1
 
         for ladder in self.platformer.ladders_group:
             # going up
-            if self.rect.colliderect(ladder.rect) and not can_climb:
-                can_climb = True
+            if self.rect.colliderect(ladder.rect) and not can_climb_up:
+                can_climb_up = True
                 middle_of_ladder = abs(ladder.rect.centerx - under.centerx) <= offset
 
             # going down
             if under.colliderect(ladder.rect):
-                climb_down = True
+                can_climb_down = True
                 middle_of_ladder = abs(ladder.rect.centerx - under.centerx) <= offset
 
-        if (not can_climb and (not climb_down or self.direction.y < 0)) or (
-                self.landed and can_climb and self.direction.y > 0 and not climb_down):
+        if (not can_climb_up and (not can_climb_down or self.direction.y < 0)) or (
+                self.landed and can_climb_up and self.direction.y > 0 and not can_climb_down):
             self.climbing = False
 
-        return can_climb, climb_down, middle_of_ladder
+        return can_climb_up, can_climb_down, middle_of_ladder

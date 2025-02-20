@@ -10,48 +10,45 @@ class Player(Entity):
         self.name = 'player'
 
     def input(self):
-        can_climb, climb_down, middle_of_ladder = self.check_climb()
+        can_climb_up, can_climb_down, middle_of_ladder = self.check_climb()
         keys = pygame.key.get_pressed()
 
         # horizontal
         if not self.climbing and self.landed:
             if keys[pygame.K_RIGHT]:
                 self.direction.x = 1
-                self.animation_possible = True
                 self.climbing = False
-                self.status = 'right'
+                self.image = self.frames['right'][int(self.frame_index)]
             elif keys[pygame.K_LEFT]:
                 self.direction.x = -1
-                self.animation_possible = True
                 self.climbing = False
-                self.status = 'left'
+                self.image = self.frames['left'][int(self.frame_index)]
             else:
                 self.direction.x = 0
 
         # vertical
         if keys[pygame.K_UP]:
-            if middle_of_ladder and can_climb:
+            if middle_of_ladder and can_climb_up:
                 self.direction.y = -1
-                self.animation_possible = True
                 self.climbing = True
-                self.status = 'climb'
-
+                self.image = self.frames['climb'][int(self.frame_index)]
         elif keys[pygame.K_DOWN]:
-            if middle_of_ladder and climb_down:
+            if middle_of_ladder and can_climb_down:
                 self.direction.y = 1
-                self.animation_possible = True
                 self.climbing = True
-                self.status = 'climb'
+                self.image = self.frames['climb'][int(self.frame_index)]
         else:
             self.direction.y = 0
             if self.climbing and self.landed:
                 self.climbing = False
 
         if not any((keys[pygame.K_RIGHT], keys[pygame.K_LEFT], keys[pygame.K_UP], keys[pygame.K_DOWN])):
-            self.animation_possible = False
+            if self.direction.x == 1:
+                self.image = self.frames['right'][1]
+            elif self.direction.x == -1:
+                self.image = self.frames['left'][1]
 
     def move_between_rooms(self):
-
         for direction, (next_room, adjustment) in ROOM_TRANSITIONS[self.platformer.current_room].items():
             if (direction == 'left' and self.rect.left < -5) or \
                     (direction == 'right' and self.rect.right > WIDTH + 5) or \
@@ -102,10 +99,7 @@ class Player(Entity):
         self.input()
         self.move(dt)
         self.animate(dt)
-
         self.collisions()
-
         self.move_between_rooms()
-
         self.collect_sleigh()
         self.leave_sleigh()
