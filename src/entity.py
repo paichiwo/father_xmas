@@ -55,6 +55,9 @@ class Entity(pygame.sprite.Sprite):
                     self.frames[key].append(surf)
 
     def move(self, dt):
+        if self.climbing:
+            self.direction.x = 0
+
         # horizontal
         self.pos.x += self.direction.x * self.speed * dt
         self.rect.x = round(self.pos.x)
@@ -63,7 +66,7 @@ class Entity(pygame.sprite.Sprite):
         self.pos.y += self.direction.y * self.speed * dt
         self.rect.y = round(self.pos.y)
 
-        pygame.draw.rect(self.screen, 'orange', self.bottom)
+        # pygame.draw.rect(self.screen, 'orange', self.bottom)
 
     def collisions(self):
         # platform collision
@@ -101,10 +104,13 @@ class Entity(pygame.sprite.Sprite):
         climb_down = False
         middle_of_ladder = False
 
-        under = pygame.rect.Rect((self.rect[0], self.rect[1] + self.rect.height),
-                                 (self.rect[2], self.rect[3] // 3))
+        under = pygame.rect.Rect(
+            (self.rect.centerx - self.rect.width // 6, self.rect.bottom),
+            (self.rect.width // 3, self.rect.height // 3)
+        )
         pygame.draw.rect(self.screen, 'yellow', under)
-        offset = 3
+
+        offset = 2 if self.name == 'player' else 1
 
         for ladder in self.platformer.ladders_group:
             # going up
