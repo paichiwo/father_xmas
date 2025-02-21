@@ -36,7 +36,7 @@ ROOM_TRANSITIONS = {
                  'up': ('room_0_1', 100)},
     'room_1_2': {'left': ('room_1_1', 302)}
 }
-
+# pos_x, pos_y, direction_x
 ENEMY_SPAWN_POS = {
     'room_0_0': [(360, 112, -1)],
     'room_0_1': [(-40, 112, 1), (360, 112, -1)],
