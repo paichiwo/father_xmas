@@ -1,6 +1,9 @@
 import sys
+
+import pygame
 import pygame._sdl2 as sdl2
 from src.config import *
+from src.debug import DebugMenu
 from src.level import Platformer, XmasLetter
 from src.dashboard import Dashboard
 from src.scenes import MainMenuScene, GameOverScene
@@ -27,7 +30,8 @@ class Game:
             'gift_rain_running': False,
             'gift_delivery_running': False,
             'congratulations_running': False,
-            'game_over_scene_running': False
+            'game_over_scene_running': False,
+            'debug_visible': False
         }
 
         # Game variables
@@ -40,6 +44,8 @@ class Game:
         self.xmas_letter = XmasLetter(self.screen)
         self.game_over_scene = GameOverScene(self.screen)
 
+        self.debug_menu = DebugMenu(self.screen, self.clock, self.platformer, self.states)
+
     def handle_game_events(self, event):
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -47,6 +53,11 @@ class Game:
         if not self.running:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
                 self.reset_game()
+        else:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_d:
+                print('debug running')
+                self.states['debug_visible'] = not self.states['debug_visible']
+
 
     def check_game_start(self):
         self.states['platformer_running'] = self.main_menu_scene.start_game
@@ -121,6 +132,9 @@ class Game:
                 self.states['game_over_scene_running'] = True
                 self.states['platformer_running'] = False
                 self.show_game_over_screen()
+
+            if self.states['debug_visible']:
+                self.debug_menu.update()
 
             sdl2.Texture.from_surface(self.renderer, self.screen).draw()
             self.renderer.present()
