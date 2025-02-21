@@ -11,7 +11,6 @@ class EnemyElf(pygame.sprite.Sprite):
 
         # Image, Rect, Animation
         self.frames = import_assets(path)
-        print(self.frames)
         self.frame_index = 1
 
         self.image = self.frames['walk'][self.frame_index]
@@ -22,7 +21,6 @@ class EnemyElf(pygame.sprite.Sprite):
         # Movement attributes
         self.direction = pygame.math.Vector2()
         self.pos = pygame.math.Vector2(self.rect.topleft)
-        self.speed = 120
 
         self.climbing = False
         self.landed = False
@@ -62,7 +60,6 @@ class EnemyElf(pygame.sprite.Sprite):
 
         # horizontal
         if not self.climbing and self.landed:
-
             if elapsed_time >= self.direction_timer or self.pos.x > 450 or self.pos.x < -120:
                 self.direction.y = 0
                 self.direction.x *= -1
@@ -148,6 +145,7 @@ class EnemyElf(pygame.sprite.Sprite):
         return can_climb_up, can_climb_down, middle_of_ladder
 
     def update(self, dt):
+        # anim frames to use
         if self.direction.x == -1:
             self.image = self.frames['walk'][int(self.frame_index)]
         elif self.direction.x == 1:
