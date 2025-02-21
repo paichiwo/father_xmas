@@ -2,20 +2,19 @@ import random
 import pygame
 from src.helpers import import_assets
 
-# create debug menu
 class EnemyElf(pygame.sprite.Sprite):
     def __init__(self, pos, direction_x, screen, platformer, path, group):
-        super().__init__(pos, screen, platformer, path, group)
+        super().__init__(group)
 
         self.screen = screen
         self.platformer = platformer
 
         # Image, Rect, Animation
         self.frames = import_assets(path)
+        print(self.frames)
         self.frame_index = 1
-        self.status = 'left'
 
-        self.image = self.frames[self.status][self.frame_index]
+        self.image = self.frames['walk'][self.frame_index]
         self.rect = self.image.get_rect(midbottom=pos)
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
         self.under = self.rect
@@ -27,8 +26,6 @@ class EnemyElf(pygame.sprite.Sprite):
 
         self.climbing = False
         self.landed = False
-
-
 
         self.direction.x = direction_x
         self.speed = 50
@@ -43,7 +40,7 @@ class EnemyElf(pygame.sprite.Sprite):
 
     def animate(self, dt):
             self.frame_index += 7 * dt
-            if self.frame_index >= len(self.frames[self.status]):
+            if self.frame_index >= len(self.frames['walk']):
                 self.frame_index = 0
 
     def move(self, dt):
@@ -58,8 +55,6 @@ class EnemyElf(pygame.sprite.Sprite):
         self.pos.y += self.direction.y * self.speed * dt
         self.rect.y = round(self.pos.y)
 
-        # pygame.draw.rect(self.screen, 'orange', self.bottom)
-
     def direction_change(self):
         can_climb_up, can_climb_down, middle_of_ladder = self.check_climb()
         current_time = pygame.time.get_ticks()
@@ -67,7 +62,6 @@ class EnemyElf(pygame.sprite.Sprite):
 
         # horizontal
         if not self.climbing and self.landed:
-            self.status = 'right' if self.direction.x > 0 else 'left'
 
             if elapsed_time >= self.direction_timer or self.pos.x > 450 or self.pos.x < -120:
                 self.direction.y = 0
@@ -75,7 +69,6 @@ class EnemyElf(pygame.sprite.Sprite):
                 self.random_number = 0
                 self.last_direction_change_time = current_time
                 self.direction_timer = random.randint(2000, 5000)
-                # self.random_number = random.choice([0, 1])
 
         # vertical
         if can_climb_up and middle_of_ladder and self.random_number == 0:
@@ -84,7 +77,6 @@ class EnemyElf(pygame.sprite.Sprite):
                 self.direction.y = -1  # Climb up
                 self.direction.x = 0
                 self.climbing = True
-                self.status = 'climb'
                 self.random_number = random.choice([0, 1, 1])
 
         elif can_climb_down and middle_of_ladder and self.random_number == 0:
@@ -93,7 +85,6 @@ class EnemyElf(pygame.sprite.Sprite):
                 self.direction.y = 1  # Climb down
                 self.direction.x = 0
                 self.climbing = True
-                self.status = 'climb'
                 self.random_number = random.choice([0, 1])
 
         else:
@@ -102,7 +93,6 @@ class EnemyElf(pygame.sprite.Sprite):
                 self.climbing = False
                 self.direction.x = self.random_number
                 self.random_number = random.choice([-1, 1])
-                # self.direction.x = 1 if self.direction.x == -1 else -1
 
     def collisions(self):
         # platform collision
@@ -158,13 +148,14 @@ class EnemyElf(pygame.sprite.Sprite):
         return can_climb_up, can_climb_down, middle_of_ladder
 
     def update(self, dt):
-        if self.status == 'right' or self.status == 'left':
-            self.image = self.frames[self.status][int(self.frame_index)]
-        elif self.status == 'climb':
+        if self.direction.x == -1:
+            self.image = self.frames['walk'][int(self.frame_index)]
+        elif self.direction.x == 1:
+            self.image = pygame.transform.flip(self.frames['walk'][int(self.frame_index)], True, False)
+        elif self.direction.x == 0 and (self.direction.y == -1 or self.direction.y == 1):
             self.image = self.frames['climb'][int(self.frame_index)]
 
         self.move(dt)
         self.animate(dt)
         self.direction_change()
         self.collisions()
-

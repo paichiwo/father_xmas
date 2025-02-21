@@ -14,9 +14,8 @@ class Player(pygame.sprite.Sprite):
         # Image, Rect, Animation
         self.frames = import_assets(path)
         self.frame_index = 1
-        self.status = 'left'
 
-        self.image = self.frames[self.status][self.frame_index]
+        self.image = self.frames['walk'][self.frame_index]
         self.rect = self.image.get_rect(midbottom=pos)
         self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
         self.under = self.rect
@@ -33,7 +32,7 @@ class Player(pygame.sprite.Sprite):
 
     def animate(self, dt):
             self.frame_index += 7 * dt
-            if self.frame_index >= len(self.frames[self.status]):
+            if self.frame_index >= len(self.frames['walk']):
                 self.frame_index = 0
 
     def input(self):
@@ -42,22 +41,21 @@ class Player(pygame.sprite.Sprite):
 
         # horizontal
         if not self.climbing and self.landed:
-            if keys[pygame.K_RIGHT]:
-                self.direction.x = 1
-                self.image = self.frames['right'][int(self.frame_index)]
-            elif keys[pygame.K_LEFT]:
+            if keys[pygame.K_LEFT]:
                 self.direction.x = -1
-                self.image = self.frames['left'][int(self.frame_index)]
+                self.image = self.frames['walk'][int(self.frame_index)]
+            elif keys[pygame.K_RIGHT]:
+                self.direction.x = 1
+                self.image = pygame.transform.flip(self.frames['walk'][int(self.frame_index)], True, False)
             else:
                 self.direction.x = 0
 
-        if keys[pygame.K_UP]:
-            if middle_of_ladder and can_climb_up:
+        # vertical
+        if keys[pygame.K_UP] and can_climb_up and middle_of_ladder:
                 self.direction.y = -1
                 self.climbing = True
                 self.image = self.frames['climb'][int(self.frame_index)]
-        elif keys[pygame.K_DOWN]:
-            if middle_of_ladder and can_climb_down:
+        elif keys[pygame.K_DOWN] and can_climb_down and middle_of_ladder:
                 self.direction.y = 1
                 self.climbing = True
                 self.image = self.frames['climb'][int(self.frame_index)]
@@ -67,10 +65,10 @@ class Player(pygame.sprite.Sprite):
                 self.climbing = False
 
         if not any((keys[pygame.K_RIGHT], keys[pygame.K_LEFT], keys[pygame.K_UP], keys[pygame.K_DOWN])):
-            if self.direction.x == 1:
-                self.image = self.frames['right'][1]
-            elif self.direction.x == -1:
-                self.image = self.frames['left'][1]
+            if self.direction.x == -1:
+                self.image = self.frames['walk'][1]
+            elif self.direction.x == 1:
+                self.image = pygame.transform.flip(self.frames['walk'][1], True, False)
 
     def move(self, dt):
         if self.climbing:
@@ -83,8 +81,6 @@ class Player(pygame.sprite.Sprite):
         # horizontal
         self.pos.y += self.direction.y * self.speed * dt
         self.rect.y = round(self.pos.y)
-
-        # pygame.draw.rect(self.screen, 'orange', self.bottom)
 
     def collisions(self):
         # platform collision
@@ -183,7 +179,6 @@ class Player(pygame.sprite.Sprite):
 
     def reset(self):
         self.rect.midbottom = (100, 150)
-        self.status = 'left'
 
     def update(self, dt):
         self.input()
