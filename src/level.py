@@ -247,7 +247,7 @@ class Platformer:
         self.player_group.draw(self.screen)
         self.enemy_group.draw(self.screen)
 
-        self.decorations_group.update()
+        self.decorations_group.update(dt)
         self.player_group.update(dt)
         self.enemy_group.update(dt)
 

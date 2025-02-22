@@ -20,15 +20,15 @@ class AnimatedSprite(SimpleSprite):
         self.image = self.frames[self.frames_index]
         self.rect = self.image.get_rect(topleft=pos)
 
-    def animate(self):
-        self.frames_index += 0.2
+    def animate(self, dt):
+        self.frames_index += 9 * dt
         if self.frames_index >= len(self.frames):
             self.frames_index = 0
 
         self.image = self.frames[int(self.frames_index)]
 
-    def update(self):
-        self.animate()
+    def update(self, dt):
+        self.animate(dt)
 
 
 class Sleigh(SimpleSprite):
