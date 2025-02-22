@@ -123,7 +123,6 @@ class EnemyElf(pygame.sprite.Sprite):
             (self.rect.centerx - self.rect.width // 6, self.rect.bottom),
             (self.rect.width // 3, self.rect.height // 3)
         )
-        pygame.draw.rect(self.screen, 'yellow', self.under_rect)
 
         offset = 1
 
