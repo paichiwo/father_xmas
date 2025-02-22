@@ -95,6 +95,7 @@ class Game:
         self.activate_game_state('main_menu_running')
 
     def run(self):
+        event = None
         while True:
             self.screen.fill(BLACK)
             self.renderer.clear()
@@ -124,7 +125,7 @@ class Game:
                 self.show_game_over_screen()
 
             if self.states['debug_visible']:
-                self.debug_menu.update()
+                self.debug_menu.update(event)
 
             sdl2.Texture.from_surface(self.renderer, self.screen).draw()
             self.renderer.present()
