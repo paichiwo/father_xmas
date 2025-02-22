@@ -20,6 +20,7 @@ PATHS = {
 # ASSETS
 pygame.init()
 FONT_8 = pygame.font.Font('assets/font/C64_Pro_Mono-STYLE.ttf', size=8)
+FONT_DEBUG = pygame.font.Font('assets/font/debug_font.ttf', size=10)
 
 ROOM_TRANSITIONS = {
     'room_0_0': {'right': ('room_0_1', 0),
