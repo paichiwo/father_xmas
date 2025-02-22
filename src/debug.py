@@ -25,7 +25,8 @@ class DebugMenu:
 
         self.debug_items = {
             'FPS': 0,
-            'UNDER': False
+            'UNDER': False,
+            'BOTTOM': False
         }
 
         self.item_positions = []
@@ -49,6 +50,7 @@ class DebugMenu:
         self.draw_title()
         self.update_fps()
         self.draw_under_rects()
+        self.draw_bottom_rects()
 
         padding = 3
         x_left = self.rect.left + padding
@@ -79,9 +81,16 @@ class DebugMenu:
     def draw_under_rects(self):
         """Draws under_rects of the player and enemies"""
         if self.debug_items['UNDER']:
-            pygame.draw.rect(self.screen, 'YELLOW', self.level.player.under_rect)
+            pygame.draw.rect(self.screen, 'YELLOW', self.level.player.under_rect, 1)
             for enemy in self.level.enemy_group:
-                pygame.draw.rect(self.screen, 'YELLOW', enemy.under_rect)
+                pygame.draw.rect(self.screen, 'YELLOW', enemy.under_rect, 1)
+
+    def draw_bottom_rects(self):
+        """Draws bottom_rects of the player and enemies"""
+        if self.debug_items['BOTTOM']:
+            pygame.draw.rect(self.screen, 'ORANGE', self.level.player.bottom_rect, 1)
+            for enemy in self.level.enemy_group:
+                pygame.draw.rect(self.screen, 'ORANGE', enemy.bottom_rect, 1)
 
     def handle_mouse_event(self, event):
         """Handles mouse input for toggling debug options."""
@@ -97,6 +106,8 @@ class DebugMenu:
     def toggle_item(self, item: str):
         """Toggles the state of a debug item."""
         if item == 'UNDER':
+            self.debug_items[item] = not self.debug_items[item]
+        elif item == 'BOTTOM':
             self.debug_items[item] = not self.debug_items[item]
 
     def update(self, event):
