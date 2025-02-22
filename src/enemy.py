@@ -15,8 +15,8 @@ class EnemyElf(pygame.sprite.Sprite):
 
         self.image = self.frames['walk'][self.frame_index]
         self.rect = self.image.get_rect(midbottom=pos)
-        self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
-        self.under = self.rect
+        self.bottom_rect = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
+        self.under_rect = pygame.rect.Rect(0, 0, 0, 0)
 
         # Movement attributes
         self.direction = pygame.math.Vector2()
@@ -95,7 +95,7 @@ class EnemyElf(pygame.sprite.Sprite):
         # platform collision
         self.landed = False
         for platform in self.platformer.platforms_group:
-            if self.bottom.colliderect(platform.rect):
+            if self.bottom_rect.colliderect(platform.rect):
                 self.landed = True
                 if not self.climbing:
                     self.direction.y = 0
@@ -112,18 +112,18 @@ class EnemyElf(pygame.sprite.Sprite):
 
                 self.pos.x = self.rect[0]
 
-        self.bottom = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
+        self.bottom_rect = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
 
     def check_climb(self):
         can_climb_up = False
         can_climb_down = False
         middle_of_ladder = False
 
-        self.under = pygame.rect.Rect(
+        self.under_rect = pygame.rect.Rect(
             (self.rect.centerx - self.rect.width // 6, self.rect.bottom),
             (self.rect.width // 3, self.rect.height // 3)
         )
-        pygame.draw.rect(self.screen, 'yellow', self.under)
+        pygame.draw.rect(self.screen, 'yellow', self.under_rect)
 
         offset = 1
 
@@ -131,12 +131,12 @@ class EnemyElf(pygame.sprite.Sprite):
             # going up
             if self.rect.colliderect(ladder.rect) and not can_climb_up:
                 can_climb_up = True
-                middle_of_ladder = abs(ladder.rect.centerx - self.under.centerx) <= offset
+                middle_of_ladder = abs(ladder.rect.centerx - self.under_rect.centerx) <= offset
 
             # going down
-            if self.under.colliderect(ladder.rect):
+            if self.under_rect.colliderect(ladder.rect):
                 can_climb_down = True
-                middle_of_ladder = abs(ladder.rect.centerx - self.under.centerx) <= offset
+                middle_of_ladder = abs(ladder.rect.centerx - self.under_rect.centerx) <= offset
 
         if (not can_climb_up and (not can_climb_down or self.direction.y < 0)) or (
                 self.landed and can_climb_up and self.direction.y > 0 and not can_climb_down):
