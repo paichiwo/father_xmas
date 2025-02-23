@@ -129,21 +129,34 @@ class OptionsScene:
 
             if event.key == pygame.K_UP:
                 self.selected_option = self.menu_items[(current_index - 1) % len(self.menu_items)]
+
             if event.key == pygame.K_DOWN:
                 self.selected_option = self.menu_items[(current_index + 1) % len(self.menu_items)]
+
             if event.key == pygame.K_LEFT:
-                if self.selected_option == 'VOLUME':
-                    self.states['VOLUME'] = max(0, self.states['VOLUME'] -1)
-                    self.options['VOLUME'] = str(self.states['VOLUME'])
-            if event.key == pygame.K_RIGHT:
-                if self.selected_option == 'VOLUME':
-                    self.states['VOLUME'] = min(100, self.states['VOLUME'] + 1)
-                    self.options['VOLUME'] = str(self.states['VOLUME'])
-            if event.key == pygame.K_RETURN:
                 if self.selected_option == 'FULLSCREEN':
                     self.states['FULLSCREEN'] = not self.states['FULLSCREEN']
-                    self.main.window.set_fullscreen(True) if self.states['FULLSCREEN'] else self.main.window.set_windowed()
-                elif self.selected_option == 'ACCEPT':
+                    self.main.window.set_fullscreen(True) if self.states[
+                        'FULLSCREEN'] else self.main.window.set_windowed()
+                    self.options['FULLSCREEN'] = f"{'YES' if self.states['FULLSCREEN'] else 'NO'}"
+
+                elif self.selected_option == 'VOLUME':
+                    self.states['VOLUME'] = max(0, self.states['VOLUME'] -1)
+                    self.options['VOLUME'] = str(self.states['VOLUME'])
+
+            if event.key == pygame.K_RIGHT:
+                if self.selected_option == 'FULLSCREEN':
+                    self.states['FULLSCREEN'] = not self.states['FULLSCREEN']
+                    self.main.window.set_fullscreen(True) if self.states[
+                        'FULLSCREEN'] else self.main.window.set_windowed()
+                    self.options['FULLSCREEN'] = f"{'YES' if self.states['FULLSCREEN'] else 'NO'}"
+
+                elif self.selected_option == 'VOLUME':
+                    self.states['VOLUME'] = min(100, self.states['VOLUME'] + 1)
+                    self.options['VOLUME'] = str(self.states['VOLUME'])
+
+            if event.key == pygame.K_RETURN:
+                if self.selected_option == 'ACCEPT':
                     self.main.reset()
 
         elif event.type == pygame.KEYUP:
