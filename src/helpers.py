@@ -15,3 +15,8 @@ def import_assets(path):
                 key = folder[0].split('\\')[1]
                 frames[key].append(surf)
     return frames
+
+def activate_state(states, new_state):
+    for key in states.keys():
+        states[key] = False
+    states[new_state] = True
