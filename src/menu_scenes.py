@@ -1,11 +1,11 @@
-import pygame
-
 from src.config import *
+from src.helpers import activate_state
 
 
 class MainMenuScene:
-    def __init__(self, screen):
+    def __init__(self, screen, window):
         self.screen = screen
+        self.window = window
 
         self.states = {
             'START': False,
@@ -16,7 +16,7 @@ class MainMenuScene:
         }
 
         self.scenes = {
-            'OPTIONS': OptionsScene(self.screen),
+            'OPTIONS': OptionsScene(self.screen, self),
             'SCORES': ScoresScene(self.screen),
             'CREDITS': CreditsScene(self.screen)
         }
@@ -24,11 +24,7 @@ class MainMenuScene:
         self.menu_items = [key for key in self.states.keys() if key != 'MAIN MENU']
         self.menu_rects = {}
         self.selected_option = 'START'
-
-    def activate_state(self, state):
-        for key in self.states.keys():
-            self.states[key] = False
-        self.states[state] = True
+        self.button_held = False
 
     def draw_main_menu(self):
         self.menu_rects = {}
@@ -43,7 +39,9 @@ class MainMenuScene:
 
     def input(self, event):
         if self.states['MAIN MENU']:
-            if event.type == pygame.KEYDOWN:
+            # handle keyboard input
+            if event.type == pygame.KEYDOWN and not self.button_held:
+                self.button_held = True
                 current_index = self.menu_items.index(self.selected_option)
 
                 if event.key == pygame.K_UP:
@@ -51,40 +49,109 @@ class MainMenuScene:
                 elif event.key == pygame.K_DOWN:
                     self.selected_option = self.menu_items[(current_index + 1) % len(self.menu_items)]
                 elif event.key == pygame.K_RETURN:
-                    self.activate_state(self.selected_option)
+                    activate_state(self.states, self.selected_option)
 
+            elif event.type == pygame.KEYUP:
+                self.button_held = False
+
+            # handle mouse input
             elif event.type == pygame.MOUSEMOTION:
                 for item, rect in self.menu_rects.items():
                     if rect.collidepoint(event.pos):
                         self.selected_option = item
 
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not self.button_held:
+                self.button_held = True
                 for item, rect in self.menu_rects.items():
                     if rect.collidepoint(event.pos):
-                        self.activate_state(item)
+                        activate_state(self.states, item)
+
+            elif event.type == pygame.MOUSEBUTTONUP:
+                self.button_held = False
 
     def reset(self):
-        self.activate_state('MAIN MENU')
+        activate_state(self.states, 'MAIN MENU')
 
-    def update(self):
+    def update(self, event):
         self.screen.fill('BLACK')
 
         if self.states['MAIN MENU']:
             self.draw_main_menu()
+            self.input(event)
         else:
             for state, scene in self.scenes.items():
                 if self.states[state]:
-                    scene.update()
+                    scene.update(event)
                     break
 
 class OptionsScene:
-    def __init__(self, screen):
+    def __init__(self, screen, main_menu):
         self.screen = screen
+        self.main = main_menu
 
-    def update(self):
-        text = FONT_8.render('OPTIONS', False, 'WHITE')
-        rect = text.get_rect(center=(WIDTH // 2, 10))
-        self.screen.blit(text, rect)
+        self.states = {
+            'FULLSCREEN': False,
+            'VOLUME': 50,
+            'ACCEPT': False
+        }
+
+        self.options = {
+            'FULLSCREEN': f"{'YES' if self.states['FULLSCREEN'] else 'NO'}",
+            'VOLUME': str(self.states['VOLUME']),
+            'ACCEPT': ''
+        }
+
+        self.menu_items = [key for key in self.states.keys()]
+        self.menu_rects = {}
+        self.selected_option = 'FULLSCREEN'
+
+        self.volume_items = ['main', 'inside', 'minus', 'plus']
+        self.volume_rects = {item: pygame.rect.Rect() for item in self.volume_items}
+
+        self.button_held = False
+
+
+    def draw_options_menu(self):
+        self.menu_rects = {}
+
+        for key, value in self.options.items():
+            color = 'GREEN' if key == self.selected_option else 'WHITE'
+            text = FONT_8.render(f'{key}: {value}' if key != 'ACCEPT' else key, False, color)
+            rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50 + self.menu_items.index(key) * 10))
+
+            self.menu_rects[key] = rect # Store the rects for mouse detection
+            self.screen.blit(text, rect)
+
+    def input(self, event):
+        if event.type == pygame.KEYDOWN and not self.button_held:
+            self.button_held = True
+            current_index = self.menu_items.index(self.selected_option)
+
+            if event.key == pygame.K_UP:
+                self.selected_option = self.menu_items[(current_index - 1) % len(self.menu_items)]
+            if event.key == pygame.K_DOWN:
+                self.selected_option = self.menu_items[(current_index + 1) % len(self.menu_items)]
+            if event.key == pygame.K_LEFT:
+                if self.selected_option == 'VOLUME':
+                    self.states['VOLUME'] = max(0, self.states['VOLUME'] -1)
+                    self.options['VOLUME'] = str(self.states['VOLUME'])
+            if event.key == pygame.K_RIGHT:
+                if self.selected_option == 'VOLUME':
+                    self.states['VOLUME'] = min(100, self.states['VOLUME'] + 1)
+                    self.options['VOLUME'] = str(self.states['VOLUME'])
+            if event.key == pygame.K_RETURN:
+                if self.selected_option == 'FULLSCREEN':
+                    self.states['FULLSCREEN'] = not self.states['FULLSCREEN']
+                    self.main.window.set_fullscreen(True) if self.states['FULLSCREEN'] else self.main.window.set_windowed()
+                elif self.selected_option == 'ACCEPT':
+                    self.main.reset()
+
+        elif event.type == pygame.KEYUP:
+            self.button_held = False
+
+    def update(self, event):
+        self.draw_options_menu()
+        self.input(event)
 
 class ScoresScene:
     def __init__(self, screen):
