@@ -4,7 +4,7 @@ from src.config import *
 from src.debug import DebugMenu
 from src.level import Platformer, XmasLetter
 from src.dashboard import Dashboard
-from src.scenes import MainMenuScene, GameOverScene
+from src.menu_scenes import MainMenuScene, GameOverScene
 
 
 class Game:
@@ -36,7 +36,7 @@ class Game:
         self.running = True
 
         # Game objects
-        self.main_menu_scene = MainMenuScene(self.screen, self.window)
+        self.main_menu_scene = MainMenuScene(self.screen)
         self.dashboard = Dashboard(self.screen)
         self.platformer = Platformer(self.screen)
         self.xmas_letter = XmasLetter(self.screen)
@@ -64,7 +64,7 @@ class Game:
             self.dashboard.timer_start_time = pygame.time.get_ticks()
 
     def check_game_start(self):
-        if self.main_menu_scene.start_game:
+        if self.main_menu_scene.states['START']:
             self.activate_game_state('platformer_running')
 
     def update_platformer_elements(self, dt):
