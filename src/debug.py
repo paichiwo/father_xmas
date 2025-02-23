@@ -1,5 +1,6 @@
-import pygame
+import os
 
+import psutil
 from src.config import *
 
 class DebugMenu:
@@ -25,6 +26,8 @@ class DebugMenu:
 
         self.debug_items = {
             'FPS': 0,
+            'RAM': '0',
+            'CPU': '0',
             'UNDER': False,
             'BOTTOM': False
         }
@@ -39,7 +42,7 @@ class DebugMenu:
     def draw_title(self):
         """Draws the title of the debug menu."""
         title_text = FONT_DEBUG.render('DEBUG MENU', True, 'ORANGE')
-        title_rect = title_text.get_rect(center=(WIDTH - self.surf.get_width() / 2, 15))
+        title_rect = title_text.get_rect(center=(WIDTH - self.surf.get_width() / 2, 10))
         self.screen.blit(title_text, title_rect)
 
     def draw_items(self):
@@ -48,14 +51,14 @@ class DebugMenu:
         self.item_positions.clear()
 
         self.draw_title()
-        self.update_fps()
+        self.update_fps_ram_cpu()
         self.draw_under_rects()
         self.draw_bottom_rects()
 
         padding = 3
         x_left = self.rect.left + padding
-        x_right = self.rect.right - padding
-        y = 30
+        x_right = self.rect.right - padding + 1
+        y = 20
 
         for item, state in self.debug_items.items():
             item_color = 'ORANGE' if pygame.font.Font.render(FONT_8, item, True, 'YELLOW').get_rect(
@@ -74,9 +77,12 @@ class DebugMenu:
             self.item_positions.append((item, item_rect))
             y += 10
 
-    def update_fps(self):
+    def update_fps_ram_cpu(self):
         """Updates the FPS value in the debug menu."""
         self.debug_items['FPS'] = int(self.clock.get_fps())
+        process = psutil.Process(os.getpid())
+        self.debug_items['RAM'] = f'{process.memory_info().rss / (1024 * 1024):.2f} MB'
+        self.debug_items['CPU'] = f'{process.cpu_percent():.1f} %'
 
     def draw_under_rects(self):
         """Draws under_rects of the player and enemies"""
