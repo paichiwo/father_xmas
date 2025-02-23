@@ -1,7 +1,9 @@
 from src.config import *
 from src.helpers import activate_state
 
-
+# add mouse functionality for options
+# add rects for volume
+# add minus and plus buttons for volume
 class MainMenuScene:
     def __init__(self, screen, window):
         self.screen = screen
