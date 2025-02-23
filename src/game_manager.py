@@ -36,7 +36,7 @@ class Game:
         self.running = True
 
         # Game objects
-        self.main_menu_scene = MainMenuScene(self.screen)
+        self.main_menu_scene = MainMenuScene(self.screen, self.window)
         self.dashboard = Dashboard(self.screen)
         self.platformer = Platformer(self.screen)
         self.xmas_letter = XmasLetter(self.screen)
@@ -102,14 +102,12 @@ class Game:
 
             for event in pygame.event.get():
                 self.handle_game_events(event)
-                if self.states['main_menu_running']:
-                    self.main_menu_scene.input(event)
 
             dt = self.clock.tick() / 1000
 
             if self.running:
                 if self.states['main_menu_running']:
-                    self.main_menu_scene.update()
+                    self.main_menu_scene.update(event)
                     self.check_game_start()
 
                 if self.states['platformer_running']:
