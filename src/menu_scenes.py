@@ -1,3 +1,5 @@
+import pygame.rect
+
 from src.config import *
 from src.helpers import activate_state
 
@@ -32,7 +34,7 @@ class MainMenuScene:
         self.menu_rects = {}
 
         for item in self.menu_items:
-            color = 'GREEN' if item == self.selected_option else 'WHITE'
+            color = DK_RED if item == self.selected_option else WHITE
             text = FONT_8.render(item, False, color)
             rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50 + self.menu_items.index(item) * 10))
 
@@ -107,19 +109,52 @@ class OptionsScene:
         self.menu_rects = {}
         self.selected_option = 'FULLSCREEN'
 
-        self.volume_items = ['main', 'inside', 'minus', 'plus']
+        self.volume_items = ['outline', 'inner', 'minus', 'plus']
         self.volume_rects = {item: pygame.rect.Rect() for item in self.volume_items}
 
         self.button_held = False
 
+    def draw_volume(self):
+
+        # Volume inner rectangle (represents current volume level)
+        volume_value_rect = pygame.rect.Rect(WIDTH // 2 - 50, HEIGHT // 2 + 59, self.states['VOLUME'], 11)
+        pygame.draw.rect(self.screen, DK_RED, volume_value_rect)
+
+        # Volume outline rectangle
+        volume_outline_rect = pygame.rect.Rect(WIDTH // 2 - 52, HEIGHT // 2 + 57, 104, 15)
+        pygame.draw.rect(self.screen, WHITE, volume_outline_rect, 1)
+
+        # Minus button rectangle
+        minus_rect = pygame.rect.Rect(WIDTH // 2 - 69, HEIGHT // 2 + 57, 15, 15)
+        pygame.draw.rect(self.screen, WHITE, minus_rect, 1)
+        minus_text = FONT_8.render('<', False, WHITE)
+        self.screen.blit(minus_text, minus_rect.move(3, 4))
+
+        # Plus button rectangle
+        plus_rect = pygame.rect.Rect(WIDTH // 2 + 54, HEIGHT // 2 + 57, 15, 15)
+        pygame.draw.rect(self.screen, WHITE, plus_rect, 1)
+        plus_text = FONT_8.render('>', False, WHITE)
+        self.screen.blit(plus_text, plus_rect.move(4, 4))
+
+        # Store rectangles for input detection
+        self.volume_rects['outline'] = volume_outline_rect
+        self.volume_rects['inner'] = volume_value_rect
+        self.volume_rects['minus'] = minus_rect
+        self.volume_rects['plus'] = plus_rect
 
     def draw_options_menu(self):
+        self.draw_volume()
+
         self.menu_rects = {}
 
         for key, value in self.options.items():
-            color = 'GREEN' if key == self.selected_option else 'WHITE'
+            color = DK_RED if key == self.selected_option and key != 'VOLUME' else WHITE
             text = FONT_8.render(f'{key}: {value}' if key != 'ACCEPT' else key, False, color)
-            rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50 + self.menu_items.index(key) * 10))
+            rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50 + self.menu_items.index(key) * 15))
+
+            if key == self.selected_option and key == 'VOLUME':
+                volume_outline_rect = pygame.rect.Rect(WIDTH // 2 - 52, HEIGHT // 2 + 57, 104, 15)
+                pygame.draw.rect(self.screen, DK_RED, volume_outline_rect, 1)
 
             self.menu_rects[key] = rect # Store the rects for mouse detection
             self.screen.blit(text, rect)
@@ -173,7 +208,7 @@ class ScoresScene:
         self.screen = screen
 
     def update(self):
-        text = FONT_8.render('SCORES', False, 'WHITE')
+        text = FONT_8.render('SCORES', False, WHITE)
         rect = text.get_rect(center=(WIDTH // 2, 10))
         self.screen.blit(text, rect)
 
@@ -182,7 +217,7 @@ class CreditsScene:
         self.screen = screen
 
     def update(self):
-        text = FONT_8.render('CREDITS', False, 'WHITE')
+        text = FONT_8.render('CREDITS', False, WHITE)
         rect = text.get_rect(center=(WIDTH // 2, 10))
         self.screen.blit(text, rect)
 

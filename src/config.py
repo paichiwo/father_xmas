@@ -9,8 +9,13 @@ SCALE = 3
 
 # COLORS
 BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GREEN = (0, 250, 0)
+WHITE = (200, 200, 200)
+GREEN = (50, 86, 50)
+DK_GREEN = (29, 53, 29)
+RED = (139, 24, 29)
+DK_RED = (111, 15, 17)
+TAN = (230, 190, 154)
+
 
 PATHS = {
     'player': 'assets/player',
