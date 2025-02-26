@@ -170,10 +170,10 @@ class Platformer:
         y = random.randint(boundary.top, boundary.bottom)
         self.snowflakes.append(Snowflake(x, y, self.screen, boundary))
 
-    def draw_snow(self):
+    def draw_snow(self, dt):
         for snowflake in self.snowflakes:
             snowflake.draw()
-            snowflake.update()
+            snowflake.update(dt)
 
     def get_random_room(self):
         return random.choice(self.rooms_list)
@@ -237,7 +237,7 @@ class Platformer:
         self.sleigh_completed = False
 
     def update(self, dt):
-        self.draw_snow()
+        self.draw_snow(dt)
 
         self.platforms_group.draw(self.screen)
         self.ladders_group.draw(self.screen)
