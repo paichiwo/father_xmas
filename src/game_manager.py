@@ -5,6 +5,7 @@ from src.debug import DebugMenu
 from src.level import Platformer, XmasLetter
 from src.dashboard import Dashboard
 from src.menu_scenes import MainMenuScene, GameOverScene
+from src.helpers import activate_state
 
 
 class Game:
@@ -29,11 +30,11 @@ class Game:
             'gift_delivery_running': False,
             'congratulations_running': False,
             'game_over_scene_running': False,
-            'debug_visible': False
         }
 
         # Game variables
         self.running = True
+        self.debug_visible = False
 
         # Game objects
         self.main_menu_scene = MainMenuScene(self.screen, self.window)
@@ -49,23 +50,15 @@ class Game:
             sys.exit()
         if self.running:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_LALT:
-                self.states['debug_visible'] = not self.states['debug_visible']
+                self.debug_visible = not self.debug_visible
         else:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
                 self.reset_game()
 
-    def activate_game_state(self, new_state):
-        for key in self.states.keys():
-            if key.endswith('_running'):
-                self.states[key] = False
-        self.states[new_state] = True
-
-        if new_state == 'platformer_running':
-            self.dashboard.timer_start_time = pygame.time.get_ticks()
-
     def check_game_start(self):
         if self.main_menu_scene.states['START']:
-            self.activate_game_state('platformer_running')
+            activate_state(self.states, 'platformer_running')
+            self.dashboard.timer_start_time = pygame.time.get_ticks()
 
     def update_platformer_elements(self, dt):
         self.platformer.update(dt)
@@ -73,7 +66,7 @@ class Game:
 
     def platformer_check_win(self):
         if self.platformer.sleigh_completed:
-            self.activate_game_state('xmas_letter_running')
+            activate_state(self.states, 'xmas_letter_running')
 
     def update_xmas_letter_elements(self):
         self.dashboard.update()
@@ -92,7 +85,7 @@ class Game:
         self.platformer.reset()
         self.dashboard.reset()
         self.main_menu_scene.reset()
-        self.activate_game_state('main_menu_running')
+        activate_state(self.states, 'main_menu_running')
 
     def run(self):
         event = None
@@ -119,10 +112,10 @@ class Game:
 
                 self.running = self.game_over()
             else:
-                self.activate_game_state('game_over_scene_running')
+                activate_state(self.states, 'game_over_scene_running')
                 self.show_game_over_screen()
 
-            if self.states['debug_visible']:
+            if self.debug_visible:
                 self.debug_menu.update(event)
 
             sdl2.Texture.from_surface(self.renderer, self.screen).draw()
