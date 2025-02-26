@@ -48,14 +48,21 @@ class Snowflake:
         self.screen = screen
         self.snow_boundary = snow_boundary
         self.size = random.randint(1, 2)
-        self.speed = random.choice([0.4, 0.6, 0.8, 1])
+        self.speed = random.choice([20, 30, 40, 50])
 
     def draw(self):
         pygame.draw.circle(self.screen, WHITE, (int(self.pos.x), int(self.pos.y)), self.size)
 
-    def update(self):
-        self.pos.y += self.speed
+    def update(self, dt):
+        self.pos.y += self.speed * dt
+
+        # Respawn at top when it falls below boundary
         if self.pos.y > self.snow_boundary.bottom:
             self.pos.y = self.snow_boundary.top
-        if self.pos.x < self.snow_boundary.left or self.pos.x > self.snow_boundary.right:
             self.pos.x = random.randint(self.snow_boundary.left, self.snow_boundary.right)
+
+        # Ensure flakes stay within horizontal bounds
+        if self.pos.x < self.snow_boundary.left:
+            self.pos.x = self.snow_boundary.left
+        elif self.pos.x > self.snow_boundary.right:
+            self.pos.x = self.snow_boundary.right
