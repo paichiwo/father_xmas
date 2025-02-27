@@ -1,6 +1,8 @@
 import os
 
 import psutil
+import pygame.draw
+
 from src.config import *
 
 class DebugMenu:
@@ -29,7 +31,8 @@ class DebugMenu:
             'RAM': '0',
             'CPU': '0',
             'UNDER': False,
-            'BOTTOM': False
+            'BOTTOM': False,
+            'RECTS': False
         }
 
         self.item_positions = []
@@ -54,6 +57,7 @@ class DebugMenu:
         self.update_fps_ram_cpu()
         self.draw_under_rects()
         self.draw_bottom_rects()
+        self.draw_rects()
 
         padding = 3
         x_left = self.rect.left + padding
@@ -98,6 +102,12 @@ class DebugMenu:
             for enemy in self.level.enemy_group:
                 pygame.draw.rect(self.screen, 'ORANGE', enemy.bottom_rect, 1)
 
+    def draw_rects(self):
+        if self.debug_items['RECTS']:
+            pygame.draw.rect(self.screen, 'WHITE', self.level.player.rect, 1)
+            for enemy in self.level.enemy_group:
+                pygame.draw.rect(self.screen, 'WHITE', enemy.rect, 1)
+
     def handle_mouse_event(self, event):
         """Handles mouse input for toggling debug options."""
         if event.type == pygame.MOUSEBUTTONDOWN and not self.mouse_button_held:
@@ -114,6 +124,8 @@ class DebugMenu:
         if item == 'UNDER':
             self.debug_items[item] = not self.debug_items[item]
         elif item == 'BOTTOM':
+            self.debug_items[item] = not self.debug_items[item]
+        elif item == 'RECTS':
             self.debug_items[item] = not self.debug_items[item]
 
     def update(self, event):
