@@ -1,6 +1,4 @@
 import random
-from os import walk
-
 from src.sprites import SimpleSprite, AnimatedSprite, Snowflake, Sleigh
 from src.player import Player
 from src.enemy import EnemyElf
@@ -248,10 +246,10 @@ class Platformer:
         self.enemy_group.draw(self.screen)
 
         self.decorations_group.update(dt)
+        self.sleigh_update()
         self.player_group.update(dt)
         self.enemy_group.update(dt)
 
-        self.sleigh_update()
 
 
 class XmasLetter:
