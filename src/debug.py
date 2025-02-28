@@ -1,9 +1,8 @@
 import os
-
 import psutil
 import pygame.draw
-
 from src.config import *
+from src.helpers import activate_state
 
 class DebugMenu:
     def __init__(self, screen, clock, level_manager, states):
@@ -36,6 +35,7 @@ class DebugMenu:
             'EPOS.X': '0',
             'EDIR.X': '0',
             'EDIR TIME': '0',
+            'LEVEL': 1
         }
 
         self.item_positions = []
@@ -61,7 +61,7 @@ class DebugMenu:
         self.draw_under_rects()
         self.draw_bottom_rects()
         self.draw_rects()
-        self.show_direction_x_and_direction_timer_and_pos_x()
+        self.show_enemy_debug_stats()
 
         padding = 3
         x_left = self.rect.left + padding
@@ -121,6 +121,15 @@ class DebugMenu:
             if int(enemy.pos.x) in range(-enemy.off_screen_max, WIDTH + enemy.off_screen_max):
                 self.debug_items['EPOS.X'] = round(enemy.pos.x)
 
+    def change_level(self):
+        """Changes game levels"""
+        if self.debug_items['LEVEL'] == 1:
+            activate_state(self.states, 'xmas_letter_running')
+            self.debug_items['LEVEL'] = 2
+        elif self.debug_items['LEVEL'] == 2:
+            activate_state(self.states, 'platformer_running')
+            self.debug_items['LEVEL'] = 1
+
     def handle_mouse_event(self, event):
         """Handles mouse input for toggling debug options."""
         if event.type == pygame.MOUSEBUTTONDOWN and not self.mouse_button_held:
@@ -134,12 +143,10 @@ class DebugMenu:
 
     def toggle_item(self, item: str):
         """Toggles the state of a debug item."""
-        if item == 'UNDER':
+        if item in ['UNDER', 'BOTTOM', 'RECTS']:
             self.debug_items[item] = not self.debug_items[item]
-        elif item == 'BOTTOM':
-            self.debug_items[item] = not self.debug_items[item]
-        elif item == 'RECTS':
-            self.debug_items[item] = not self.debug_items[item]
+        elif item == 'LEVEL':
+            self.change_level()
 
     def update(self, event):
         """Updates and renders the debug menu."""
