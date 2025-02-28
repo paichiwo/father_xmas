@@ -117,7 +117,10 @@ class DebugMenu:
         """Shows info about enemies: pos.x, direction.x, direction_timer"""
         for enemy in self.level.enemy_group:
             self.debug_items['EDIR.X'] = enemy.direction.x
-            self.debug_items['EDIR TIME'] = enemy.direction_timer
+
+            time_left = str(max(0, (enemy.last_direction_change_time + enemy.direction_timer - pygame.time.get_ticks())))
+            self.debug_items['EDIR TIME'] = time_left
+
             if int(enemy.pos.x) in range(-enemy.off_screen_max, WIDTH + enemy.off_screen_max):
                 self.debug_items['EPOS.X'] = round(enemy.pos.x)
 
@@ -153,4 +156,3 @@ class DebugMenu:
         self.draw_bg()
         self.draw_items()
         self.handle_mouse_event(event)
-
