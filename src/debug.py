@@ -116,7 +116,7 @@ class DebugMenu:
     def show_enemy_debug_stats(self):
         """Shows info about enemies: pos.x, direction.x, direction_timer"""
         for enemy in self.level.enemy_group:
-            self.debug_items['EDIR.X'] = enemy.direction.x
+            self.debug_items['EDIR.X'] = 'LEFT' if enemy.direction.x < 0 else 'RIGHT'
 
             time_left = str(max(0, (enemy.last_direction_change_time + enemy.direction_timer - pygame.time.get_ticks())))
             self.debug_items['EDIR TIME'] = time_left
