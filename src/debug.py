@@ -32,7 +32,10 @@ class DebugMenu:
             'CPU': '0',
             'UNDER': False,
             'BOTTOM': False,
-            'RECTS': False
+            'RECTS': False,
+            'EPOS.X': '0',
+            'EDIR.X': '0',
+            'EDIR TIME': '0',
         }
 
         self.item_positions = []
@@ -58,6 +61,7 @@ class DebugMenu:
         self.draw_under_rects()
         self.draw_bottom_rects()
         self.draw_rects()
+        self.show_direction_x_and_direction_timer_and_pos_x()
 
         padding = 3
         x_left = self.rect.left + padding
@@ -96,17 +100,26 @@ class DebugMenu:
                 pygame.draw.rect(self.screen, 'YELLOW', enemy.under_rect, 1)
 
     def draw_bottom_rects(self):
-        """Draws bottom_rects of the player and enemies"""
+        """Draws player's and enemies bottom_rect"""
         if self.debug_items['BOTTOM']:
             pygame.draw.rect(self.screen, 'ORANGE', self.level.player.bottom_rect, 1)
             for enemy in self.level.enemy_group:
                 pygame.draw.rect(self.screen, 'ORANGE', enemy.bottom_rect, 1)
 
     def draw_rects(self):
+        """Draws player's and enemies rects"""
         if self.debug_items['RECTS']:
             pygame.draw.rect(self.screen, 'WHITE', self.level.player.rect, 1)
             for enemy in self.level.enemy_group:
                 pygame.draw.rect(self.screen, 'WHITE', enemy.rect, 1)
+
+    def show_enemy_debug_stats(self):
+        """Shows info about enemies: pos.x, direction.x, direction_timer"""
+        for enemy in self.level.enemy_group:
+            self.debug_items['EDIR.X'] = enemy.direction.x
+            self.debug_items['EDIR TIME'] = enemy.direction_timer
+            if int(enemy.pos.x) in range(-enemy.off_screen_max, WIDTH + enemy.off_screen_max):
+                self.debug_items['EPOS.X'] = round(enemy.pos.x)
 
     def handle_mouse_event(self, event):
         """Handles mouse input for toggling debug options."""
