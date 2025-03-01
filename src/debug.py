@@ -35,6 +35,9 @@ class DebugMenu:
             'EPOS.X': '0',
             'EDIR.X': '0',
             'EDIR TIME': '0',
+            'ECHOICE': 1,
+            'ECLIMB': False,
+            'ELANDED': True,
             'LEVEL': 1
         }
 
@@ -123,6 +126,10 @@ class DebugMenu:
 
             if int(enemy.pos.x) in range(-enemy.off_screen_max, WIDTH + enemy.off_screen_max):
                 self.debug_items['EPOS.X'] = round(enemy.pos.x)
+
+            self.debug_items['ECHOICE'] = enemy.climb_decision
+            self.debug_items['ECLIMB'] = enemy.climbing
+            self.debug_items['ELANDED'] = enemy.landed
 
     def change_level(self):
         """Changes game levels"""
