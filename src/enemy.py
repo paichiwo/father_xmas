@@ -3,7 +3,7 @@ from src.helpers import import_assets
 from src.config import *
 
 class EnemyElf(pygame.sprite.Sprite):
-    def __init__(self, pos, direction_x, screen, platformer, path, group):
+    def __init__(self, screen, platformer, path, pos, direction_x, group):
         super().__init__(group)
 
         self.screen = screen
@@ -54,15 +54,9 @@ class EnemyElf(pygame.sprite.Sprite):
         self.rect.y = round(self.pos.y)
 
     def check_climb(self):
-        can_climb_up = False
-        can_climb_down = False
-        middle_of_ladder = False
-
-        self.under_rect = pygame.rect.Rect(
-            (self.rect.centerx - self.rect.width // 6, self.rect.bottom),
-            (self.rect.width // 3, self.rect.height // 3)
-        )
-
+        can_climb_up, can_climb_down, middle_of_ladder = False, False, False
+        self.under_rect.update(self.rect.centerx - self.rect.width // 6, self.rect.bottom,
+                               self.rect.width // 3, self.rect.height // 3)
         offset = 1
 
         for ladder in self.platformer.ladders_group:
@@ -70,7 +64,6 @@ class EnemyElf(pygame.sprite.Sprite):
             if self.rect.colliderect(ladder.rect) and not can_climb_up:
                 can_climb_up = True
                 middle_of_ladder = abs(ladder.rect.centerx - self.under_rect.centerx) <= offset
-
             # going down
             if self.under_rect.colliderect(ladder.rect):
                 can_climb_down = True
@@ -87,24 +80,26 @@ class EnemyElf(pygame.sprite.Sprite):
         elapsed_time = pygame.time.get_ticks() - self.last_direction_change_time
 
         # horizontal movement
-        if not self.climbing and self.landed:
-            if (elapsed_time >= self.direction_timer or self.collided_with_wall or
-                (self.pos.x > WIDTH + self.off_screen_max and not self.landed) or
-                (self.pos.x < -self.off_screen_max and not self.landed)):
+        if not self.climbing:
+            if self.landed and (elapsed_time >= self.direction_timer or self.collided_with_wall):
                 self.direction.y = 0
                 self.direction.x *= -1
                 self.direction_timer = random.randint(2000, 5000)
                 self.last_direction_change_time = pygame.time.get_ticks()
                 self.climb_decision = 1
 
+            elif not self.landed and (self.pos.x < -100 or self.pos.x > 420):
+                self.direction.x *= -1
+                self.direction_timer = random.randint(2000, 5000)
+                self.last_direction_change_time = pygame.time.get_ticks()
+
         # vertical movement
         # GOING UP
-        if can_climb_up and middle_of_ladder and self.climb_decision == 1:
+        elif can_climb_up and middle_of_ladder and self.climb_decision == 1:
             if self.direction.y == 0:
                 self.direction.y = -1
                 self.direction.x = 0
                 self.climbing = True
-
                 self.climb_decision = random.choice([0, 0, 1])
 
         # GOING DOWN
@@ -113,7 +108,6 @@ class EnemyElf(pygame.sprite.Sprite):
                 self.direction.y = 1
                 self.direction.x = 0
                 self.climbing = True
-
                 self.climb_decision = random.choice([0, 0, 1])
 
         # GOING UP OR DOWN BUT LANDED ON THE PLATFORM
@@ -125,14 +119,15 @@ class EnemyElf(pygame.sprite.Sprite):
 
     def collisions_with_platforms(self):
         self.landed = False
+        self.bottom_rect.update(self.rect.left, self.rect.bottom, self.rect.width, 3)
+
         for platform in self.platformer.platforms_group:
             if self.bottom_rect.colliderect(platform.rect):
                 self.landed = True
                 if not self.climbing:
                     self.direction.y = 0
                     self.rect.bottom = platform.rect.y
-
-        self.bottom_rect = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
+                break
 
     def collisions_with_walls(self):
         self.collided_with_wall = False
