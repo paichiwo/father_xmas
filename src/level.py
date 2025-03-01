@@ -216,13 +216,12 @@ class Platformer:
         self.enemy_spawn_timer += pygame.time.get_ticks()
         if self.enemy_spawn_timer >= self.enemy_spawn_delay:
             enemy_spawn_data = random.choice(ENEMY_SPAWN_POS[self.current_room])
-            EnemyElf(pos=(enemy_spawn_data[0], enemy_spawn_data[1]),
-                     direction_x=enemy_spawn_data[2],
-                     screen=self.screen,
+            EnemyElf(screen=self.screen,
                      platformer=self,
                      path=PATHS['elf'],
+                     pos=(enemy_spawn_data[0], enemy_spawn_data[1]),
+                     direction_x=enemy_spawn_data[2],
                      group=self.enemy_group)
-
             self.enemy_spawn_timer = 0
             self.enemy_spawn_delay = random.randint(2000, 5000)
 
@@ -249,7 +248,6 @@ class Platformer:
         self.sleigh_update()
         self.player_group.update(dt)
         self.enemy_group.update(dt)
-
 
 
 class XmasLetter:
