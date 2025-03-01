@@ -16,21 +16,19 @@ class EnemyElf(pygame.sprite.Sprite):
         self.bottom_rect = pygame.rect.Rect()
         self.under_rect = pygame.rect.Rect()
 
-        self.direction = pygame.math.Vector2()
+        self.direction = pygame.math.Vector2((direction_x, 0))
         self.pos = pygame.math.Vector2(self.rect.topleft)
 
         self.climbing = False
         self.landed = False
         self.collided_with_wall = False
 
-        self.direction.x = direction_x
         self.speed = 50
         self.off_screen_max = 100
         self.climb_decision = random.choice([0, 1]) # 0 = no climbing; 1 = climbing
 
         self.direction_timer = random.randint(2000, 5000)
         self.last_direction_change_time = pygame.time.get_ticks()
-
         self.off_screen_timer = random.randint(2000, 5000)
         self.last_off_screen_time = pygame.time.get_ticks()
 
@@ -47,9 +45,6 @@ class EnemyElf(pygame.sprite.Sprite):
             self.image = self.frames['climb'][int(self.frame_index)]
 
     def move(self, dt):
-        # if self.climbing:
-        #     self.direction.x = 0
-
         # horizontal
         self.pos.x += self.direction.x * self.speed * dt
         self.rect.x = round(self.pos.x)
@@ -92,23 +87,15 @@ class EnemyElf(pygame.sprite.Sprite):
         elapsed_time = pygame.time.get_ticks() - self.last_direction_change_time
 
         # horizontal movement
-        if (not self.climbing and self.landed or
+        if not self.climbing and self.landed:
+            if (elapsed_time >= self.direction_timer or self.collided_with_wall or
                 (self.pos.x > WIDTH + self.off_screen_max and not self.landed) or
                 (self.pos.x < -self.off_screen_max and not self.landed)):
-            if elapsed_time >= self.direction_timer or self.collided_with_wall:
                 self.direction.y = 0
                 self.direction.x *= -1
                 self.direction_timer = random.randint(2000, 5000)
                 self.last_direction_change_time = pygame.time.get_ticks()
                 self.climb_decision = 1
-
-        # if not self.climbing and self.landed:
-        #     if elapsed_time >= self.direction_timer or self.pos.x > 450 or self.pos.x < -120 or self.collided_with_wall:
-        #         self.direction.y = 0
-        #         self.direction.x *= -1
-        #         self.climb_decision = 1
-        #         self.last_direction_change_time = pygame.time.get_ticks()
-        #         self.direction_timer = random.randint(2000, 5000)
 
         # vertical movement
         # GOING UP
@@ -118,25 +105,23 @@ class EnemyElf(pygame.sprite.Sprite):
                 self.direction.x = 0
                 self.climbing = True
 
-                self.climb_decision = random.choice([0, 1])
+                self.climb_decision = random.choice([0, 0, 1])
 
         # GOING DOWN
-        elif can_climb_down and middle_of_ladder:
+        elif can_climb_down and middle_of_ladder and self.climb_decision == 1:
             if self.direction.y == 0:
                 self.direction.y = 1
                 self.direction.x = 0
                 self.climbing = True
 
-                self.climb_decision = random.choice([0, 1])
+                self.climb_decision = random.choice([0, 0, 1])
 
         # GOING UP OR DOWN BUT LANDED ON THE PLATFORM
         else:
-            if self.climbing and self.landed and self.climb_decision == 1:
+            if self.climbing and self.landed:
                 self.direction.y = 0
                 self.climbing = False
                 self.direction.x = random.choice([-1, 1])
-
-        print('climbing', self.climbing)
 
     def collisions_with_platforms(self):
         self.landed = False
@@ -145,8 +130,7 @@ class EnemyElf(pygame.sprite.Sprite):
                 self.landed = True
                 if not self.climbing:
                     self.direction.y = 0
-                    self.rect.bottom = platform.rect[1]
-        print('landed', self.landed)
+                    self.rect.bottom = platform.rect.y
 
         self.bottom_rect = pygame.rect.Rect(self.rect.left, self.rect.bottom, self.rect.width, 3)
 
