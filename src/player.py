@@ -56,11 +56,11 @@ class Player(pygame.sprite.Sprite):
 
         # vertical
         if keys[pygame.K_UP] and can_climb_up and middle_of_ladder:
-                self.direction.y = -1
-                self.climbing = True
+            self.direction.y = -1
+            self.climbing = True
         elif keys[pygame.K_DOWN] and can_climb_down and middle_of_ladder:
-                self.direction.y = 1
-                self.climbing = True
+            self.direction.y = 1
+            self.climbing = True
         else:
             self.direction.y = 0
             if self.climbing and self.landed:
