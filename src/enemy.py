@@ -2,6 +2,7 @@ import random
 from src.helpers import import_assets
 from src.config import *
 
+
 class EnemyElf(pygame.sprite.Sprite):
     def __init__(self, screen, platformer, path, pos, direction_x, group):
         super().__init__(group)
@@ -27,10 +28,8 @@ class EnemyElf(pygame.sprite.Sprite):
         self.off_screen_max = 100
         self.climb_decision = random.choice([0, 1]) # 0 = no climbing; 1 = climbing
 
-        self.direction_timer = random.randint(2000, 5000)
+        self.direction_timer = self.off_screen_timer = random.randint(2000, 5000)
         self.last_direction_change_time = pygame.time.get_ticks()
-        self.off_screen_timer = random.randint(2000, 5000)
-        self.last_off_screen_time = pygame.time.get_ticks()
 
     def animate(self, dt):
         self.frame_index += 7 * dt
