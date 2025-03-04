@@ -50,8 +50,8 @@ class Platformer:
             14: pygame.image.load(img_path + 'decor/painting_1.png').convert_alpha(),
             15: pygame.image.load(img_path + 'decor/painting_2.png').convert_alpha(),
             16: pygame.image.load(img_path + 'decor/table.png').convert_alpha(),
-            17: pygame.image.load(img_path + 'decor/chair.png').convert_alpha(),
-            18: pygame.transform.flip(pygame.image.load(img_path + 'decor/chair.png').convert_alpha(), True, False),
+            17: pygame.image.load(img_path + 'decor/chair_right.png').convert_alpha(),
+            18: pygame.image.load(img_path + 'decor/chair_left.png').convert_alpha(),
             19: pygame.image.load(img_path + 'decor/bed.png').convert_alpha(),
             20: pygame.image.load(img_path + 'walls/fire_wall_left.png').convert_alpha(),
             21: pygame.image.load(img_path + 'walls/fire_wall_right.png').convert_alpha(),
@@ -75,7 +75,7 @@ class Platformer:
         # Rooms setup
         self.current_room = 'room_0_2'
         self.rooms_list = ['room_0_0', 'room_0_1', 'room_0_2', 'room_1_0', 'room_1_1']
-        self.random_room = self.get_random_room()
+        self.random_room = self.get_random_room() # room to create sleigh piece
 
         # Populate the level with elements based on the current room layout
         self.player = Player(
@@ -239,7 +239,6 @@ class Platformer:
         self.platforms_group.draw(self.screen)
         self.ladders_group.draw(self.screen)
         self.collision_walls.draw(self.screen)
-
         self.decorations_group.draw(self.screen)
         self.player_group.draw(self.screen)
         self.enemy_group.draw(self.screen)
