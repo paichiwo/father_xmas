@@ -48,6 +48,14 @@ class Platformer:
             if sprite is not self.player:
                 sprite.kill()
 
+    def change_room(self, new_room_key):
+        """Clears the old room and loads a new one"""
+        if new_room_key in self.tmx_rooms and new_room_key != self.current_room_key:
+            self.clear_room()
+            self.current_room_key = new_room_key
+            self.current_room = self.tmx_rooms[new_room_key]
+            self.create_room(self.current_room)
+
     def update(self, dt):
         self.all_sprites.update(dt)
         self.all_sprites.draw(self.screen)
