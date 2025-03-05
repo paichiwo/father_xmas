@@ -1,5 +1,5 @@
 import random
-from src.sprites import SimpleSprite, AnimatedSprite, Snowflake, Sleigh
+from src.sprites import Sprite, AnimatedSprite, Snowflake, Sleigh
 from src.player import Player
 from src.enemy import EnemyElf
 from src.config import *
@@ -128,17 +128,17 @@ class Platformer:
                     elements.append(element)
 
     def create_platforms(self, room_layout):
-        return self.create_elements(room_layout, [1, 25], SimpleSprite, self.platforms_group)
+        return self.create_elements(room_layout, [1, 25], Sprite, self.platforms_group)
 
     def create_ladders(self, room_layout):
-        return self.create_elements(room_layout, [10, 11, 24], SimpleSprite, self.ladders_group)
+        return self.create_elements(room_layout, [10, 11, 24], Sprite, self.ladders_group)
 
     def create_walls_with_collisions(self, room_layout):
-        return self.create_elements(room_layout, [7, 20, 21], SimpleSprite, self.collision_walls)
+        return self.create_elements(room_layout, [7, 20, 21], Sprite, self.collision_walls)
 
     def create_decorations(self, room_layout):
         valid_ids = [2, 3, 4, 5, 6, 8, 9, 12, 14, 15, 16, 17, 18, 19, 22, 23, 27, 28, 29, 30, 31, 32]
-        return self.create_elements(room_layout, valid_ids, SimpleSprite, self.decorations_group)
+        return self.create_elements(room_layout, valid_ids, Sprite, self.decorations_group)
 
     def create_animations(self, room_layout):
         return self.create_elements(room_layout, [13, 26], AnimatedSprite, self.decorations_group)
