@@ -1,9 +1,9 @@
 import random
 import pygame
-from src.config import WHITE
+from src.config import WHITE, TILE_SIZE
 
 
-class SimpleSprite(pygame.sprite.Sprite):
+class Sprite(pygame.sprite.Sprite):
     def __init__(self, pos, surf, group):
         super().__init__(group)
 
@@ -11,14 +11,13 @@ class SimpleSprite(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=pos)
 
 
-class AnimatedSprite(SimpleSprite):
-    def __init__(self, pos, surf, group):
-        super().__init__(pos, surf[0], group)
+class AnimatedSprite(Sprite):
+    def __init__(self, pos, frames, group):
+        super().__init__(pos, frames[0], group)
 
-        self.frames = surf
+        self.frames = frames
         self.frames_index = 0
         self.image = self.frames[self.frames_index]
-        self.rect = self.image.get_rect(topleft=pos)
 
     def animate(self, dt):
         self.frames_index += 9 * dt
@@ -31,7 +30,7 @@ class AnimatedSprite(SimpleSprite):
         self.animate(dt)
 
 
-class Sleigh(SimpleSprite):
+class Sleigh(Sprite):
     def __init__(self, pos, screen, surf, group):
         super().__init__(pos, surf, group)
 
