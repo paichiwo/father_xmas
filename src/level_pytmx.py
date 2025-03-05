@@ -19,14 +19,13 @@ class Platformer:
         self.tmx_rooms = {room: load_pygame(f'data/levels/{room}.tmx') for room in self.rooms}
         self.current_room_key = 'room_0_2'
         self.current_room = self.tmx_rooms[self.current_room_key]
-
-        # create a room
         self.create_room(self.current_room)
 
         # player initialization
         self.player = Player((5 * TILE_SIZE, 7 * TILE_SIZE), PATHS['player'], [self.all_sprites])
 
     def create_room(self, tmx_map):
+        """Creates the current room by adding objects to sprite groups."""
         layer_groups = {
             'platforms': self.platforms_group,
             'ladders': self.ladders_group,
@@ -42,6 +41,12 @@ class Platformer:
             if props and 'frames' in props:
                 frames = [tmx_map.get_tile_image_by_gid(frame.gid) for frame in props['frames']]
                 AnimatedSprite((x * TILE_SIZE, y * TILE_SIZE), frames, [self.all_sprites])
+
+    def clear_room(self):
+        """Clears all non-player sprites from groups to prepare for a new room."""
+        for sprite in self.all_sprites.sprites():
+            if sprite is not self.player:
+                sprite.kill()
 
     def update(self, dt):
         self.all_sprites.update(dt)
