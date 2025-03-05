@@ -8,25 +8,25 @@ class Platformer:
     def __init__(self, screen):
         self.screen = screen
 
+        # sprite groups
+        self.all_sprites = pygame.sprite.Group()
+        self.platforms_group = pygame.sprite.Group()
+        self.ladders_group = pygame.sprite.Group()
+        self.collision_walls = pygame.sprite.Group()
+
         # rooms setup
         self.rooms = ['room_0_0', 'room_0_1', 'room_0_2', 'room_1_0', 'room_1_1', 'room_1_2']
         self.tmx_rooms = {room: load_pygame(f'data/levels/{room}.tmx') for room in self.rooms}
         self.current_room_key = 'room_0_2'
         self.current_room = self.tmx_rooms[self.current_room_key]
 
-        # groups
-        self.all_sprites = pygame.sprite.Group()
-        self.platforms_group = pygame.sprite.Group()
-        self.ladders_group = pygame.sprite.Group()
-        self.collision_walls = pygame.sprite.Group()
-
-        # placeholder for player initialization
-        self.player = None
-
         # create a room
-        self.setup(self.current_room)
+        self.create_room(self.current_room)
 
-    def setup(self, tmx_map):
+        # player initialization
+        self.player = Player((5 * TILE_SIZE, 7 * TILE_SIZE), PATHS['player'], [self.all_sprites])
+
+    def create_room(self, tmx_map):
         layer_groups = {
             'platforms': self.platforms_group,
             'ladders': self.ladders_group,
@@ -43,10 +43,7 @@ class Platformer:
                 frames = [tmx_map.get_tile_image_by_gid(frame.gid) for frame in props['frames']]
                 AnimatedSprite((x * TILE_SIZE, y * TILE_SIZE), frames, [self.all_sprites])
 
-        self.player = Player((5 * TILE_SIZE, 7 * TILE_SIZE), PATHS['player'], [self.all_sprites])
-
     def update(self, dt):
         self.all_sprites.update(dt)
         self.all_sprites.draw(self.screen)
         pygame.draw.rect(self.screen, 'white', self.player.rect, 1)
-
