@@ -1,5 +1,6 @@
-from random import randint
+from random import randint, choice
 from src.config import *
+from src.helpers import import_images
 from src.sprites import Sprite, AnimatedSprite, Snowflake
 from src.player_pytmx import Player
 from pytmx import load_pygame
@@ -9,14 +10,15 @@ class Platformer:
     def __init__(self, screen):
         self.screen = screen
 
+        # snow
+        self.snow_images = import_images(PATHS['snow'])
+
         # sprite groups
         self.all_sprites = pygame.sprite.Group()
         self.player_group = pygame.sprite.GroupSingle()
         self.platforms_group = pygame.sprite.Group()
         self.ladders_group = pygame.sprite.Group()
         self.collision_walls = pygame.sprite.Group()
-
-        self.snowflakes = []
 
         # rooms setup
         self.rooms = ['room_0_0', 'room_0_1', 'room_0_2', 'room_1_0', 'room_1_1', 'room_1_2']
@@ -30,6 +32,8 @@ class Platformer:
 
     def create_room(self, tmx_map):
         """Creates the current room by adding objects to sprite groups."""
+        self.create_snow()
+
         layer_groups = {
             'platforms': self.platforms_group,
             'ladders': self.ladders_group,
@@ -46,8 +50,6 @@ class Platformer:
                 frames = [tmx_map.get_tile_image_by_gid(frame.gid) for frame in props['frames']]
                 AnimatedSprite((x * TILE_SIZE, y * TILE_SIZE), frames, [self.all_sprites])
 
-        self.create_snow()
-
     def clear_room(self):
         """Clears all non-player sprites from groups to prepare for a new room."""
         for sprite in self.all_sprites.sprites():
@@ -63,15 +65,11 @@ class Platformer:
 
     def create_snow(self):
         """Creates snowflakes based on the current room's snow boundaries."""
-        self.snowflakes.clear()
-
         if self.current_room_key in SNOW_BOUNDARIES:
             for _ in range(SNOW_AMOUNT):
                 for boundary in SNOW_BOUNDARIES[self.current_room_key]:
                     pos = (randint(boundary.left, boundary.right), randint(boundary.top, boundary.bottom))
-                    self.snowflakes.append(Snowflake(pos, self.screen, boundary))
-        else:
-            self.snowflakes.clear()
+                    Snowflake(pos, choice(self.snow_images), boundary, [self.all_sprites])
 
     def update(self, dt):
         self.all_sprites.update(dt)
@@ -79,10 +77,6 @@ class Platformer:
 
         self.player_group.update(dt)
         self.player_group.draw(self.screen)
-
-        for snowflake in self.snowflakes:
-            snowflake.update(dt)
-            snowflake.draw()
 
         pygame.draw.rect(self.screen, 'white', self.player.bottom_rect, 1)
         pygame.draw.rect(self.screen, 'pink', self.player.rect, 1)
