@@ -70,29 +70,6 @@ class Player(pygame.sprite.Sprite):
         if self.direction.x == 1 or (state == 'idle' and self.last_direction == 1):
             self.image = pygame.transform.flip(self.image, True, False)
 
-    def animatea(self, dt):
-        """Handles sprite animation based on movement."""
-        if self.direction.x != 0:
-            self.frame_index += self.animation_speed * dt
-            if self.frame_index >= len(self.frames['walk']):
-                self.frame_index = 0
-
-            self.image = self.frames['walk'][int(self.frame_index)]
-            if self.direction.x == 1:
-                self.image = pygame.transform.flip(self.image, True, False)
-
-        elif self.direction.y != 0:
-            self.frame_index += self.animation_speed * dt
-            if self.frame_index >= len(self.frames['climb']):
-                self.frame_index = 0
-
-            self.image = self.frames['climb'][int(self.frame_index)]
-
-        else:  # Not moving -> use idle frame, but keep facing last direction
-            self.image = self.frames['idle'][0]
-            if self.last_direction == 1:
-                self.image = pygame.transform.flip(self.image, True, False)
-
     def collisions_with_platforms(self):
         self.landed = False
         self.bottom_rect.update(self.rect.left - TILE_SIZE / 2, self.rect.bottom, self.rect.width + TILE_SIZE, 3)
