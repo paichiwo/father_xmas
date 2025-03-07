@@ -19,7 +19,8 @@ TAN = (230, 190, 154)
 
 PATHS = {
     'player': 'assets/player',
-    'elf': 'assets/enemy/elf'
+    'elf': 'assets/enemy/elf',
+    'snow': 'assets/level/snow'
 }
 
 # ASSETS
