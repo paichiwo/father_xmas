@@ -1,3 +1,5 @@
+import pygame
+
 from src.config import *
 from src.sprites import Sprite, AnimatedSprite
 from src.player_pytmx import Player
@@ -10,6 +12,7 @@ class Platformer:
 
         # sprite groups
         self.all_sprites = pygame.sprite.Group()
+        self.player_group = pygame.sprite.GroupSingle()
         self.platforms_group = pygame.sprite.Group()
         self.ladders_group = pygame.sprite.Group()
         self.collision_walls = pygame.sprite.Group()
@@ -22,7 +25,7 @@ class Platformer:
         self.create_room(self.current_room)
 
         # player initialization
-        self.player = Player((5 * TILE_SIZE, 7 * TILE_SIZE), PATHS['player'], [self.all_sprites])
+        self.player = Player((5 * TILE_SIZE, 7 * TILE_SIZE), self, PATHS['player'], [self.player_group])
 
     def create_room(self, tmx_map):
         """Creates the current room by adding objects to sprite groups."""
@@ -45,8 +48,7 @@ class Platformer:
     def clear_room(self):
         """Clears all non-player sprites from groups to prepare for a new room."""
         for sprite in self.all_sprites.sprites():
-            if sprite is not self.player:
-                sprite.kill()
+            sprite.kill()
 
     def change_room(self, new_room_key):
         """Clears the old room and loads a new one"""
@@ -59,4 +61,11 @@ class Platformer:
     def update(self, dt):
         self.all_sprites.update(dt)
         self.all_sprites.draw(self.screen)
-        pygame.draw.rect(self.screen, 'white', self.player.rect, 1)
+        self.player_group.update(dt)
+        self.player_group.draw(self.screen)
+
+        pygame.draw.rect(self.screen, 'white', self.player.bottom_rect, 1)
+        pygame.draw.rect(self.screen, 'pink', self.player.rect, 1)
+        pygame.draw.rect(self.screen, 'yellow', self.player.under_rect, 1)
+        for ladder in self.ladders_group:
+            pygame.draw.rect(self.screen, 'red', ladder.rect, 1)
