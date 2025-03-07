@@ -1,9 +1,11 @@
 from src.config import *
 from src.helpers import import_assets
+from src.sprites import Sleigh
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, level, path, group):
+    def __init__(self, pos, screen, level, path, group):
         super().__init__(group)
+        self.screen = screen
         self.level = level
 
         self.frames = import_assets(path)
@@ -123,6 +125,26 @@ class Player(pygame.sprite.Sprite):
                 self.pos.x, self.pos.y = (adjustment, self.pos.y) if direction in ['left', 'right'] else (self.pos.x, adjustment)
                 self.level.change_room(next_room)
 
+    def collect_sleigh(self):
+        if self.level.current_room_key == self.level.sleigh_spawn_room:
+            for sleigh in self.level.sleigh_group:
+                if self.rect.colliderect(sleigh.rect):
+                    self.level.sleigh_in_inventory = True
+                    sleigh.kill()
+
+        elif self.level.current_room_key == 'room_1_2' and self.level.sleigh_in_inventory and self.rect.x == 100:
+            index = len(self.level.completed_sleigh_pieces)
+            pos = (112 - TILE_SIZE * index, 128)
+            Sleigh(pos, self.screen, self.level.sleigh_images[index], self.level.completed_sleigh_group)
+
+            self.level.sleigh_in_inventory = False
+            self.level.completed_sleigh_pieces.append(str(index + 1))
+            self.level.sleigh_group.empty()
+            self.level.create_sleigh()
+
+            if len(self.level.completed_sleigh_pieces) == 4:
+                self.level.level_won = True
+
     def update(self, dt):
         self.input()
         self.move(dt)
@@ -130,3 +152,4 @@ class Player(pygame.sprite.Sprite):
         self.collisions_with_platforms()
         self.collisions_with_walls()
         self.move_between_rooms()
+        self.collect_sleigh()

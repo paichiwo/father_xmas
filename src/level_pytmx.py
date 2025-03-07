@@ -1,17 +1,17 @@
 from random import randint, choice
 from src.config import *
 from src.helpers import import_images
-from src.sprites import Sprite, AnimatedSprite, Snowflake
+from src.sprites import Sprite, AnimatedSprite, Snowflake, Sleigh
 from src.player_pytmx import Player
 from pytmx import load_pygame
 
 
 class Platformer:
     def __init__(self, screen):
+
         self.screen = screen
 
-        # snow
-        self.snow_images = import_images(PATHS['snow'])
+        self.level_won = False
 
         # sprite groups
         self.all_sprites = pygame.sprite.Group()
@@ -19,16 +19,28 @@ class Platformer:
         self.platforms_group = pygame.sprite.Group()
         self.ladders_group = pygame.sprite.Group()
         self.collision_walls = pygame.sprite.Group()
+        self.sleigh_group = pygame.sprite.Group()
+        self.completed_sleigh_group = pygame.sprite.Group()
+
+        # snow
+        self.snow_images = import_images(PATHS['snow'])
 
         # rooms setup
         self.rooms = ['room_0_0', 'room_0_1', 'room_0_2', 'room_1_0', 'room_1_1', 'room_1_2']
         self.tmx_rooms = {room: load_pygame(f'data/levels/{room}.tmx') for room in self.rooms}
-        self.current_room_key = 'room_0_2'
+        self.current_room_key = 'room_0_1'
         self.current_room = self.tmx_rooms[self.current_room_key]
         self.create_room(self.current_room)
 
+        # sleigh
+        self.sleigh_images = import_images(PATHS['sleigh'])
+        self.sleigh_in_inventory = False
+        self.completed_sleigh_pieces = []
+        self.sleigh_spawn_room = choice(self.rooms[:5])
+        self.create_sleigh()
+
         # player initialization
-        self.player = Player((5 * TILE_SIZE, 7 * TILE_SIZE), self, PATHS['player'], [self.player_group])
+        self.player = Player((5 * TILE_SIZE, 7 * TILE_SIZE), self.screen, self, PATHS['player'], [self.player_group])
 
     def create_room(self, tmx_map):
         """Creates the current room by adding objects to sprite groups."""
@@ -53,7 +65,7 @@ class Platformer:
     def clear_room(self):
         """Clears all non-player sprites from groups to prepare for a new room."""
         for sprite in self.all_sprites.sprites():
-            sprite.kill()
+                sprite.kill()
 
     def change_room(self, new_room_key):
         """Clears the old room and loads a new one"""
@@ -71,9 +83,28 @@ class Platformer:
                     pos = (randint(boundary.left, boundary.right), randint(boundary.top, boundary.bottom))
                     Snowflake(pos, choice(self.snow_images), boundary, [self.all_sprites])
 
+    def create_sleigh(self):
+        platform_rects = []
+        if not self.sleigh_in_inventory:
+            self.sleigh_spawn_room = choice(self.rooms)
+            for platform in self.platforms_group:
+                if int(platform.rect[0]) not in [0, 304]:
+                    platform_rects.append(platform.rect)
+            pos = choice(platform_rects)
+            image_index = len(self.completed_sleigh_pieces)
+
+            if image_index < 4:
+                Sleigh((pos[0], pos[1]), self.screen, self.sleigh_images[image_index], [self.sleigh_group])
+        else:
+            self.sleigh_group.empty()
+
     def update(self, dt):
         self.all_sprites.update(dt)
         self.all_sprites.draw(self.screen)
+
+        self.sleigh_group.update() if self.current_room_key is self.sleigh_spawn_room else self.sleigh_group.remove()
+        if self.current_room_key == 'room_1_2':
+            self.completed_sleigh_group.update()
 
         self.player_group.update(dt)
         self.player_group.draw(self.screen)
@@ -81,5 +112,3 @@ class Platformer:
         pygame.draw.rect(self.screen, 'white', self.player.bottom_rect, 1)
         pygame.draw.rect(self.screen, 'pink', self.player.rect, 1)
         pygame.draw.rect(self.screen, 'yellow', self.player.under_rect, 1)
-        for ladder in self.ladders_group:
-            pygame.draw.rect(self.screen, 'red', ladder.rect, 1)
