@@ -42,7 +42,7 @@ class Game:
     def run(self):
         event = None
         while True:
-            self.screen.fill(BLACK)
+            self.screen.fill('black')
             self.renderer.clear()
             dt = self.clock.tick() / 1000
 

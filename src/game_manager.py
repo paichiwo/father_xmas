@@ -90,7 +90,7 @@ class Game:
     def run(self):
         event = None
         while True:
-            self.screen.fill(BLACK)
+            self.screen.fill('black')
             self.renderer.clear()
 
             for event in pygame.event.get():
