@@ -1,7 +1,6 @@
-import pygame
-
+from random import randint
 from src.config import *
-from src.sprites import Sprite, AnimatedSprite
+from src.sprites import Sprite, AnimatedSprite, Snowflake
 from src.player_pytmx import Player
 from pytmx import load_pygame
 
@@ -16,6 +15,8 @@ class Platformer:
         self.platforms_group = pygame.sprite.Group()
         self.ladders_group = pygame.sprite.Group()
         self.collision_walls = pygame.sprite.Group()
+
+        self.snowflakes = []
 
         # rooms setup
         self.rooms = ['room_0_0', 'room_0_1', 'room_0_2', 'room_1_0', 'room_1_1', 'room_1_2']
@@ -45,6 +46,8 @@ class Platformer:
                 frames = [tmx_map.get_tile_image_by_gid(frame.gid) for frame in props['frames']]
                 AnimatedSprite((x * TILE_SIZE, y * TILE_SIZE), frames, [self.all_sprites])
 
+        self.create_snow()
+
     def clear_room(self):
         """Clears all non-player sprites from groups to prepare for a new room."""
         for sprite in self.all_sprites.sprites():
@@ -58,11 +61,28 @@ class Platformer:
             self.current_room = self.tmx_rooms[new_room_key]
             self.create_room(self.current_room)
 
+    def create_snow(self):
+        """Creates snowflakes based on the current room's snow boundaries."""
+        self.snowflakes.clear()
+
+        if self.current_room_key in SNOW_BOUNDARIES:
+            for _ in range(SNOW_AMOUNT):
+                for boundary in SNOW_BOUNDARIES[self.current_room_key]:
+                    pos = (randint(boundary.left, boundary.right), randint(boundary.top, boundary.bottom))
+                    self.snowflakes.append(Snowflake(pos, self.screen, boundary))
+        else:
+            self.snowflakes.clear()
+
     def update(self, dt):
         self.all_sprites.update(dt)
         self.all_sprites.draw(self.screen)
+
         self.player_group.update(dt)
         self.player_group.draw(self.screen)
+
+        for snowflake in self.snowflakes:
+            snowflake.update(dt)
+            snowflake.draw()
 
         pygame.draw.rect(self.screen, 'white', self.player.bottom_rect, 1)
         pygame.draw.rect(self.screen, 'pink', self.player.rect, 1)
