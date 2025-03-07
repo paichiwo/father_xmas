@@ -66,6 +66,8 @@ class Player(pygame.sprite.Sprite):
         if state != 'idle':
             self.frame_index = (self.frame_index + self.animation_speed * dt) % len(self.frames[state])
             self.image = self.frames[state][int(self.frame_index)]
+        elif self.climbing and self.direction.y == 0:
+            self.image = self.frames['climb'][0]
         else:
             self.image = self.frames['idle'][0]
 
@@ -94,7 +96,7 @@ class Player(pygame.sprite.Sprite):
 
     def check_climb(self):
         """Determines whether the player can climb up or down a ladder."""
-        offset = 1
+        offset = 2
         can_climb_up = can_climb_down = middle_of_ladder = False
         self.under_rect.update(self.rect.centerx - self.rect.width // 6, self.rect.bottom,
                                self.rect.width // 3, self.rect.height // 3)
