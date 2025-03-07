@@ -10,7 +10,7 @@ class Player(pygame.sprite.Sprite):
         self.frame_index = 0
         self.image = self.frames['idle'][self.frame_index]
         self.rect = self.image.get_frect(midbottom=pos)
-        self.animation_speed = 7
+        self.animation_speed = 6
 
         self.direction = pygame.math.Vector2()
         self.pos = pygame.math.Vector2(self.rect.topleft)
@@ -59,6 +59,19 @@ class Player(pygame.sprite.Sprite):
 
     def animate(self, dt):
         """Handles sprite animation based on movement."""
+        state = 'walk' if self.direction.x else 'climb' if self.direction.y else 'idle'
+
+        if state != 'idle':
+            self.frame_index = (self.frame_index + self.animation_speed * dt) % len(self.frames[state])
+            self.image = self.frames[state][int(self.frame_index)]
+        else:
+            self.image = self.frames['idle'][0]
+
+        if self.direction.x == 1 or (state == 'idle' and self.last_direction == 1):
+            self.image = pygame.transform.flip(self.image, True, False)
+
+    def animatea(self, dt):
+        """Handles sprite animation based on movement."""
         if self.direction.x != 0:
             self.frame_index += self.animation_speed * dt
             if self.frame_index >= len(self.frames['walk']):
@@ -67,6 +80,13 @@ class Player(pygame.sprite.Sprite):
             self.image = self.frames['walk'][int(self.frame_index)]
             if self.direction.x == 1:
                 self.image = pygame.transform.flip(self.image, True, False)
+
+        elif self.direction.y != 0:
+            self.frame_index += self.animation_speed * dt
+            if self.frame_index >= len(self.frames['climb']):
+                self.frame_index = 0
+
+            self.image = self.frames['climb'][int(self.frame_index)]
 
         else:  # Not moving -> use idle frame, but keep facing last direction
             self.image = self.frames['idle'][0]
@@ -95,10 +115,10 @@ class Player(pygame.sprite.Sprite):
 
     def check_climb(self):
         """Determines whether the player can climb up or down a ladder."""
+        offset = 1
         can_climb_up = can_climb_down = middle_of_ladder = False
         self.under_rect.update(self.rect.centerx - self.rect.width // 6, self.rect.bottom,
                                self.rect.width // 3, self.rect.height // 3)
-        offset = 1
 
         for ladder in self.level.ladders_group:
             if self.rect.colliderect(ladder.rect):  # going up
@@ -133,5 +153,3 @@ class Player(pygame.sprite.Sprite):
         self.collisions_with_platforms()
         self.collisions_with_walls()
         self.move_between_rooms()
-
-
