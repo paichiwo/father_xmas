@@ -27,6 +27,7 @@ pygame.init()
 FONT_8 = pygame.font.Font('assets/font/C64_Pro_Mono-STYLE.ttf', size=8)
 FONT_DEBUG = pygame.font.Font('assets/font/debug_font.ttf', size=10)
 
+# start room: {enemy facing, dest room, trigger pos}
 ROOM_TRANSITIONS = {
     'room_0_0': {'right': ('room_0_1', 0),
                  'down': ('room_1_0', -5)},
@@ -52,6 +53,14 @@ ENEMY_SPAWN_POS = {
     'room_1_1': [(-40, 128, 1), (-40, 64, 1),
                  (360, 128, -1)],
     'room_1_2': [(-40, 128, 1), (290, 128, -1)],
+}
+# snow
+SNOW_AMOUNT = 20
+SNOW_BOUNDARIES = {
+    'room_0_0': [pygame.Rect(0, 0, 320, 32)],
+    'room_0_1': [pygame.Rect(0, 0, 320, 32)],
+    'room_0_2': [pygame.Rect(0, 0, 240, 32), pygame.Rect(240, 0, 80, 144)],
+    'room_1_2': [pygame.Rect(0, 0, 320, 144)]
 }
 
 ROOMS = {
