@@ -1,7 +1,4 @@
 from random import randint, choice
-
-import pygame
-
 from src.config import *
 from src.helpers import import_images
 from src.sprites import Sprite, AnimatedSprite, Snowflake, Sleigh
@@ -13,7 +10,6 @@ class Platformer:
     def __init__(self, screen):
 
         self.screen = screen
-
         self.level_won = False
 
         # sprite groups
@@ -110,9 +106,3 @@ class Platformer:
 
         self.player_group.update(dt)
         self.player_group.draw(self.screen)
-
-        # pygame.draw.rect(self.screen, 'white', self.player.bottom_rect, 1)
-        # pygame.draw.rect(self.screen, 'pink', self.player.rect, 1)
-        # pygame.draw.rect(self.screen, 'yellow', self.player.under_rect, 1)
-        # for platform in self.platforms_group.sprites():
-        #     pygame.draw.rect(self.screen, 'red', platform.rect, 1)
