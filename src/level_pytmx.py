@@ -1,4 +1,7 @@
 from random import randint, choice
+
+import pygame
+
 from src.config import *
 from src.helpers import import_images
 from src.sprites import Sprite, AnimatedSprite, Snowflake, Sleigh
@@ -28,7 +31,7 @@ class Platformer:
         # rooms setup
         self.rooms = ['room_0_0', 'room_0_1', 'room_0_2', 'room_1_0', 'room_1_1', 'room_1_2']
         self.tmx_rooms = {room: load_pygame(f'data/levels/{room}.tmx') for room in self.rooms}
-        self.current_room_key = 'room_0_1'
+        self.current_room_key = 'room_0_2'
         self.current_room = self.tmx_rooms[self.current_room_key]
         self.create_room(self.current_room)
 
@@ -64,8 +67,10 @@ class Platformer:
 
     def clear_room(self):
         """Clears all non-player sprites from groups to prepare for a new room."""
-        for sprite in self.all_sprites.sprites():
-                sprite.kill()
+        self.all_sprites.empty()
+        self.platforms_group.empty()
+        self.ladders_group.empty()
+        self.collision_walls.empty()
 
     def change_room(self, new_room_key):
         """Clears the old room and loads a new one"""
@@ -84,19 +89,16 @@ class Platformer:
                     Snowflake(pos, choice(self.snow_images), boundary, [self.all_sprites])
 
     def create_sleigh(self):
-        platform_rects = []
-        if not self.sleigh_in_inventory:
-            self.sleigh_spawn_room = choice(self.rooms)
-            for platform in self.platforms_group:
-                if int(platform.rect[0]) not in [0, 304]:
-                    platform_rects.append(platform.rect)
-            pos = choice(platform_rects)
-            image_index = len(self.completed_sleigh_pieces)
-
-            if image_index < 4:
-                Sleigh((pos[0], pos[1]), self.screen, self.sleigh_images[image_index], [self.sleigh_group])
-        else:
-            self.sleigh_group.empty()
+        rects = []
+        if not self.sleigh_in_inventory and self.sleigh_spawn_room in self.tmx_rooms:
+            tmx_map = self.tmx_rooms[self.sleigh_spawn_room]
+            for x, y, surf in tmx_map.get_layer_by_name('platforms').tiles():
+                if 1 < x < 19:
+                    rects.append((x * TILE_SIZE, y * TILE_SIZE))
+            pos = choice(rects)
+            index = len(self.completed_sleigh_pieces)
+            if index < len(self.sleigh_images):
+                Sleigh(pos, self.screen, self.sleigh_images[index], [self.sleigh_group])
 
     def update(self, dt):
         self.all_sprites.update(dt)
@@ -109,6 +111,8 @@ class Platformer:
         self.player_group.update(dt)
         self.player_group.draw(self.screen)
 
-        pygame.draw.rect(self.screen, 'white', self.player.bottom_rect, 1)
-        pygame.draw.rect(self.screen, 'pink', self.player.rect, 1)
-        pygame.draw.rect(self.screen, 'yellow', self.player.under_rect, 1)
+        # pygame.draw.rect(self.screen, 'white', self.player.bottom_rect, 1)
+        # pygame.draw.rect(self.screen, 'pink', self.player.rect, 1)
+        # pygame.draw.rect(self.screen, 'yellow', self.player.under_rect, 1)
+        # for platform in self.platforms_group.sprites():
+        #     pygame.draw.rect(self.screen, 'red', platform.rect, 1)

@@ -136,16 +136,15 @@ class Player(pygame.sprite.Sprite):
 
         elif self.level.current_room_key == 'room_1_2' and self.level.sleigh_in_inventory and self.rect.x == 100:
             index = len(self.level.completed_sleigh_pieces)
-            pos = (112 - TILE_SIZE * index, 128)
-            Sleigh(pos, self.screen, self.level.sleigh_images[index], self.level.completed_sleigh_group)
+            if index < len(self.level.sleigh_images):
+                pos = (TILE_SIZE * 7 - TILE_SIZE * index, TILE_SIZE * 8)
+                Sleigh(pos, self.screen, self.level.sleigh_images[index], self.level.completed_sleigh_group)
 
-            self.level.sleigh_in_inventory = False
-            self.level.completed_sleigh_pieces.append(str(index + 1))
-            self.level.sleigh_group.empty()
-            self.level.create_sleigh()
+                self.level.sleigh_in_inventory = False
+                self.level.completed_sleigh_pieces.append(str(index + 1))
+                self.level.sleigh_group.empty()
+                self.level.create_sleigh()
 
-            if len(self.level.completed_sleigh_pieces) == 4:
-                self.level.level_won = True
 
     def update(self, dt):
         self.input()
