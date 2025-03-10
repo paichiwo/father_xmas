@@ -7,7 +7,6 @@ from src.dashboard import Dashboard
 from src.menu_scenes import MainMenuScene, GameOverScene
 from src.helpers import activate_state
 
-
 class Game:
     def __init__(self):
 
@@ -29,8 +28,9 @@ class Game:
             'gift_rain_running': False,
             'gift_delivery_running': False,
             'congratulations_running': False,
-            'game_over_scene_running': False,
+            'game_over_scene_running': False
         }
+
 
         # Game variables
         self.running = True
@@ -46,6 +46,7 @@ class Game:
 
     def handle_game_events(self, event):
         if event.type == pygame.QUIT:
+            self.running = False
             pygame.quit()
             sys.exit()
         if self.running:
@@ -65,19 +66,19 @@ class Game:
         self.dashboard.update()
 
     def platformer_check_win(self):
-        if self.platformer.sleigh_completed:
+        if self.platformer.all_sleigh_completed:
             activate_state(self.states, 'xmas_letter_running')
 
     def update_xmas_letter_elements(self):
         self.dashboard.update()
-        self.xmas_letter.draw()
         self.xmas_letter.update()
+        self.xmas_letter.draw()
 
     def game_over(self):
         return not self.dashboard.game_over
 
     def show_game_over_screen(self):
-        if self.states['game_over_scene_running']:
+        if self.states['game_over_screen_running']:
             self.game_over_scene.draw()
 
     def reset_game(self):
@@ -92,25 +93,23 @@ class Game:
         while True:
             self.screen.fill(BLACK)
             self.renderer.clear()
+            dt = self.clock.tick() / 1000
 
             for event in pygame.event.get():
                 self.handle_game_events(event)
-
-            dt = self.clock.tick() / 1000
 
             if self.running:
                 if self.states['main_menu_running']:
                     self.main_menu_scene.update(event)
                     self.check_game_start()
-
                 if self.states['platformer_running']:
                     self.update_platformer_elements(dt)
                     self.platformer_check_win()
-
                 if self.states['xmas_letter_running']:
                     self.update_xmas_letter_elements()
 
                 self.running = self.game_over()
+
             else:
                 activate_state(self.states, 'game_over_scene_running')
                 self.show_game_over_screen()

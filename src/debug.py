@@ -21,7 +21,7 @@ class DebugMenu:
         self.clock = clock
 
         self.surf = pygame.Surface((86, HEIGHT))
-        self.surf.fill('BLACK')
+        self.surf.fill(BLACK)
         self.surf.set_alpha(200)
         self.rect = self.surf.get_rect(topright=(WIDTH, 0))
 
@@ -50,7 +50,7 @@ class DebugMenu:
 
     def draw_title(self):
         """Draws the title of the debug menu."""
-        title_text = FONT_DEBUG.render('DEBUG MENU', True, 'ORANGE')
+        title_text = FONT_DEBUG.render('DEBUG MENU', True, ORANGE)
         title_rect = title_text.get_rect(center=(WIDTH - self.surf.get_width() / 2, 10))
         self.screen.blit(title_text, title_rect)
 
@@ -64,7 +64,7 @@ class DebugMenu:
         self.draw_under_rects()
         self.draw_bottom_rects()
         self.draw_rects()
-        self.show_enemy_debug_stats()
+        # self.show_enemy_debug_stats()
 
         padding = 3
         x_left = self.rect.left + padding
@@ -72,9 +72,9 @@ class DebugMenu:
         y = 20
 
         for item, state in self.debug_items.items():
-            item_color = 'ORANGE' if pygame.font.Font.render(FONT_8, item, True, 'YELLOW').get_rect(
-                topleft=(x_left, y)).collidepoint(mouse_pos) else 'YELLOW'
-            state_color = 'RED' if not state else 'GREEN'
+            item_color = 'ORANGE' if pygame.font.Font.render(FONT_8, item, True, YELLOW).get_rect(
+                topleft=(x_left, y)).collidepoint(mouse_pos) else YELLOW
+            state_color = RED if not state else GREEN
 
             item_text = FONT_DEBUG.render(item, True, item_color)
             item_rect = item_text.get_rect(topleft=(x_left, y))
@@ -98,23 +98,23 @@ class DebugMenu:
     def draw_under_rects(self):
         """Draws under_rects of the player and enemies"""
         if self.debug_items['UNDER']:
-            pygame.draw.rect(self.screen, 'YELLOW', self.level.player.under_rect, 1)
+            pygame.draw.rect(self.screen, YELLOW, self.level.player.under_rect, 1)
             for enemy in self.level.enemy_group:
-                pygame.draw.rect(self.screen, 'YELLOW', enemy.under_rect, 1)
+                pygame.draw.rect(self.screen, YELLOW, enemy.under_rect, 1)
 
     def draw_bottom_rects(self):
         """Draws player's and enemies bottom_rect"""
         if self.debug_items['BOTTOM']:
-            pygame.draw.rect(self.screen, 'ORANGE', self.level.player.bottom_rect, 1)
+            pygame.draw.rect(self.screen, ORANGE, self.level.player.bottom_rect, 1)
             for enemy in self.level.enemy_group:
-                pygame.draw.rect(self.screen, 'ORANGE', enemy.bottom_rect, 1)
+                pygame.draw.rect(self.screen, ORANGE, enemy.bottom_rect, 1)
 
     def draw_rects(self):
         """Draws player's and enemies rects"""
         if self.debug_items['RECTS']:
-            pygame.draw.rect(self.screen, 'WHITE', self.level.player.rect, 1)
+            pygame.draw.rect(self.screen, WHITE, self.level.player.rect, 1)
             for enemy in self.level.enemy_group:
-                pygame.draw.rect(self.screen, 'WHITE', enemy.rect, 1)
+                pygame.draw.rect(self.screen, WHITE, enemy.rect, 1)
 
     def show_enemy_debug_stats(self):
         """Shows info about enemies: pos.x, direction.x, direction_timer"""

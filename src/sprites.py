@@ -1,6 +1,5 @@
-import random
-import pygame
-from src.config import WHITE, TILE_SIZE
+from random import randint, choice
+from src.config import *
 
 
 class Sprite(pygame.sprite.Sprite):
@@ -8,7 +7,7 @@ class Sprite(pygame.sprite.Sprite):
         super().__init__(group)
 
         self.image = surf
-        self.rect = self.image.get_rect(topleft=pos)
+        self.rect = self.image.get_frect(topleft=pos)
 
 
 class AnimatedSprite(Sprite):
@@ -41,27 +40,25 @@ class Sleigh(Sprite):
         self.screen.blit(self.image, self.rect)
 
 
-class Snowflake:
-    def __init__(self, x, y, screen, snow_boundary):
-        self.pos = pygame.Vector2(x, y)
-        self.screen = screen
-        self.snow_boundary = snow_boundary
-        self.size = random.randint(1, 2)
-        self.speed = random.choice([20, 30, 40, 50])
+class Snowflake(Sprite):
 
-    def draw(self):
-        pygame.draw.circle(self.screen, WHITE, (int(self.pos.x), int(self.pos.y)), self.size)
+    def __init__(self, pos, surf, boundary, group):
+        super().__init__(pos, surf, group)
+
+        self.boundary = boundary
+
+        self.pos = pygame.Vector2(pos)
+        self.speed = choice([20, 30, 40, 50])
 
     def update(self, dt):
         self.pos.y += self.speed * dt
 
         # Respawn at top when it falls below boundary
-        if self.pos.y > self.snow_boundary.bottom:
-            self.pos.y = self.snow_boundary.top
-            self.pos.x = random.randint(self.snow_boundary.left, self.snow_boundary.right)
+        if self.pos.y > self.boundary.bottom:
+            self.pos.y = self.boundary.top
+            self.pos.x = randint(self.boundary.left, self.boundary.right)
 
         # Ensure flakes stay within horizontal bounds
-        if self.pos.x < self.snow_boundary.left:
-            self.pos.x = self.snow_boundary.left
-        elif self.pos.x > self.snow_boundary.right:
-            self.pos.x = self.snow_boundary.right
+        self.pos.x = max(self.boundary.left, min(self.pos.x, self.boundary.right))
+
+        self.rect.topleft = self.pos
