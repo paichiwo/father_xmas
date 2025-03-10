@@ -98,17 +98,15 @@ class Player(pygame.sprite.Sprite):
     def check_climb(self):
         """Determines whether the player can climb up or down a ladder."""
         offset = 2
-        can_climb_up = can_climb_down = middle_of_ladder = False
+        can_climb_up = can_climb_down = False
         self.under_rect.update(self.rect.centerx - self.rect.width // 6, self.rect.bottom,
                                self.rect.width // 3, self.rect.height // 3)
 
         for ladder in self.level.ladders_group:
             if self.rect.colliderect(ladder.rect):  # going up
-                middle_of_ladder = abs(ladder.rect.centerx - self.under_rect.centerx) <= offset
-                can_climb_up = True if middle_of_ladder else False
+                can_climb_up = abs(ladder.rect.centerx - self.under_rect.centerx) <= offset # middle of ladder
             if self.under_rect.colliderect(ladder.rect):   # going down
-                middle_of_ladder = abs(ladder.rect.centerx - self.under_rect.centerx) <= offset
-                can_climb_down = True if middle_of_ladder else False
+                can_climb_down = abs(ladder.rect.centerx - self.under_rect.centerx) <= offset # middle of ladder
 
         if (not can_climb_up and (not can_climb_down or self.direction.y < 0)) or (
                 self.landed and can_climb_up and self.direction.y > 0 and not can_climb_down):
@@ -146,6 +144,11 @@ class Player(pygame.sprite.Sprite):
                 self.level.sleigh_group.empty()
                 self.level.create_sleigh()
 
+                self.level.all_sleigh_completed = True if len(self.level.completed_sleigh_pieces) == 4 else False
+
+    def reset(self):
+        self.rect.midbottom = (5 * TILE_SIZE, 7 * TILE_SIZE)
+        self.pos = pygame.math.Vector2(self.rect.topleft)
 
     def update(self, dt):
         self.input()
