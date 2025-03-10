@@ -1,4 +1,4 @@
-from src.game_manager_pytmx import Game
+from src.game_manager import Game
 
 
 if __name__ == '__main__':
