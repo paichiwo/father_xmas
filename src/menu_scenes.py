@@ -74,8 +74,6 @@ class MainMenuScene:
         activate_state(self.states, 'MAIN MENU')
 
     def update(self, event):
-        self.screen.fill('BLACK')
-
         if self.states['MAIN MENU']:
             self.draw_main_menu()
             self.input(event)
