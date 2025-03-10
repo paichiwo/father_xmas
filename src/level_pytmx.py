@@ -3,6 +3,7 @@ from src.config import *
 from src.helpers import import_images
 from src.sprites import Sprite, AnimatedSprite, Snowflake, Sleigh
 from src.player_pytmx import Player
+from src.enemy import EnemyElf
 from pytmx import load_pygame
 
 
@@ -15,6 +16,7 @@ class Platformer:
         # sprite groups
         self.all_sprites = pygame.sprite.Group()
         self.player_group = pygame.sprite.GroupSingle()
+        self.enemy_group = pygame.sprite.Group()
         self.platforms_group = pygame.sprite.Group()
         self.ladders_group = pygame.sprite.Group()
         self.collision_walls = pygame.sprite.Group()
@@ -34,12 +36,18 @@ class Platformer:
         # sleigh
         self.sleigh_images = import_images(PATHS['sleigh'])
         self.sleigh_in_inventory = False
+        self.all_sleigh_completed = False
         self.completed_sleigh_pieces = []
         self.sleigh_spawn_room = choice(self.rooms[:5])
         self.create_sleigh()
 
         # player initialization
         self.player = Player((5 * TILE_SIZE, 7 * TILE_SIZE), self.screen, self, PATHS['player'], [self.player_group])
+
+        # enemy
+        self.enemy_spawn_timer = 0
+        self.enemy_spawn_delay = randint(2000, 5000)
+        self.create_enemies()
 
     def create_room(self, tmx_map):
         """Creates the current room by adding objects to sprite groups."""
@@ -67,6 +75,7 @@ class Platformer:
         self.platforms_group.empty()
         self.ladders_group.empty()
         self.collision_walls.empty()
+        self.enemy_group.empty()
 
     def change_room(self, new_room_key):
         """Clears the old room and loads a new one"""
@@ -75,6 +84,7 @@ class Platformer:
             self.current_room_key = new_room_key
             self.current_room = self.tmx_rooms[new_room_key]
             self.create_room(self.current_room)
+            self.create_enemies()
 
     def create_snow(self):
         """Creates snowflakes based on the current room's snow boundaries."""
@@ -96,6 +106,27 @@ class Platformer:
             if index < len(self.sleigh_images):
                 Sleigh(pos, self.screen, self.sleigh_images[index], [self.sleigh_group])
 
+    def create_enemies(self):
+        self.enemy_spawn_timer += pygame.time.get_ticks()
+        if self.enemy_spawn_timer >= self.enemy_spawn_delay:
+            enemy_spawn_data = choice(ENEMY_SPAWN_POS[self.current_room_key])
+            EnemyElf(screen=self.screen,
+                     platformer=self,
+                     path=PATHS['elf'],
+                     pos=(enemy_spawn_data[0], enemy_spawn_data[1]),
+                     direction_x=enemy_spawn_data[2],
+                     group=self.enemy_group)
+            self.enemy_spawn_timer = 0
+            self.enemy_spawn_delay = randint(2000, 5000)
+
+    def reset(self):
+        self.player.reset()
+        self.current_room_key = 'room_0_2'
+        self.change_room(self.current_room_key)
+        self.completed_sleigh_pieces = []
+        self.sleigh_in_inventory = False
+        self.all_sleigh_completed = False
+
     def update(self, dt):
         self.all_sprites.update(dt)
         self.all_sprites.draw(self.screen)
@@ -106,3 +137,22 @@ class Platformer:
 
         self.player_group.update(dt)
         self.player_group.draw(self.screen)
+
+        self.enemy_group.update(dt)
+        self.enemy_group.draw(self.screen)
+
+
+class XmasLetter:
+    def __init__(self, screen):
+        self.screen = screen
+        self.image = pygame.Surface((20, 20))
+        pygame.draw.circle(self.image, 'blue', (self.image.get_width() // 2, self.image.get_height() // 2), 10)
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (30, 30)
+
+    def draw(self):
+        self.screen.blit(self.image, self.rect)
+        pygame.draw.rect(self.screen, 'red', self.rect, 1)
+
+    def update(self):
+        self.rect.x += 1
