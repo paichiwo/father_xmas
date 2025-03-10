@@ -8,6 +8,11 @@ TILE_SIZE = 16
 SCALE = 3
 
 # COLORS
+BLACK  = (0, 0 ,0)
+WHITE = 'grey80'
+YELLOW = 'yellow'
+ORANGE = 'orange'
+GREEN = (19, 211, 24)
 DK_GREEN = (29, 53, 29)
 RED = (139, 24, 29)
 DK_RED = (111, 15, 17)
