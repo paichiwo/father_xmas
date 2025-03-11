@@ -64,7 +64,7 @@ class DebugMenu:
         self.draw_under_rects()
         self.draw_bottom_rects()
         self.draw_rects()
-        # self.show_enemy_debug_stats()
+        self.show_enemy_debug_stats()
 
         padding = 3
         x_left = self.rect.left + padding
