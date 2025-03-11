@@ -11,7 +11,7 @@ class EnemyElf(pygame.sprite.Sprite):
         self.frames = import_assets(path)
         self.frame_index = 0
         self.image = self.frames['walk'][self.frame_index]
-        self.animation_speed = 6
+        self.animation_speed = 7
 
         self.rect = self.image.get_rect(midbottom=pos)
         self.bottom_rect = pygame.rect.Rect()
@@ -35,6 +35,10 @@ class EnemyElf(pygame.sprite.Sprite):
         self.pos += self.direction * self.speed * dt
         self.rect.topleft = (self.pos.x, self.pos.y)
 
+    def restart_direction_timers(self):
+        self.direction_timer = random.randint(2000, 5000)
+        self.last_direction_change_time = pygame.time.get_ticks()
+
     def direction_change(self):
         can_climb_up, can_climb_down = self.check_climb()
         elapsed_time = pygame.time.get_ticks() - self.last_direction_change_time
@@ -48,14 +52,12 @@ class EnemyElf(pygame.sprite.Sprite):
 
         if not self.climbing and self.landed and elapsed_time >= self.direction_timer:
             self.direction.x *= -1
-            self.direction_timer = random.randint(2000, 5000)
-            self.last_direction_change_time = pygame.time.get_ticks()
+            self.restart_direction_timers()
             self.climb_decision = 1
 
         if not self.landed and (self.pos.x < -100 or self.pos.x > 420):
             self.direction.x *= -1
-            self.direction_timer = random.randint(2000, 5000)
-            self.last_direction_change_time = pygame.time.get_ticks()
+            self.restart_direction_timers()
 
         # vertical movement
         if can_climb_up and self.climb_decision == 1:
