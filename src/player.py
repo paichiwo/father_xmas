@@ -11,17 +11,17 @@ class Player(pygame.sprite.Sprite):
         self.frames = import_assets(path)
         self.frame_index = 0
         self.image = self.frames['idle'][self.frame_index]
+        self.animation_speed = 6
 
         self.rect = self.image.get_frect(midbottom=pos)
-        self.animation_speed = 6
+        self.bottom_rect = pygame.rect.Rect()
+        self.under_rect = pygame.rect.Rect()
 
         self.direction = pygame.math.Vector2()
         self.pos = pygame.math.Vector2(self.rect.topleft)
+
         self.last_direction = -1
         self.speed = 120
-
-        self.bottom_rect = pygame.rect.Rect()
-        self.under_rect = pygame.rect.Rect()
         self.landed = False
         self.climbing = False
 

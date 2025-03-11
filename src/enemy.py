@@ -20,11 +20,11 @@ class EnemyElf(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2((direction_x, 0))
         self.pos = pygame.math.Vector2(self.rect.topleft)
 
-        self.climbing = False
         self.landed = False
+        self.climbing = False
         self.collided_with_wall = False
 
-        self.speed = 50
+        self.speed = 60
         self.off_screen_max = 100
         self.climb_decision = random.choice([0, 1]) # 0 = no climbing; 1 = climbing
 
