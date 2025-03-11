@@ -69,8 +69,8 @@ class Player(pygame.sprite.Sprite):
             self.image = self.frames[state][int(self.frame_index)]
         elif self.climbing and self.direction.y == 0:
             self.image = self.frames['climb'][0]
-        else:
-            self.image = self.frames['idle'][0]
+        elif not self.climbing:
+                self.image = self.frames['idle'][0]
 
         if self.direction.x == 1 or (state == 'idle' and self.last_direction == 1):
             self.image = pygame.transform.flip(self.image, True, False)
