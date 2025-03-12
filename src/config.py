@@ -62,6 +62,6 @@ SNOW_AMOUNT = 20
 SNOW_BOUNDARIES = {
     'room_0_0': [pygame.Rect(0, 0, 320, 32)],
     'room_0_1': [pygame.Rect(0, 0, 320, 32)],
-    'room_0_2': [pygame.Rect(0, 0, 240, 32), pygame.Rect(240, 0, 70, 154)],
+    'room_0_2': [pygame.Rect(0, 0, 230, 32), pygame.Rect(230, 0, 100, 144)],
     'room_1_2': [pygame.Rect(0, 0, 320, 144)]
 }

@@ -1,4 +1,7 @@
 from random import randint, choice, uniform
+
+import pygame
+
 from src.config import *
 
 
@@ -48,7 +51,7 @@ class Snowflake(Sprite):
         self.drift_speed =uniform(-10, 10)
 
     def reset_speeds(self):
-        self.speed = uniform(20, 50)
+        self.speed = uniform(20, 30)
         self.drift_speed =uniform(-10, 10)
 
     def update(self, dt):
@@ -60,5 +63,6 @@ class Snowflake(Sprite):
             self.pos.y = self.boundary.top
             self.pos.x = randint(self.boundary.left, self.boundary.right)
             self.reset_speeds()
-
+        self.pos.x = max(self.boundary.left, min(self.pos.x, self.boundary.right))
         self.rect.topleft = (round(self.pos.x), round(self.pos.y))
+
