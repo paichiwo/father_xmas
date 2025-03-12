@@ -33,7 +33,7 @@ class EnemyElf(pygame.sprite.Sprite):
 
     def move(self, dt):
         self.pos += self.direction * self.speed * dt
-        self.rect.topleft = (self.pos.x, self.pos.y)
+        self.rect.topleft = (round(self.pos.x), round(self.pos.y))
 
     def restart_direction_timers(self):
         self.direction_timer = random.randint(2000, 5000)
