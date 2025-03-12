@@ -1,4 +1,4 @@
-from random import randint, choice
+from random import randint, choice, uniform
 from src.config import *
 
 
@@ -8,7 +8,6 @@ class Sprite(pygame.sprite.Sprite):
 
         self.image = surf
         self.rect = self.image.get_frect(topleft=pos)
-
 
 class AnimatedSprite(Sprite):
     def __init__(self, pos, frames, group):
@@ -28,7 +27,6 @@ class AnimatedSprite(Sprite):
     def update(self, dt):
         self.animate(dt)
 
-
 class Sleigh(Sprite):
     def __init__(self, pos, screen, surf, group):
         super().__init__(pos, surf, group)
@@ -39,26 +37,28 @@ class Sleigh(Sprite):
     def update(self):
         self.screen.blit(self.image, self.rect)
 
-
 class Snowflake(Sprite):
-
     def __init__(self, pos, surf, boundary, group):
         super().__init__(pos, surf, group)
 
         self.boundary = boundary
 
         self.pos = pygame.Vector2(pos)
-        self.speed = choice([20, 30, 40, 50])
+        self.speed = uniform(20, 30)
+        self.drift_speed =uniform(-10, 10)
+
+    def reset_speeds(self):
+        self.speed = uniform(20, 50)
+        self.drift_speed =uniform(-10, 10)
 
     def update(self, dt):
-        self.pos.y += self.speed * dt
+        self.pos.y += (self.speed * dt)
+        self.pos.x += self.drift_speed * dt
 
         # Respawn at top when it falls below boundary
         if self.pos.y > self.boundary.bottom:
             self.pos.y = self.boundary.top
             self.pos.x = randint(self.boundary.left, self.boundary.right)
+            self.reset_speeds()
 
-        # Ensure flakes stay within horizontal bounds
-        self.pos.x = max(self.boundary.left, min(self.pos.x, self.boundary.right))
-
-        self.rect.topleft = self.pos
+        self.rect.topleft = (round(self.pos.x), round(self.pos.y))
