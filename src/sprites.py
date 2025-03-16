@@ -1,5 +1,5 @@
 from random import randint, choice, uniform
-
+import math
 import pygame
 
 from src.config import *
@@ -40,29 +40,43 @@ class Sleigh(Sprite):
     def update(self):
         self.screen.blit(self.image, self.rect)
 
+import pygame
+from random import randint, uniform
+import math
+
 class Snowflake(Sprite):
     def __init__(self, pos, surf, boundary, group):
         super().__init__(pos, surf, group)
 
         self.boundary = boundary
-
         self.pos = pygame.Vector2(pos)
+        self.base_x = self.pos.x  # Store initial X position for smooth oscillation
+
         self.speed = uniform(20, 30)
-        self.drift_speed =uniform(-10, 10)
+        self.drift_amplitude = uniform(5, 10)  # Slightly smaller to prevent extreme drift
+        self.drift_frequency = uniform(0.3, 1.0)  # Lower frequency for smoother motion
+        self.timer = 0
 
     def reset_speeds(self):
+        """Reset speeds when the snowflake respawns at the top."""
         self.speed = uniform(20, 30)
-        self.drift_speed =uniform(-10, 10)
+        self.drift_amplitude = uniform(5, 10)  # Slightly smaller to prevent extreme drift
+        self.drift_frequency = uniform(0.3, 1.0)  # Lower frequency for smoother motion
+        self.timer = 0  # Reset drift phase to prevent erratic behavior
 
     def update(self, dt):
-        self.pos.y += (self.speed * dt)
-        self.pos.x += self.drift_speed * dt
+        """Updates snowflake position with smooth falling and drifting."""
+        self.pos.y += self.speed * dt  # Fall downward
+        self.timer += self.drift_frequency * dt  # Smooth oscillation update
+        self.pos.x = self.base_x + math.sin(self.timer) * self.drift_amplitude  # Smooth left/right drift
 
-        # Respawn at top when it falls below boundary
+        # Reset when it falls below the boundary
         if self.pos.y > self.boundary.bottom:
-            self.pos.y = self.boundary.top
-            self.pos.x = randint(self.boundary.left, self.boundary.right)
+            self.pos.y = self.boundary.top - randint(5, 15)  # Start slightly above to avoid flickering
+            self.base_x = randint(self.boundary.left, self.boundary.right)  # Random new X position
             self.reset_speeds()
-        self.pos.x = max(self.boundary.left, min(self.pos.x, self.boundary.right))
-        self.rect.topleft = (round(self.pos.x), round(self.pos.y))
 
+        # Keep X within boundary limits
+        self.pos.x = max(self.boundary.left, min(self.pos.x, self.boundary.right))
+
+        self.rect.topleft = (round(self.pos.x), round(self.pos.y))
