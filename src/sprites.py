@@ -1,7 +1,5 @@
-from random import randint, choice, uniform
+from random import randint, uniform
 import math
-import pygame
-
 from src.config import *
 
 
@@ -40,9 +38,6 @@ class Sleigh(Sprite):
     def update(self):
         self.screen.blit(self.image, self.rect)
 
-import pygame
-from random import randint, uniform
-import math
 
 class Snowflake(Sprite):
     def __init__(self, pos, surf, boundary, group):
