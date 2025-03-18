@@ -25,7 +25,6 @@ PATHS = {
     'snow': 'assets/level/snow',
     'sleigh': 'assets/level/sleigh'
 }
-
 # ASSETS
 pygame.init()
 FONT_8 = pygame.font.Font('assets/font/C64_Pro_Mono-STYLE.ttf', size=8)
@@ -63,5 +62,5 @@ SNOW_BOUNDARIES = {
     'room_0_0': [pygame.Rect(0, 0, 320, 32)],
     'room_0_1': [pygame.Rect(0, 0, 320, 32)],
     'room_0_2': [pygame.Rect(0, 0, 230, 32), pygame.Rect(230, 0, 100, 144)],
-    'room_1_2': [pygame.Rect(0, 0, 320, 144)]
+    'room_1_2': [pygame.Rect(0, 0, 160, 144), pygame.Rect(161, 0, 320, 144)]
 }
