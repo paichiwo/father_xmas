@@ -38,8 +38,8 @@ class Platformer:
 
         # sleigh
         self.sleigh_images = import_images(PATHS['sleigh'])
-        self.sleigh_in_inventory = False
         self.all_sleigh_completed = False
+        self.sleigh_in_inventory = False
         self.completed_sleigh_pieces = []
         self.sleigh_spawn_room = choice(self.rooms[:5])
         self.create_sleigh()
@@ -47,6 +47,8 @@ class Platformer:
         # enemy
         self.enemy_spawn_timer = 0
         self.enemy_spawn_delay = randint(2000, 5000)
+        self.last_collision_time = 0
+        self.collision_cooldown = 3000
 
     def create_room(self, tmx_map):
         """Creates the current room by adding objects to sprite groups."""
@@ -93,16 +95,22 @@ class Platformer:
                     Snowflake(pos, choice(self.snow_images), boundary, [self.snowflakes, self.all_sprites])
 
     def create_sleigh(self):
-        rects = []
-        if not self.sleigh_in_inventory and self.sleigh_spawn_room in self.tmx_rooms:
-            tmx_map = self.tmx_rooms[self.sleigh_spawn_room]
-            for x, y, surf in tmx_map.get_layer_by_name('platforms').tiles():
-                if 1 < x < 19:
-                    rects.append((x * TILE_SIZE, y * TILE_SIZE))
-            pos = choice(rects)
-            index = len(self.completed_sleigh_pieces)
-            if index < len(self.sleigh_images):
-                Sleigh(pos, self.screen, self.sleigh_images[index], [self.sleigh_group])
+        self.sleigh_spawn_room = choice([room for room in self.rooms[:5] if room != self.current_room_key])
+        if self.sleigh_in_inventory or self.sleigh_spawn_room not in self.tmx_rooms:
+            return
+
+        tms_map = self.tmx_rooms[self.sleigh_spawn_room]
+        ladders = [(x * TILE_SIZE, y * TILE_SIZE) for x, y, _ in tms_map.get_layer_by_name('ladders').tiles()]
+
+        rects = [
+            (x * TILE_SIZE, y * TILE_SIZE)
+            for x, y, _ in tms_map.get_layer_by_name('platforms').tiles()
+            if y in [7, 8] and 1 < x < 18 and (x * TILE_SIZE, y * TILE_SIZE) not in ladders
+        ]
+
+        index  = len(self.completed_sleigh_pieces)
+        if rects and index < len(self.sleigh_images):
+            Sleigh(choice(rects), self.screen, self.sleigh_images[index], [self.sleigh_group])
 
     def create_enemies(self):
         self.enemy_spawn_timer += pygame.time.get_ticks()
@@ -116,6 +124,13 @@ class Platformer:
                      group=[self.enemy_group, self.all_sprites])
             self.enemy_spawn_timer = 0
             self.enemy_spawn_delay = randint(2000, 5000)
+
+    def collisions_player_with_enemy(self):
+        if pygame.time.get_ticks() - self.last_collision_time > self.collision_cooldown:
+            if pygame.sprite.groupcollide(self.enemy_group, self.player_group, False, False):
+                self.last_collision_time = pygame.time.get_ticks()
+                self.sleigh_in_inventory = False
+                self.create_sleigh()
 
     def reset(self):
         self.player.reset()
@@ -135,6 +150,8 @@ class Platformer:
 
         self.player_group.update(dt)
         self.player_group.draw(self.screen)
+        # self.collisions_player_with_enemy()
+        # print(self.sleigh_in_inventory)
 
 class XmasLetter:
     def __init__(self, screen):
