@@ -99,6 +99,8 @@ class Platformer:
         if self.sleigh_in_inventory or self.sleigh_spawn_room not in self.tmx_rooms:
             return
 
+        print(self.sleigh_spawn_room)
+
         tms_map = self.tmx_rooms[self.sleigh_spawn_room]
         ladders = [(x * TILE_SIZE, y * TILE_SIZE) for x, y, _ in tms_map.get_layer_by_name('ladders').tiles()]
 
@@ -129,8 +131,9 @@ class Platformer:
         if pygame.time.get_ticks() - self.last_collision_time > self.collision_cooldown:
             if pygame.sprite.groupcollide(self.enemy_group, self.player_group, False, False):
                 self.last_collision_time = pygame.time.get_ticks()
-                self.sleigh_in_inventory = False
-                self.create_sleigh()
+                if self.sleigh_in_inventory:
+                    self.sleigh_in_inventory = False
+                    self.create_sleigh()
 
     def reset(self):
         self.player.reset()
@@ -150,7 +153,7 @@ class Platformer:
 
         self.player_group.update(dt)
         self.player_group.draw(self.screen)
-        # self.collisions_player_with_enemy()
+        self.collisions_player_with_enemy()
         # print(self.sleigh_in_inventory)
 
 class XmasLetter:
