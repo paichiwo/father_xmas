@@ -7,7 +7,7 @@ from src.enemy import EnemyElf
 from pytmx import load_pygame
 
 
-class Platformer:
+class LevelOne:
     def __init__(self, screen):
         self.screen = screen
         self.level_won = False
@@ -95,6 +95,7 @@ class Platformer:
                     Snowflake(pos, choice(self.snow_images), boundary, [self.snowflakes, self.all_sprites])
 
     def create_sleigh(self):
+        """Creates sleigh in a random room"""
         self.sleigh_spawn_room = choice([room for room in self.rooms[:5] if room != self.current_room_key])
         if self.sleigh_in_inventory or self.sleigh_spawn_room not in self.tmx_rooms:
             return
@@ -115,11 +116,12 @@ class Platformer:
             Sleigh(choice(rects), self.screen, self.sleigh_images[index], [self.sleigh_group])
 
     def create_enemies(self):
+        """Creates enemy in each room"""
         self.enemy_spawn_timer += pygame.time.get_ticks()
         if self.enemy_spawn_timer >= self.enemy_spawn_delay:
             enemy_spawn_data = choice(ENEMY_SPAWN_POS[self.current_room_key])
             EnemyElf(screen=self.screen,
-                     platformer=self,
+                     level_1=self,
                      path=PATHS['elf'],
                      pos=(enemy_spawn_data[0], enemy_spawn_data[1]),
                      direction_x=enemy_spawn_data[2],
@@ -128,6 +130,7 @@ class Platformer:
             self.enemy_spawn_delay = randint(2000, 5000)
 
     def collisions_player_with_enemy(self):
+        """Handles player's with enemy collisions"""
         if pygame.time.get_ticks() - self.last_collision_time > self.collision_cooldown:
             if pygame.sprite.groupcollide(self.enemy_group, self.player_group, False, False):
                 self.last_collision_time = pygame.time.get_ticks()
@@ -136,6 +139,7 @@ class Platformer:
                     self.create_sleigh()
 
     def reset(self):
+        """Reset level 1"""
         self.player.reset()
         self.current_room_key = 'room_0_2'
         self.change_room(self.current_room_key)
@@ -155,18 +159,3 @@ class Platformer:
         self.player_group.draw(self.screen)
         self.collisions_player_with_enemy()
         # print(self.sleigh_in_inventory)
-
-class XmasLetter:
-    def __init__(self, screen):
-        self.screen = screen
-        self.image = pygame.Surface((20, 20))
-        pygame.draw.circle(self.image, 'blue', (self.image.get_width() // 2, self.image.get_height() // 2), 10)
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (30, 30)
-
-    def draw(self):
-        self.screen.blit(self.image, self.rect)
-        pygame.draw.rect(self.screen, 'red', self.rect, 1)
-
-    def update(self):
-        self.rect.x += 1

@@ -3,10 +3,10 @@ from src.helpers import import_assets
 from src.config import *
 
 class EnemyElf(pygame.sprite.Sprite):
-    def __init__(self, pos, direction_x, screen, platformer, path, group):
+    def __init__(self, pos, direction_x, screen, level_1, path, group):
         super().__init__(group)
         self.screen = screen
-        self.platformer = platformer
+        self.level_1 = level_1
 
         self.frames = import_assets(path)
         self.frame_index = 0
@@ -92,7 +92,7 @@ class EnemyElf(pygame.sprite.Sprite):
     def collisions_with_platforms(self):
         self.landed = False
         self.bottom_rect.update(self.rect.left - TILE_SIZE / 2, self.rect.bottom, self.rect.width + TILE_SIZE, 3)
-        for platform in self.platformer.platforms_group:
+        for platform in self.level_1.platforms_group:
             if self.bottom_rect.colliderect(platform.rect):
                 self.landed = True
                 if not self.climbing:
@@ -101,7 +101,7 @@ class EnemyElf(pygame.sprite.Sprite):
 
     def collisions_with_walls(self):
         self.collided_with_wall = False
-        for wall in self.platformer.collision_walls:
+        for wall in self.level_1.collision_walls:
             if self.rect.colliderect(wall.rect):
                 if self.direction.x > 0:
                     self.rect.right = wall.rect.left if self.direction.x > 0 else self.rect.left
@@ -117,7 +117,7 @@ class EnemyElf(pygame.sprite.Sprite):
         self.under_rect.update(self.rect.centerx - self.rect.width // 6, self.rect.bottom,
                                self.rect.width // 3, self.rect.height // 3)
 
-        for ladder in self.platformer.ladders_group:
+        for ladder in self.level_1.ladders_group:
             if self.rect.colliderect(ladder.rect):  # going up
                 can_climb_up = abs(ladder.rect.centerx - self.under_rect.centerx) <= offset  # middle of ladder
             if self.under_rect.colliderect(ladder.rect):  # going down

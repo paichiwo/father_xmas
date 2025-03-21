@@ -3,10 +3,10 @@ from src.helpers import import_assets
 from src.sprites import Sleigh
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, pos, screen, level, path, group):
+    def __init__(self, pos, screen, level_1, path, group):
         super().__init__(group)
         self.screen = screen
-        self.level = level
+        self.level_1 = level_1
 
         self.frames = import_assets(path)
         self.frame_index = 0
@@ -79,7 +79,7 @@ class Player(pygame.sprite.Sprite):
         """Handles collision with platforms"""
         self.landed = False
         self.bottom_rect.update(self.rect.left - TILE_SIZE / 2, self.rect.bottom, self.rect.width + TILE_SIZE, 3)
-        for platform in self.level.platforms_group:
+        for platform in self.level_1.platforms_group:
             if self.bottom_rect.colliderect(platform.rect):
                 self.landed = True
                 if not self.climbing:
@@ -88,7 +88,7 @@ class Player(pygame.sprite.Sprite):
 
     def collisions_with_walls(self):
         """Checks for collisions with walls and prevents movement through them."""
-        for wall in self.level.collision_walls:
+        for wall in self.level_1.collision_walls:
             if self.rect.colliderect(wall.rect):
                 if self.direction.x > 0:
                     self.rect.right = wall.rect.left if self.direction.x > 0 else self.rect.left
@@ -103,7 +103,7 @@ class Player(pygame.sprite.Sprite):
         self.under_rect.update(self.rect.centerx - self.rect.width // 6, self.rect.bottom,
                                self.rect.width // 3, self.rect.height // 3)
 
-        for ladder in self.level.ladders_group:
+        for ladder in self.level_1.ladders_group:
             if self.rect.colliderect(ladder.rect):  # going up
                 can_climb_up = abs(ladder.rect.centerx - self.under_rect.centerx) <= offset # middle of ladder
             if self.under_rect.colliderect(ladder.rect):   # going down
@@ -117,7 +117,7 @@ class Player(pygame.sprite.Sprite):
 
     def move_between_rooms(self):
         """Handles transitioning the player between rooms."""
-        for direction, (next_room, adjustment) in ROOM_TRANSITIONS[self.level.current_room_key].items():
+        for direction, (next_room, adjustment) in ROOM_TRANSITIONS[self.level_1.current_room_key].items():
             if (
                     (direction == 'left' and self.rect.left < -5) or
                     (direction == 'right' and self.rect.right > WIDTH + 5) or
@@ -125,28 +125,28 @@ class Player(pygame.sprite.Sprite):
                     (direction == 'down' and self.rect.bottom > 149)
             ):
                 self.pos.x, self.pos.y = (adjustment, self.pos.y) if direction in ['left', 'right'] else (self.pos.x, adjustment)
-                self.level.change_room(next_room)
+                self.level_1.change_room(next_room)
 
     def collect_sleigh(self):
         """Handles collecting sleigh mechanism"""
-        if self.level.current_room_key == self.level.sleigh_spawn_room:
-            for sleigh in self.level.sleigh_group:
+        if self.level_1.current_room_key == self.level_1.sleigh_spawn_room:
+            for sleigh in self.level_1.sleigh_group:
                 if self.rect.colliderect(sleigh.rect):
-                    self.level.sleigh_in_inventory = True
+                    self.level_1.sleigh_in_inventory = True
                     sleigh.kill()
 
-        elif self.level.current_room_key == 'room_1_2' and self.level.sleigh_in_inventory and self.rect.x == 100:
-            index = len(self.level.completed_sleigh_pieces)
-            if index < len(self.level.sleigh_images):
+        elif self.level_1.current_room_key == 'room_1_2' and self.level_1.sleigh_in_inventory and self.rect.x == 100:
+            index = len(self.level_1.completed_sleigh_pieces)
+            if index < len(self.level_1.sleigh_images):
                 pos = (TILE_SIZE * 7 - TILE_SIZE * index, TILE_SIZE * 8)
-                Sleigh(pos, self.screen, self.level.sleigh_images[index], self.level.completed_sleigh_group)
+                Sleigh(pos, self.screen, self.level_1.sleigh_images[index], self.level_1.completed_sleigh_group)
 
-                self.level.sleigh_in_inventory = False
-                self.level.completed_sleigh_pieces.append(str(index + 1))
-                self.level.sleigh_group.empty()
-                self.level.create_sleigh()
+                self.level_1.sleigh_in_inventory = False
+                self.level_1.completed_sleigh_pieces.append(str(index + 1))
+                self.level_1.sleigh_group.empty()
+                self.level_1.create_sleigh()
 
-                self.level.all_sleigh_completed = True if len(self.level.completed_sleigh_pieces) == 4 else False
+                self.level_1.all_sleigh_completed = True if len(self.level_1.completed_sleigh_pieces) == 4 else False
 
     def reset(self):
         """Resets player's class"""

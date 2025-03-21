@@ -5,18 +5,18 @@ from src.config import *
 from src.helpers import activate_state
 
 class DebugMenu:
-    def __init__(self, screen, clock, level_manager, states):
+    def __init__(self, screen, clock, level_1, states):
         """
         Initializes the debug menu.
 
         Args:
             screen (pygame.Surface): The game screen to draw the menu on.
             clock (pygame.time.Clock): The game clock to track FPS.
-            level_manager: The level manager handling player and enemy data.
+            level_1: The level manager handling player and enemy data.
             states (dict): Dictionary storing game states.
         """
         self.screen = screen
-        self.level = level_manager
+        self.level_1 = level_1
         self.states = states
         self.clock = clock
 
@@ -100,27 +100,27 @@ class DebugMenu:
     def draw_under_rects(self):
         """Draws under_rects of the player and enemies"""
         if self.debug_items['UNDER']:
-            pygame.draw.rect(self.screen, YELLOW, self.level.player.under_rect, 1)
-            for enemy in self.level.enemy_group:
+            pygame.draw.rect(self.screen, YELLOW, self.level_1.player.under_rect, 1)
+            for enemy in self.level_1.enemy_group:
                 pygame.draw.rect(self.screen, YELLOW, enemy.under_rect, 1)
 
     def draw_bottom_rects(self):
         """Draws player's and enemies bottom_rect"""
         if self.debug_items['BOTTOM']:
-            pygame.draw.rect(self.screen, ORANGE, self.level.player.bottom_rect, 1)
-            for enemy in self.level.enemy_group:
+            pygame.draw.rect(self.screen, ORANGE, self.level_1.player.bottom_rect, 1)
+            for enemy in self.level_1.enemy_group:
                 pygame.draw.rect(self.screen, ORANGE, enemy.bottom_rect, 1)
 
     def draw_rects(self):
         """Draws player's and enemies rects"""
         if self.debug_items['RECTS']:
-            pygame.draw.rect(self.screen, WHITE, self.level.player.rect, 1)
-            for enemy in self.level.enemy_group:
+            pygame.draw.rect(self.screen, WHITE, self.level_1.player.rect, 1)
+            for enemy in self.level_1.enemy_group:
                 pygame.draw.rect(self.screen, WHITE, enemy.rect, 1)
 
     def show_enemy_debug_stats(self):
         """Shows info about enemies: pos.x, direction.x, direction_timer"""
-        for enemy in self.level.enemy_group:
+        for enemy in self.level_1.enemy_group:
             self.debug_items['EDIR.X'] = 'LEFT' if enemy.direction.x < 0 else 'RIGHT'
 
             time_left = str(max(0, (enemy.last_direction_change_time + enemy.direction_timer - pygame.time.get_ticks())))
@@ -143,7 +143,7 @@ class DebugMenu:
             self.debug_items['LEVEL'] = 1
 
     def show_sleigh_in_inventory(self):
-        self.debug_items['SLEIGH'] = self.level.sleigh_in_inventory
+        self.debug_items['SLEIGH'] = self.level_1.sleigh_in_inventory
 
     def handle_mouse_event(self, event):
         """Handles mouse input for toggling debug options."""
