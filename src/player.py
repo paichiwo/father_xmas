@@ -109,8 +109,10 @@ class Player(pygame.sprite.Sprite):
             if self.under_rect.colliderect(ladder.rect):   # going down
                 can_climb_down = abs(ladder.rect.centerx - self.under_rect.centerx) <= offset # middle of ladder
 
-        if (not can_climb_up and (not can_climb_down or self.direction.y < 0)) or (
-                self.landed and can_climb_up and self.direction.y > 0 and not can_climb_down):
+        cannot_climb = not can_climb_up and (not can_climb_down or self.direction.y < 0)
+        stuck_on_ladder = self.landed and can_climb_up and self.direction.y > 0 and not can_climb_down
+
+        if cannot_climb or stuck_on_ladder:
             self.climbing = False
 
         return can_climb_up, can_climb_down
