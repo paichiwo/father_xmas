@@ -1,4 +1,4 @@
-import random
+from random import choice, randint
 from src.helpers import import_assets
 from src.config import *
 
@@ -26,9 +26,9 @@ class EnemyElf(pygame.sprite.Sprite):
 
         self.speed = 60
         self.off_screen_max = 100
-        self.climb_decision = random.choice([0, 1]) # 0 = no climbing; 1 = climbing
+        self.climb_decision = choice([0, 1]) # 0 = no climbing; 1 = climbing
 
-        self.direction_timer = random.randint(2000, 5000)
+        self.direction_timer = randint(2000, 5000)
         self.last_direction_change_time = pygame.time.get_ticks()
 
     def move(self, dt):
@@ -36,7 +36,7 @@ class EnemyElf(pygame.sprite.Sprite):
         self.rect.topleft = (round(self.pos.x), round(self.pos.y))
 
     def restart_direction_timers(self):
-        self.direction_timer = random.randint(2000, 5000)
+        self.direction_timer = randint(2000, 5000)
         self.last_direction_change_time = pygame.time.get_ticks()
 
     def direction_change(self):
@@ -65,21 +65,21 @@ class EnemyElf(pygame.sprite.Sprite):
                 self.direction.y = -1
                 self.direction.x = 0
                 self.climbing = True
-                self.climb_decision = random.choice([0, 0, 1])
+                self.climb_decision = choice([0, 0, 1])
 
         elif can_climb_down and self.climb_decision == 1:
             if self.direction.y == 0:
                 self.direction.y = 1
                 self.direction.x = 0
                 self.climbing = True
-                self.climb_decision = random.choice([0, 0, 1])
+                self.climb_decision = choice([0, 0, 1])
 
         # GOING UP OR DOWN BUT LANDED ON THE PLATFORM
         else:
             if self.climbing and self.landed:
                 self.direction.y = 0
                 self.climbing = False
-                self.direction.x = random.choice([-1, 1])
+                self.direction.x = choice([-1, 1])
 
     def animate(self, dt):
         state = 'walk' if self.direction.x else 'climb'
@@ -103,6 +103,11 @@ class EnemyElf(pygame.sprite.Sprite):
         self.collided_with_wall = False
         for wall in self.platformer.collision_walls:
             if self.rect.colliderect(wall.rect):
+                if self.direction.x > 0:
+                    self.rect.right = wall.rect.left if self.direction.x > 0 else self.rect.left
+                else:
+                    self.rect.left = wall.rect.right
+                self.pos.x = self.rect.x
                 self.collided_with_wall = True
 
     def check_climb(self):
