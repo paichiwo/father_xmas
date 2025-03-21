@@ -76,6 +76,7 @@ class Player(pygame.sprite.Sprite):
             self.image = pygame.transform.flip(self.image, True, False)
 
     def collisions_with_platforms(self):
+        """Handles collision with platforms"""
         self.landed = False
         self.bottom_rect.update(self.rect.left - TILE_SIZE / 2, self.rect.bottom, self.rect.width + TILE_SIZE, 3)
         for platform in self.level.platforms_group:
@@ -127,6 +128,7 @@ class Player(pygame.sprite.Sprite):
                 self.level.change_room(next_room)
 
     def collect_sleigh(self):
+        """Handles collecting sleigh mechanism"""
         if self.level.current_room_key == self.level.sleigh_spawn_room:
             for sleigh in self.level.sleigh_group:
                 if self.rect.colliderect(sleigh.rect):
@@ -147,6 +149,7 @@ class Player(pygame.sprite.Sprite):
                 self.level.all_sleigh_completed = True if len(self.level.completed_sleigh_pieces) == 4 else False
 
     def reset(self):
+        """Resets player's class"""
         self.rect.midbottom = (5 * TILE_SIZE, 7 * TILE_SIZE)
         self.pos = pygame.math.Vector2(self.rect.topleft)
 
