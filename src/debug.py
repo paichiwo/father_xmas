@@ -38,7 +38,8 @@ class DebugMenu:
             'ECHOICE': 1,
             'ECLIMB': False,
             'ELANDED': True,
-            'LEVEL': 1
+            'LEVEL': 1,
+            'SLEIGH': False
         }
 
         self.item_positions = []
@@ -65,6 +66,7 @@ class DebugMenu:
         self.draw_bottom_rects()
         self.draw_rects()
         self.show_enemy_debug_stats()
+        self.show_sleigh_in_inventory()
 
         padding = 3
         x_left = self.rect.left + padding
@@ -139,6 +141,9 @@ class DebugMenu:
         elif self.debug_items['LEVEL'] == 2:
             activate_state(self.states, 'platformer_running')
             self.debug_items['LEVEL'] = 1
+
+    def show_sleigh_in_inventory(self):
+        self.debug_items['SLEIGH'] = self.level.sleigh_in_inventory
 
     def handle_mouse_event(self, event):
         """Handles mouse input for toggling debug options."""
