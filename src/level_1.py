@@ -1,4 +1,8 @@
+from math import sin
 from random import randint, choice
+
+import pygame.time
+
 from src.config import *
 from src.helpers import import_images
 from src.sprites import Sprite, AnimatedSprite, Snowflake, Sleigh
@@ -49,6 +53,8 @@ class LevelOne:
         self.enemy_spawn_delay = randint(2000, 5000)
         self.last_collision_time = 0
         self.collision_cooldown = 3000
+        self.enemy_collided_with_player = False
+        self.last_enemy_collision_with_player = 0
 
     def create_room(self, tmx_map):
         """Creates the current room by adding objects to sprite groups."""
@@ -130,13 +136,30 @@ class LevelOne:
             self.enemy_spawn_delay = randint(2000, 5000)
 
     def collisions_player_with_enemy(self):
-        """Handles player's with enemy collisions"""
-        if pygame.time.get_ticks() - self.last_collision_time > self.collision_cooldown:
+        """Handles player's with enemy collisions and makes player blink"""
+        current_time = pygame.time.get_ticks()
+
+        if current_time - self.last_collision_time > self.collision_cooldown:
             if pygame.sprite.groupcollide(self.enemy_group, self.player_group, False, False):
+                self.enemy_collided_with_player = True
                 self.last_collision_time = pygame.time.get_ticks()
+
+                # Drop sleigh if holding it
                 if self.sleigh_in_inventory:
                     self.sleigh_in_inventory = False
                     self.create_sleigh()
+
+        # Make player blink for 2 seconds
+        if self.enemy_collided_with_player:
+            surf = self.player.mask.to_surface()
+            surf.set_colorkey((0, 0, 0))
+            value = (sin(current_time / 80) + 1) / 2
+            surf.set_alpha(int(value * 255))
+            self.screen.blit(surf, self.player.rect.topleft)
+
+            if current_time - self.last_collision_time >= 2000: # set duration
+                self.enemy_collided_with_player = False
+
 
     def reset(self):
         """Reset level 1"""
@@ -155,7 +178,7 @@ class LevelOne:
         if self.current_room_key == 'room_1_2':
             self.completed_sleigh_group.update()
 
-        self.player_group.update(dt)
         self.player_group.draw(self.screen)
+        self.player_group.update(dt)
+
         self.collisions_player_with_enemy()
-        # print(self.sleigh_in_inventory)

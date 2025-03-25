@@ -1,3 +1,7 @@
+from math import sin
+
+import pygame.mask
+
 from src.config import *
 from src.helpers import import_assets
 from src.sprites import Sleigh
@@ -24,6 +28,8 @@ class Player(pygame.sprite.Sprite):
         self.speed = 120
         self.landed = False
         self.climbing = False
+
+        self.mask = pygame.mask.from_surface(self.image)
 
     def move(self, dt):
         """Moves the player based on direction and speed."""
@@ -74,6 +80,8 @@ class Player(pygame.sprite.Sprite):
 
         if self.direction.x == 1 or (state == 'idle' and self.last_direction == 1):
             self.image = pygame.transform.flip(self.image, True, False)
+
+        self.mask = pygame.mask.from_surface(self.image)
 
     def collisions_with_platforms(self):
         """Handles collision with platforms"""
