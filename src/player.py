@@ -1,7 +1,3 @@
-from math import sin
-
-import pygame.mask
-
 from src.config import *
 from src.helpers import import_assets
 from src.sprites import Sleigh
