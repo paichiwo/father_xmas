@@ -1,8 +1,5 @@
 from math import sin
 from random import randint, choice
-
-import pygame.time
-
 from src.config import *
 from src.helpers import import_images
 from src.sprites import Sprite, AnimatedSprite, Snowflake, Sleigh
