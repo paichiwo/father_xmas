@@ -80,8 +80,6 @@ class Player(pygame.sprite.Sprite):
         if self.direction.x == 1 or (state == 'idle' and self.last_direction == 1):
             self.image = pygame.transform.flip(self.image, True, False)
 
-        self.mask = pygame.mask.from_surface(self.image)
-
     def collisions_with_platforms(self):
         """Handles collision with platforms"""
         self.landed = False
@@ -173,6 +171,7 @@ class Player(pygame.sprite.Sprite):
         """Handles blinking effect by using math.sin with pygame.time.get_ticks()"""
         if self.sleigh_in_inventory and self.timers['collision_cooldown'].active:
             alpha = int((sin(pygame.time.get_ticks() / 50) + 1) / 2 * 255)
+            print(alpha)
             self.image.set_alpha(alpha)
         else:
             self.image.set_alpha(255)
@@ -181,6 +180,7 @@ class Player(pygame.sprite.Sprite):
         """Resets player's class"""
         self.rect.midbottom = (5 * TILE_SIZE, 7 * TILE_SIZE)
         self.pos = pygame.math.Vector2(self.rect.topleft)
+        self.sleigh_in_inventory = False
 
     def update(self, dt):
         for timer in self.timers.values():

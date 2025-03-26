@@ -1,4 +1,3 @@
-from math import sin
 from random import randint, choice
 from src.config import *
 from src.helpers import import_images
@@ -45,8 +44,8 @@ class LevelOne:
         self.sleigh_spawn_room = choice(self.rooms[:5])
         self.create_sleigh()
 
-        #timers
-        self.timers = {'enemy_spawn': Timer(1000, self.create_enemies)}
+        # timers
+        self.timers = {'enemy_spawn': Timer(500, self.create_enemies)}
 
     def create_room(self, tmx_map):
         """Creates the current room by adding objects to sprite groups."""
@@ -129,7 +128,6 @@ class LevelOne:
         self.current_room_key = 'room_0_2'
         self.change_room(self.current_room_key)
         self.completed_sleigh_pieces = []
-        self.sleigh_in_inventory = False
         self.all_sleigh_completed = False
 
     def update(self, dt):
