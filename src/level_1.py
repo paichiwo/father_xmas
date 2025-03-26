@@ -5,6 +5,7 @@ from src.helpers import import_images
 from src.sprites import Sprite, AnimatedSprite, Snowflake, Sleigh
 from src.player import Player
 from src.enemy import EnemyElf
+from src.timer import Timer
 from pytmx import load_pygame
 
 
@@ -45,13 +46,16 @@ class LevelOne:
         self.sleigh_spawn_room = choice(self.rooms[:5])
         self.create_sleigh()
 
-        # enemy
-        self.enemy_spawn_timer = 0
-        self.enemy_spawn_delay = randint(2000, 5000)
         self.last_collision_time = 0
         self.collision_cooldown = 3000
         self.enemy_collided_with_player = False
         self.last_enemy_collision_with_player = 0
+
+        #timers
+        self.timers = {
+            'enemy_spawn': Timer(randint(2000, 5000), self.create_enemies),
+            'collision_cooldown': Timer(3000, self.end_invincibility)
+        }
 
     def create_room(self, tmx_map):
         """Creates the current room by adding objects to sprite groups."""
@@ -85,7 +89,7 @@ class LevelOne:
             self.current_room_key = new_room_key
             self.current_room = self.tmx_rooms[new_room_key]
             self.create_room(self.current_room)
-            self.create_enemies()
+            self.timers['enemy_spawn'].activate()
 
     def create_snow(self):
         """Creates snowflakes based on the current room's snow boundaries."""
@@ -120,43 +124,29 @@ class LevelOne:
 
     def create_enemies(self):
         """Creates enemy in each room"""
-        self.enemy_spawn_timer += pygame.time.get_ticks()
-        if self.enemy_spawn_timer >= self.enemy_spawn_delay:
-            enemy_spawn_data = choice(ENEMY_SPAWN_POS[self.current_room_key])
-            EnemyElf(screen=self.screen,
-                     level_1=self,
-                     path=PATHS['elf'],
-                     pos=(enemy_spawn_data[0], enemy_spawn_data[1]),
-                     direction_x=enemy_spawn_data[2],
-                     group=[self.enemy_group, self.all_sprites])
-            self.enemy_spawn_timer = 0
-            self.enemy_spawn_delay = randint(2000, 5000)
+        enemy_spawn_data = choice(ENEMY_SPAWN_POS[self.current_room_key])
+        EnemyElf(screen=self.screen,
+                 level_1=self,
+                 path=PATHS['elf'],
+                 pos=(enemy_spawn_data[0], enemy_spawn_data[1]),
+                 direction_x=enemy_spawn_data[2],
+                 group=[self.enemy_group, self.all_sprites])
+        self.timers['enemy_spawn'].deactivate()
 
     def collisions_player_with_enemy(self):
         """Handles player's with enemy collisions and makes player blink"""
-        current_time = pygame.time.get_ticks()
-
-        if current_time - self.last_collision_time > self.collision_cooldown:
+        if not self.timers['collision_cooldown'].active:
             if pygame.sprite.groupcollide(self.enemy_group, self.player_group, False, False):
                 self.enemy_collided_with_player = True
-                self.last_collision_time = pygame.time.get_ticks()
+                self.timers['collision_cooldown'].activate()
 
                 # Drop sleigh if holding it
                 if self.sleigh_in_inventory:
                     self.sleigh_in_inventory = False
                     self.create_sleigh()
 
-        # Make player blink for 2 seconds
-        if self.enemy_collided_with_player:
-            surf = self.player.mask.to_surface()
-            surf.set_colorkey((0, 0, 0))
-            value = (sin(current_time / 80) + 1) / 2
-            surf.set_alpha(int(value * 255))
-            self.screen.blit(surf, self.player.rect.topleft)
-
-            if current_time - self.last_collision_time >= 2000: # set duration
-                self.enemy_collided_with_player = False
-
+    def end_invincibility(self):
+        self.enemy_collided_with_player = False
 
     def reset(self):
         """Reset level 1"""
@@ -170,6 +160,9 @@ class LevelOne:
     def update(self, dt):
         self.all_sprites.update(dt)
         self.all_sprites.draw(self.screen)
+
+        for timer in self.timers.values():
+            timer.update()
 
         self.sleigh_group.update() if self.current_room_key is self.sleigh_spawn_room else self.sleigh_group.remove()
         if self.current_room_key == 'room_1_2':
