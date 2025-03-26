@@ -1,6 +1,8 @@
+from math import sin
 from src.config import *
 from src.helpers import import_assets
 from src.sprites import Sleigh
+from src.timer import Timer
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, screen, level_1, path, group):
@@ -25,7 +27,13 @@ class Player(pygame.sprite.Sprite):
         self.landed = False
         self.climbing = False
 
+        self.sleigh_in_inventory = False
+        self.timers = {
+            'collision_cooldown': Timer(3000, self.loose_sleigh)
+        }
+
         self.mask = pygame.mask.from_surface(self.image)
+        self.last_collision_time = 0
 
     def move(self, dt):
         """Moves the player based on direction and speed."""
@@ -138,21 +146,41 @@ class Player(pygame.sprite.Sprite):
         if self.level_1.current_room_key == self.level_1.sleigh_spawn_room:
             for sleigh in self.level_1.sleigh_group:
                 if self.rect.colliderect(sleigh.rect):
-                    self.level_1.sleigh_in_inventory = True
+                    self.sleigh_in_inventory = True
                     sleigh.kill()
 
-        elif self.level_1.current_room_key == 'room_1_2' and self.level_1.sleigh_in_inventory and self.rect.x == 100:
+        elif self.level_1.current_room_key == 'room_1_2' and self.sleigh_in_inventory and self.rect.x == 100:
             index = len(self.level_1.completed_sleigh_pieces)
             if index < len(self.level_1.sleigh_images):
                 pos = (TILE_SIZE * 7 - TILE_SIZE * index, TILE_SIZE * 8)
                 Sleigh(pos, self.screen, self.level_1.sleigh_images[index], self.level_1.completed_sleigh_group)
 
-                self.level_1.sleigh_in_inventory = False
+                self.sleigh_in_inventory = False
                 self.level_1.completed_sleigh_pieces.append(str(index + 1))
                 self.level_1.sleigh_group.empty()
                 self.level_1.create_sleigh()
 
-                self.level_1.all_sleigh_completed = True if len(self.level_1.completed_sleigh_pieces) == 4 else False
+                self.level_1.level_won = True if len(self.level_1.completed_sleigh_pieces) == 4 else False
+
+    def loose_sleigh(self):
+        """Handles loosing sleigh"""
+        if self.sleigh_in_inventory:
+            self.sleigh_in_inventory = False
+            self.level_1.create_sleigh()
+
+    def collisions_player_with_enemy(self):
+        """Handles player's with enemy collisions and makes player blink"""
+        if not self.timers['collision_cooldown'].active:
+            if pygame.sprite.groupcollide(self.level_1.enemy_group, self.level_1.player_group, False, False):
+                self.timers['collision_cooldown'].activate()
+
+    def blink(self):
+        """Handles blinking effect by using math.sin with pygame.time.get_ticks()"""
+        if self.sleigh_in_inventory and self.timers['collision_cooldown'].active:
+            alpha = int((sin(pygame.time.get_ticks() / 80) + 1) / 2 * 255)
+            self.image.set_alpha(alpha)
+        else:
+            self.image.set_alpha(255)
 
     def reset(self):
         """Resets player's class"""
@@ -160,10 +188,16 @@ class Player(pygame.sprite.Sprite):
         self.pos = pygame.math.Vector2(self.rect.topleft)
 
     def update(self, dt):
+        for timer in self.timers.values():
+            timer.update()
+
         self.input()
         self.move(dt)
         self.animate(dt)
         self.collisions_with_platforms()
         self.collisions_with_walls()
+        self.collisions_player_with_enemy()
+        self.blink()
         self.move_between_rooms()
         self.collect_sleigh()
+

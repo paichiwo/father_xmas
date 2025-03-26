@@ -41,20 +41,13 @@ class LevelOne:
         # sleigh
         self.sleigh_images = import_images(PATHS['sleigh'])
         self.all_sleigh_completed = False
-        self.sleigh_in_inventory = False
         self.completed_sleigh_pieces = []
         self.sleigh_spawn_room = choice(self.rooms[:5])
         self.create_sleigh()
 
-        self.last_collision_time = 0
-        self.collision_cooldown = 3000
-        self.enemy_collided_with_player = False
-        self.last_enemy_collision_with_player = 0
-
         #timers
         self.timers = {
-            'enemy_spawn': Timer(randint(2000, 5000), self.create_enemies),
-            'collision_cooldown': Timer(3000, self.end_invincibility)
+            'enemy_spawn': Timer(2000, self.create_enemies),
         }
 
     def create_room(self, tmx_map):
@@ -104,7 +97,7 @@ class LevelOne:
     def create_sleigh(self):
         """Creates sleigh in a random room"""
         self.sleigh_spawn_room = choice([room for room in self.rooms[:5] if room != self.current_room_key])
-        if self.sleigh_in_inventory or self.sleigh_spawn_room not in self.tmx_rooms:
+        if self.player.sleigh_in_inventory or self.sleigh_spawn_room not in self.tmx_rooms:
             return
 
         print(self.sleigh_spawn_room)
@@ -117,7 +110,6 @@ class LevelOne:
             for x, y, _ in tms_map.get_layer_by_name('platforms').tiles()
             if y in [7, 8] and 1 < x < 18 and (x * TILE_SIZE, y * TILE_SIZE) not in ladders
         ]
-
         index  = len(self.completed_sleigh_pieces)
         if rects and index < len(self.sleigh_images):
             Sleigh(choice(rects), self.screen, self.sleigh_images[index], [self.sleigh_group])
@@ -133,21 +125,6 @@ class LevelOne:
                  group=[self.enemy_group, self.all_sprites])
         self.timers['enemy_spawn'].deactivate()
 
-    def collisions_player_with_enemy(self):
-        """Handles player's with enemy collisions and makes player blink"""
-        if not self.timers['collision_cooldown'].active:
-            if pygame.sprite.groupcollide(self.enemy_group, self.player_group, False, False):
-                self.enemy_collided_with_player = True
-                self.timers['collision_cooldown'].activate()
-
-                # Drop sleigh if holding it
-                if self.sleigh_in_inventory:
-                    self.sleigh_in_inventory = False
-                    self.create_sleigh()
-
-    def end_invincibility(self):
-        self.enemy_collided_with_player = False
-
     def reset(self):
         """Reset level 1"""
         self.player.reset()
@@ -158,11 +135,11 @@ class LevelOne:
         self.all_sleigh_completed = False
 
     def update(self, dt):
-        self.all_sprites.update(dt)
-        self.all_sprites.draw(self.screen)
-
         for timer in self.timers.values():
             timer.update()
+
+        self.all_sprites.update(dt)
+        self.all_sprites.draw(self.screen)
 
         self.sleigh_group.update() if self.current_room_key is self.sleigh_spawn_room else self.sleigh_group.remove()
         if self.current_room_key == 'room_1_2':
@@ -170,5 +147,3 @@ class LevelOne:
 
         self.player_group.draw(self.screen)
         self.player_group.update(dt)
-
-        self.collisions_player_with_enemy()
