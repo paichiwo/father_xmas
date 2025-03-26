@@ -67,7 +67,7 @@ class Game:
         self.dashboard.update()
 
     def platformer_check_win(self):
-        if self.level_1.all_sleigh_completed:
+        if self.level_1.level_won:
             activate_state(self.states, 'level_2_running')
 
     def update_xmas_letter_elements(self):
