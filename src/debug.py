@@ -143,7 +143,7 @@ class DebugMenu:
             self.debug_items['LEVEL'] = 1
 
     def show_sleigh_in_inventory(self):
-        self.debug_items['SLEIGH'] = self.level_1.sleigh_in_inventory
+        self.debug_items['SLEIGH'] = self.level_1.player.sleigh_in_inventory
 
     def handle_mouse_event(self, event):
         """Handles mouse input for toggling debug options."""
