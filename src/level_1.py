@@ -46,9 +46,7 @@ class LevelOne:
         self.create_sleigh()
 
         #timers
-        self.timers = {
-            'enemy_spawn': Timer(2000, self.create_enemies),
-        }
+        self.timers = {'enemy_spawn': Timer(1000, self.create_enemies)}
 
     def create_room(self, tmx_map):
         """Creates the current room by adding objects to sprite groups."""
@@ -145,5 +143,5 @@ class LevelOne:
         if self.current_room_key == 'room_1_2':
             self.completed_sleigh_group.update()
 
-        self.player_group.draw(self.screen)
         self.player_group.update(dt)
+        self.player_group.draw(self.screen)

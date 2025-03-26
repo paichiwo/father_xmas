@@ -28,12 +28,7 @@ class Player(pygame.sprite.Sprite):
         self.climbing = False
 
         self.sleigh_in_inventory = False
-        self.timers = {
-            'collision_cooldown': Timer(3000, self.loose_sleigh)
-        }
-
-        self.mask = pygame.mask.from_surface(self.image)
-        self.last_collision_time = 0
+        self.timers = {'collision_cooldown': Timer(2000, self.loose_sleigh)}
 
     def move(self, dt):
         """Moves the player based on direction and speed."""
@@ -177,7 +172,7 @@ class Player(pygame.sprite.Sprite):
     def blink(self):
         """Handles blinking effect by using math.sin with pygame.time.get_ticks()"""
         if self.sleigh_in_inventory and self.timers['collision_cooldown'].active:
-            alpha = int((sin(pygame.time.get_ticks() / 80) + 1) / 2 * 255)
+            alpha = int((sin(pygame.time.get_ticks() / 50) + 1) / 2 * 255)
             self.image.set_alpha(alpha)
         else:
             self.image.set_alpha(255)
