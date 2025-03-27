@@ -28,7 +28,7 @@ class Player(pygame.sprite.Sprite):
         self.climbing = False
 
         self.sleigh_in_inventory = False
-        self.timers = {'collision_cooldown': Timer(2000, self.loose_sleigh)}
+        self.timers = {'collision_cooldown': Timer(1000)}
 
     def move(self, dt):
         """Moves the player based on direction and speed."""
@@ -155,23 +155,18 @@ class Player(pygame.sprite.Sprite):
 
                 self.level_1.level_won = True if len(self.level_1.completed_sleigh_pieces) == 4 else False
 
-    def loose_sleigh(self):
-        """Handles loosing sleigh"""
-        if self.sleigh_in_inventory:
-            self.sleigh_in_inventory = False
-            self.level_1.create_sleigh()
-
     def collisions_player_with_enemy(self):
         """Handles player's with enemy collisions and makes player blink"""
         if not self.timers['collision_cooldown'].active:
-            if pygame.sprite.groupcollide(self.level_1.enemy_group, self.level_1.player_group, False, False):
+            if pygame.sprite.groupcollide(self.level_1.enemy_group, self.level_1.player_group, False, False) and self.sleigh_in_inventory:
                 self.timers['collision_cooldown'].activate()
+                self.sleigh_in_inventory = False
+                self.level_1.create_sleigh()
 
     def blink(self):
         """Handles blinking effect by using math.sin with pygame.time.get_ticks()"""
-        if self.sleigh_in_inventory and self.timers['collision_cooldown'].active:
+        if self.timers['collision_cooldown'].active:
             alpha = int((sin(pygame.time.get_ticks() / 50) + 1) / 2 * 255)
-            print(alpha)
             self.image.set_alpha(alpha)
         else:
             self.image.set_alpha(255)
