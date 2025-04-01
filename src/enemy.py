@@ -28,7 +28,7 @@ class EnemyElf(pygame.sprite.Sprite):
         self.off_screen_max = 100
         self.climb_decision = choice([0, 1]) # 0 = no climbing; 1 = climbing
 
-        self.direction_timer = randint(2000, 5000)
+        self.direction_timer = randint(3000, 7000)
         self.last_direction_change_time = pygame.time.get_ticks()
 
     def move(self, dt):
@@ -36,7 +36,7 @@ class EnemyElf(pygame.sprite.Sprite):
         self.rect.topleft = (round(self.pos.x), round(self.pos.y))
 
     def restart_direction_timers(self):
-        self.direction_timer = randint(2000, 5000)
+        self.direction_timer = randint(3000, 7000)
         self.last_direction_change_time = pygame.time.get_ticks()
 
     def direction_change(self):
@@ -55,7 +55,7 @@ class EnemyElf(pygame.sprite.Sprite):
             self.restart_direction_timers()
             self.climb_decision = 1
 
-        if not self.landed and (self.pos.x < -100 or self.pos.x > 420):
+        if not self.landed and (self.pos.x < -self.off_screen_max or self.pos.x > WIDTH + self.off_screen_max):
             self.direction.x *= -1
             self.restart_direction_timers()
 

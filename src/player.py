@@ -28,7 +28,7 @@ class Player(pygame.sprite.Sprite):
         self.climbing = False
 
         self.sleigh_in_inventory = False
-        self.timers = {'collision_cooldown': Timer(1000)}
+        self.collision_cooldown_timer = Timer(1000)
 
     def move(self, dt):
         """Moves the player based on direction and speed."""
@@ -157,15 +157,15 @@ class Player(pygame.sprite.Sprite):
 
     def collisions_player_with_enemy(self):
         """Handles player's with enemy collisions and makes player blink"""
-        if not self.timers['collision_cooldown'].active:
+        if not self.collision_cooldown_timer.active:
             if pygame.sprite.groupcollide(self.level_1.enemy_group, self.level_1.player_group, False, False) and self.sleigh_in_inventory:
-                self.timers['collision_cooldown'].activate()
+                self.collision_cooldown_timer.activate()
                 self.sleigh_in_inventory = False
                 self.level_1.create_sleigh()
 
     def blink(self):
         """Handles blinking effect by using math.sin with pygame.time.get_ticks()"""
-        if self.timers['collision_cooldown'].active:
+        if self.collision_cooldown_timer.active:
             alpha = int((sin(pygame.time.get_ticks() / 50) + 1) / 2 * 255)
             self.image.set_alpha(alpha)
         else:
@@ -178,9 +178,7 @@ class Player(pygame.sprite.Sprite):
         self.sleigh_in_inventory = False
 
     def update(self, dt):
-        for timer in self.timers.values():
-            timer.update()
-
+        self.collision_cooldown_timer.update()
         self.input()
         self.move(dt)
         self.animate(dt)

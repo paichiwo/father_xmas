@@ -45,7 +45,7 @@ class LevelOne:
         self.create_sleigh()
 
         # timers
-        self.timers = {'enemy_spawn': Timer(500, self.create_enemies)}
+        self.timers = {'enemy_spawn': Timer(100, self.create_enemies)}
 
     def create_room(self, tmx_map):
         """Creates the current room by adding objects to sprite groups."""
