@@ -136,10 +136,10 @@ class DebugMenu:
     def change_level(self):
         """Changes game levels"""
         if self.debug_items['LEVEL'] == 1:
-            activate_state(self.states, 'xmas_letter_running')
+            activate_state(self.states, 'level_2_running')
             self.debug_items['LEVEL'] = 2
         elif self.debug_items['LEVEL'] == 2:
-            activate_state(self.states, 'platformer_running')
+            activate_state(self.states, 'level_1_running')
             self.debug_items['LEVEL'] = 1
 
     def show_sleigh_in_inventory(self):
