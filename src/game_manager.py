@@ -65,15 +65,12 @@ class Game:
     def update_level_1_elements(self, dt):
         self.level_1.update(dt)
         self.dashboard.update()
-
-    def platformer_check_win(self):
         if self.level_1.level_won:
             activate_state(self.states, 'level_2_running')
 
-    def update_xmas_letter_elements(self):
-        self.dashboard.update()
-        self.level_2.update()
-        self.level_2.draw()
+    def update_level_2_elements(self, dt):
+        # self.dashboard.update()
+        self.level_2.update(dt)
 
     def game_over(self):
         return not self.dashboard.game_over
@@ -105,9 +102,8 @@ class Game:
                     self.check_game_start()
                 if self.states['level_1_running']:
                     self.update_level_1_elements(dt)
-                    self.platformer_check_win()
                 if self.states['level_2_running']:
-                    self.update_xmas_letter_elements()
+                    self.update_level_2_elements(dt)
 
                 self.running = self.game_over()
 
