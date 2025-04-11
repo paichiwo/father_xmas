@@ -36,7 +36,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.topleft = (round(self.pos.x), round(self.pos.y))
 
     def collisions_with_screen(self):
-        self.rect.clamp_ip(pygame.Rect(0, 0, 960, 480))
+        self.rect.clamp_ip(pygame.Rect(0, 0, WIDTH, HEIGHT))
         self.pos.update(self.rect.topleft)
 
     def blink(self):
@@ -60,7 +60,6 @@ class Player(pygame.sprite.Sprite):
 
 class Game:
     def __init__(self):
-        self.width, self.height = 960, 480
         # Game setup
         self.clock = pygame.time.Clock()
 
@@ -88,7 +87,6 @@ class Game:
                     sys.exit()
 
             self.player_group.update(dt)
-            self.player.blink()
 
             sdl2.Texture.from_surface(self.renderer, self.screen).draw()
             self.renderer.present()
