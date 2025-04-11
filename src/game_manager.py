@@ -69,8 +69,8 @@ class Game:
             activate_state(self.states, 'level_2_running')
 
     def update_level_2_elements(self, dt):
-        # self.dashboard.update()
         self.level_2.update(dt)
+        self.dashboard.update()
 
     def game_over(self):
         return not self.dashboard.game_over
