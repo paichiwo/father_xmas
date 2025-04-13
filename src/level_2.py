@@ -1,9 +1,5 @@
-from random import randint, choice
-
-import pygame
-
 from src.config import *
-from src.helpers import import_images
+from src.helpers import import_gifts
 from src.sprites import Sprite, AnimatedSprite, Snowflake, Sleigh
 from src.player import Player
 from src.enemy import EnemyElf
@@ -19,12 +15,14 @@ class LevelTwo:
         self.create_level(load_pygame('data/levels/level_2.tmx'))
 
         # Image browser setup
-        self.gift_images = import_images('assets/level/level_2_gifts/')
-        self.gift_names = ['train', 'bear', 'computer', 'doll', 'rocket', 'ball']
-        self.image_index = 0  # Keep track of the current image index
+        path = 'assets/level/level_2_gifts/'
+        self.gifts = import_gifts(path)
+        self.gift_keys = list(self.gifts.keys())
+
+        self.image_index = 0
         self.selected_gifts = []
 
-        self.image_switch_timer = Timer(150)
+        self.image_switch_timer = Timer(80)
         self.image_switch_timer.activate()
 
     def create_level(self, tmx_map):
@@ -44,19 +42,22 @@ class LevelTwo:
 
         if not self.image_switch_timer.active:
             if keys[pygame.K_LEFT]:
-                self.image_index = (self.image_index - 1) % len(self.gift_images)
+                self.image_index = (self.image_index - 1) % len(self.gift_keys)
             elif keys[pygame.K_RIGHT]:
-                self.image_index = (self.image_index + 1) % len(self.gift_images)
+                self.image_index = (self.image_index + 1) % len(self.gift_keys)
             elif keys[pygame.K_RETURN]:
-                self.selected_gifts.append(self.gift_names[self.image_index])
+                selected_key = self.gift_keys[self.image_index]
+                self.selected_gifts.append(selected_key)
                 print(self.selected_gifts)
-                self.gift_images.pop(self.image_index)
-                self.gift_names.pop(self.image_index)
+                del self.gifts[selected_key]
+                self.gift_keys.pop(self.image_index)
+
 
             self.image_switch_timer.activate()
 
     def display_image(self):
-        original_image = self.gift_images[self.image_index]
+        key = self.gift_keys[self.image_index]
+        original_image = self.gifts[key]
         scaled_image = pygame.transform.scale(original_image,
                                               (original_image.get_width() * 2, original_image.get_height() * 2))
         rect = scaled_image.get_rect(topleft=(WIDTH / 3 - 35, HEIGHT / 2 - 20))
