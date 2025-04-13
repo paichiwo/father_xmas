@@ -23,6 +23,16 @@ def import_images(path):
         list_of_images.append(pygame.image.load(os.path.join(path, file)).convert_alpha())
     return list_of_images
 
+def import_gifts(path):
+    gifts = {}
+
+    for root, dirs, files in os.walk(path):
+        for dir_name in dirs:
+            image_path = os.path.join(root, dir_name, '0.png')
+            gifts[dir_name] = pygame.image.load(image_path).convert_alpha()
+        break
+    return gifts
+
 def activate_state(states, new_state):
     for key in states.keys():
         states[key] = False
